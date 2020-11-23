@@ -35,9 +35,9 @@
  *
  * lg(65536) = 16	
  * On platform with 8-byte pointers
- * memory overhead per node is 8 * 16 + oio8 = 136 bytes.
+ * memory overhead per node is 8 * 16 = 128 bytes.
  *
- * Total memory overhead is 136 * N + sizeof(struct skiplist)
+ * Total memory overhead is 128 * N + sizeof(struct skiplist)
  *
  */
 
