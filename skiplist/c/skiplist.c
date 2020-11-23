@@ -120,6 +120,8 @@ void skiplist_destroy(skiplist_t** list)
 		curr = curr->next_at_lvl[0];
 		free(to_free);
 	}
+	
+	free(*(list)->head);
 
 	free(*list);
 	*list = NULL;
