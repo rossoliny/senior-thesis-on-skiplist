@@ -1,7 +1,7 @@
 
 /************************************************/
 /*						*/
-/*	File:		skiplist.h		*/
+/*	File:		skiplist.c		*/
 /*	Date:		23.11.2020		*/
 /*	Author:		Isa Dzhumanbaev		*/
 /*						*/
