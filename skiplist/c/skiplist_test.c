@@ -3,7 +3,7 @@
 /*						*/
 /*	File:		skiplist_test.c		*/
 /*	Date:		23.11.2020		*/
-/*	Author:		Isa Dzhumanbaev		*/
+/*	Author:		Isa Dzhumabaev		*/
 /*						*/
 /************************************************/
 
