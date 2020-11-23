@@ -1,3 +1,13 @@
+
+/************************************************/
+/*						*/
+/*	File:		skiplist_test.c		*/
+/*	Date:		23.11.2020		*/
+/*	Author:		Isa Dzhumanbaev		*/
+/*						*/
+/************************************************/
+
+
 #include "skiplist.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -45,6 +55,8 @@ void test_skiplist_node_init_1()
 		}
 		i++;
 	}
+
+	skiplist_node_destroy(&node);
 	tdone("test_skiplist_node_init_1");
 }
 
@@ -52,12 +64,13 @@ void test_skiplist_node_init_2()
 {
 	tstart("test_skiplist_node_init_2");
 
-	skiplist_node_t* list = skiplist_node_init(NULL, 0, (void*)123, 4);
-	if(list != NULL)
+	skiplist_node_t* node = skiplist_node_init(NULL, 0, (void*)123, 4);
+	if(node != NULL)
 	{
 		tfail("node initialized with key equal to NULL.");
 	}
 
+	skiplist_node_destroy(&node);
 	tdone("test_skiplist_node_init_2");
 }
 
@@ -111,6 +124,7 @@ void test_skiplist_init_1()
 		i++;
 	}
 
+	skiplist_destroy(&skiplist);
 	tdone("test_skiplist_init_1");
 }
 
@@ -134,6 +148,9 @@ void test_skiplist_destroy_1()
 	tdone("test_skiplist_destroy_1");
 }
 
+
+
+
 int main() 
 {
 	// NODE
@@ -149,3 +166,10 @@ int main()
 	test_skiplist_destroy_1();
 	puts("\n****\tSKIPLIST Tests Done\t****");
 }
+
+
+
+
+
+
+/* END OF FILE */

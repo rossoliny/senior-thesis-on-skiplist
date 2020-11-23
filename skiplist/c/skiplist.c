@@ -1,3 +1,13 @@
+
+/************************************************/
+/*						*/
+/*	File:		skiplist.h		*/
+/*	Date:		23.11.2020		*/
+/*	Author:		Isa Dzhumanbaev		*/
+/*						*/
+/************************************************/
+
+
 #include "skiplist.h"
 #include <stdlib.h>
 #include <string.h>
@@ -134,3 +144,4 @@ void skiplist_destroy(skiplist_t** list)
 
 
 
+/* END OF FILE */
