@@ -121,7 +121,7 @@ void skiplist_destroy(skiplist_t** list)
 		free(to_free);
 	}
 	
-	free(*(list)->head);
+	free((*list)->head);
 
 	free(*list);
 	*list = NULL;
