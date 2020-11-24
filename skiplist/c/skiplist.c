@@ -129,7 +129,7 @@ void skiplist_destroy(skiplist_t** list)
 		to_free = curr;
 		// But must save node after current to delete in next iteration.
 		curr = curr->next_at_lvl[0];
-		free(to_free);
+		skiplist_node_destroy(&to_free);
 	}
 	
 	free((*list)->head);
