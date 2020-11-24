@@ -13,10 +13,19 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define DEBUG
+
 #define tstart(name) 	puts("\nTest Case:\t"  name); fflush(stdout)
 #define tdone(name) 	puts("Test Pass:\t"  name); fflush(stdout)
 #define tfail(msg) 	fputs("Test Failed:\t"  msg, stderr); fflush(stderr); exit(1)
-#define tmsg(msg)	puts("\t\t" msg); fflush(stdout)
+
+#ifdef TDEBUG
+	#define tmsg(msg)	puts("\t\t" msg); fflush(stdout)
+	#define print_skiplist(list) print_skiplist_func(list)
+#else
+	#define tmsg(msg)
+	#define print_skiplist(list)
+#endif
 
 // NODE TESTS
 void test_skiplist_node_init_1()
@@ -92,7 +101,8 @@ void test_skiplist_node_destroy_1()
 
 // SKIPLIST TESTS
 
-void print_skiplist(skiplist_t* list)
+
+void print_skiplist_func(skiplist_t* list)
 {
 	skiplist_node_t* node = list->head->next_at_lvl[0];
 	while(node != NULL)
