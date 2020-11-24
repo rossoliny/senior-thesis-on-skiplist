@@ -170,8 +170,8 @@ skiplist_node_t* skiplist_insert(skiplist_t* list, void* key, size_t key_sz, voi
 	//
 	// Because this variable indicates the number of additional layers on top of
 	// original linked list. Maybe I must rename it.
-	size_t	curr_lvl = list->height;
-	skiplist_node_t* curr = list->head->next_at_lvl[curr_lvl];
+	ssize_t	curr_lvl = list->height;
+	skiplist_node_t* curr = (skiplist_node_t*) list->head;
 
 	// Outter loop is used to make vertical steps.
 	while(curr_lvl >= 0)
@@ -179,7 +179,7 @@ skiplist_node_t* skiplist_insert(skiplist_t* list, void* key, size_t key_sz, voi
 		// Inner loop is used to make horizontal steps.
 		// It will stop only when curr->key >= key.
 		// Or if curr is NULL. It means the end of the list at curr_lvl.
-		while(curr != NULL && list->cmp(curr->key, key) < 0)
+		while(curr->next_at_lvl[curr_lvl] != NULL && list->cmp(curr->next_at_lvl[curr_lvl]->key, key) < 0) 
 		{
 			curr = curr->next_at_lvl[curr_lvl];
 		}
@@ -195,6 +195,7 @@ skiplist_node_t* skiplist_insert(skiplist_t* list, void* key, size_t key_sz, voi
 	// Then curr->next_at_lvl[0] is the node with key that is equal or greater
 	// than the required key.
 	
+	// If curr is NULL than this is the very first element.
 	curr = curr->next_at_lvl[0];
 
 	// If curr == NULL then this is the end of the lvl 0 list 
@@ -206,6 +207,7 @@ skiplist_node_t* skiplist_insert(skiplist_t* list, void* key, size_t key_sz, voi
 	{
 		skiplist_node_t* new_node;
 		new_node = skiplist_node_init(key, key_sz, value, value_sz);
+		list->length++;
 		
 		// if(new_node == NULL) is always false, so no checks.
 
@@ -223,7 +225,9 @@ skiplist_node_t* skiplist_insert(skiplist_t* list, void* key, size_t key_sz, voi
 		while(curr_lvl > list->height)
 		{
 			// Set new_node as next node of head at curr_lvl
-			list->head->next_at_lvl[curr_lvl] = new_node;
+
+			// list->head->next_at_lvl[curr_lvl] = new_node;
+			step_down_point_at[curr_lvl] = (skiplist_node_t*) list->head;
 			curr_lvl--;
 		}
 		// Set new height.
@@ -236,8 +240,9 @@ skiplist_node_t* skiplist_insert(skiplist_t* list, void* key, size_t key_sz, voi
 		//
 		// All the other cells are equal to NULL because they were not
 		// assigned during search. That's why algo must stop when it first sees NULL
+		
 		curr_lvl = 0;
-		while(step_down_point_at[curr_lvl] != NULL)
+		while(curr_lvl <= list->height)
 		{
 			new_node->next_at_lvl[curr_lvl] = 
 				step_down_point_at[curr_lvl]->next_at_lvl[curr_lvl];

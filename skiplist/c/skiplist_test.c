@@ -161,22 +161,78 @@ void test_skiplist_insert_1()
 
 	skiplist_t* list = skiplist_init(strcomp);
 	
-	char name[] = "isa";
-	int age = 23;
+	char name[] 	= "isa";
+	int age 	= 23;
 
-	tmsg("trying to insert");
+	tmsg("\n\t\ttrying to insert 1st element.");
 	skiplist_insert(list, name, sizeof(name), &age, sizeof(age));
-	tmsg("inserted.");
+	tmsg("inserted.\n");
 
-
-	int age_res = *((int*) list->head->next_at_lvl[0]->value);
-	if(age_res != age)
+	int res_age = *((int*) list->head->next_at_lvl[0]->value);
+	if(res_age != age)
 	{
-		tfail("age_res is equal to age.");
+		tfail("res_age is not equal to age.");
+	}
+	
+
+
+	char name2[] 	= "ali";
+	int age2 	= 228;
+	tmsg("trying to insert 2nd element at position before 1st.");
+	skiplist_insert(list, name2, sizeof(name2), &age2, sizeof(age2));
+	tmsg("inserted.\n");
+
+	res_age = *((int*) list->head->next_at_lvl[0]->next_at_lvl[0]->value);
+	if(res_age != age)
+	{
+		tfail("Not iserted at right position, res_age != age.");
 	}
 
+
+
+	char name3[] 	= "isz";
+	int age3 	= -1;
+
+	tmsg("trying to insert 3rd element at last position.");
+	skiplist_insert(list, name3, sizeof(name3), &age3, sizeof(age3));
+	tmsg("inserted.\n");
+
+	int res_age3 = *((int*) list->head->next_at_lvl[0]->next_at_lvl[0]->next_at_lvl[0]->value);
+	if(res_age3 != age3)
+	{
+		tfail("Not inserted at last position.");
+	}
+
+
+
+	char name4[] 	= "isb";
+	int age4 	= 124532;
+
+	tmsg("trying to insert 4th element before last.");
+	skiplist_insert(list, name4, sizeof(name4), &age4, sizeof(age4));
+	tmsg("inserted.");
+	
+	int res_age4 = *(int*) list->head->next_at_lvl[0]->next_at_lvl[0]->next_at_lvl[0]->value;
+	if(res_age4 != age4)
+	{
+		tfail("Not inserted at correct position.");
+	}
+
+	tmsg("");
+	tmsg("Insertions are finished. Printing skiplist.");
+	skiplist_node_t* node = list->head->next_at_lvl[0];
+	while(node != NULL)
+	{
+		char* k = (char*) node->key;
+		int*  v	= (int*) node->value;
+		printf("\t\t(%s, %d)\n", k, *v);
+		node = node->next_at_lvl[0];
+	}
+
+	skiplist_destroy(&list);
 	tdone("test_skiplist_insert_1");
 }
+
 
 int main() 
 {
@@ -193,6 +249,8 @@ int main()
 	test_skiplist_destroy_1();
 	test_skiplist_insert_1();
 	puts("\n****\tSKIPLIST Tests Done\t****");
+
+	puts("\n****\tAll Tests Are Passed\t****");
 }
 
 
