@@ -150,7 +150,12 @@ skiplist_node_t* skiplist_insert(skiplist_t* list, void* key, size_t key_sz, voi
 	// Must test if cmp is not NULL because
 	// even though it was checked on the construction of a list
 	// it may be changed directly by the user.
-	
+	if(list->cmp == NULL)
+	{
+		skiplist_destroy(&list);
+		return NULL;
+
+	}
 
 	// Array to save pointers to all NODES where algorithm decided to go 1 lvl down.
 	//
@@ -250,7 +255,9 @@ skiplist_node_t* skiplist_insert(skiplist_t* list, void* key, size_t key_sz, voi
 			step_down_point_at[curr_lvl]->next_at_lvl[curr_lvl] = new_node;
 			curr_lvl++;
 		}
+		return new_node;
 	}
+	return curr;
 }
 
 
