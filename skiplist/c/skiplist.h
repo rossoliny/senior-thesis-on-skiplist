@@ -146,7 +146,7 @@ void skiplist_destroy(skiplist_t** list);
 skiplist_node_t* skiplist_search(skiplist_t* list, void* key);
 
 // TODO: Add documentation.
-skiplist_node_t* skiplist_insert(skiplist_t* list, void* key, void* value);
+skiplist_node_t* skiplist_insert(skiplist_t* list, void* key, size_t key_sz, void* value, size_t value_sz);
 
 // TODO: Add documentation.
 skiplist_node_t* skiplist_remove(skiplist_t* list, void* key);

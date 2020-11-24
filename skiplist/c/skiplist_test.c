@@ -133,10 +133,11 @@ void test_skiplist_destroy_1()
 	tstart("test_skiplist_destroy_1");
 	
 	skiplist_t* list = skiplist_init(NULL);
-	if(list == NULL)
+	if(list != NULL)
 	{
-		tfail("Could not initialize skiplist.");
+		tfail("Error, list initialized without cmp function.");
 	}
+	list = skiplist_init(test_cmp_true);
 
 	skiplist_destroy(&list);
 
@@ -149,7 +150,33 @@ void test_skiplist_destroy_1()
 }
 
 
+void test_skiplist_insert_1()
+{
+	tstart("test_skiplist_insert_1");
+	
+	int strcomp(void* a, void* b)
+	{
+		return strcmp((char*)a, (char*)b);
+	}
 
+	skiplist_t* list = skiplist_init(strcomp);
+	
+	char name[] = "isa";
+	int age = 23;
+
+	tmsg("trying to insert");
+	skiplist_insert(list, name, sizeof(name), &age, sizeof(age));
+	tmsg("inserted.");
+
+
+	int age_res = *((int*) list->head->next_at_lvl[0]->value);
+	if(age_res != age)
+	{
+		tfail("age_res is equal to age.");
+	}
+
+	tdone("test_skiplist_insert_1");
+}
 
 int main() 
 {
@@ -164,6 +191,7 @@ int main()
 	puts("\n****\t   SKIPLIST Tests\t****");
 	test_skiplist_init_1();
 	test_skiplist_destroy_1();
+	test_skiplist_insert_1();
 	puts("\n****\tSKIPLIST Tests Done\t****");
 }
 

@@ -138,7 +138,7 @@ void skiplist_destroy(skiplist_t** list)
 	*list = NULL;
 }
 
-skiplist_node_t* skiplist_insert(skiplist_t* list, void* key, void* value)
+skiplist_node_t* skiplist_insert(skiplist_t* list, void* key, size_t key_sz, void* value, size_t value_sz)
 {
 	// Not possible to insert anything into non-existing list
 	// and not possible to insert NULL key.
@@ -205,7 +205,7 @@ skiplist_node_t* skiplist_insert(skiplist_t* list, void* key, void* value)
 	if(curr == NULL || list->cmp(curr->key, key) != 0)
 	{
 		skiplist_node_t* new_node;
-		new_node = skiplist_node_init(key, sizeof(key), value, sizeof(value));
+		new_node = skiplist_node_init(key, key_sz, value, value_sz);
 		
 		// if(new_node == NULL) is always false, so no checks.
 
