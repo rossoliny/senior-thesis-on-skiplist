@@ -261,7 +261,40 @@ skiplist_node_t* skiplist_insert(skiplist_t* list, void* key, size_t key_sz, voi
 }
 
 
+skiplist_node_t* skiplist_search(skiplist_t* list, void* key)
+{
 
+	if(list == NULL || key == NULL)
+	{
+		return NULL;
+	}
+	if(list->cmp == NULL)
+	{
+		skiplist_destroy(&list);
+		return NULL;
+	}
+
+	ssize_t curr_lvl = list->height;
+	skiplist_node_t* curr = (skiplist_node_t*) list->head;
+
+	while(curr_lvl >= 0)
+	{
+		while(curr->next_at_lvl[curr_lvl] != NULL && list->cmp(curr->next_at_lvl[curr_lvl]->key, key) < 0)
+		{
+			curr = curr->next_at_lvl[curr_lvl];
+		}
+		curr_lvl--;
+	}
+
+	curr = curr->next_at_lvl[0];
+
+	if(curr != NULL && strcmp(curr->key, key) != 0) 
+	{
+		return NULL;
+	}
+
+	return curr;
+}
 
 
 

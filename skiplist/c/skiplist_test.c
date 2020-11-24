@@ -91,6 +91,21 @@ void test_skiplist_node_destroy_1()
 }
 
 // SKIPLIST TESTS
+
+void print_skiplist(skiplist_t* list)
+{
+	skiplist_node_t* node = list->head->next_at_lvl[0];
+	while(node != NULL)
+	{
+		char* k = (char*) node->key;
+		int*  v	= (int*) node->value;
+		printf("\t\t(%s,\t%d)\n", k, *v);
+		node = node->next_at_lvl[0];
+	}
+	puts("");
+	fflush(stdout);
+}
+
 int test_cmp_true(void* a, void* b)
 {
 	return 1;
@@ -220,17 +235,63 @@ void test_skiplist_insert_1()
 
 	tmsg("");
 	tmsg("Insertions are finished. Printing skiplist.");
-	skiplist_node_t* node = list->head->next_at_lvl[0];
-	while(node != NULL)
-	{
-		char* k = (char*) node->key;
-		int*  v	= (int*) node->value;
-		printf("\t\t(%s, %d)\n", k, *v);
-		node = node->next_at_lvl[0];
-	}
+	print_skiplist(list);
 
 	skiplist_destroy(&list);
 	tdone("test_skiplist_insert_1");
+}
+
+
+
+void test_skiplist_search_1()
+{
+	tstart("test_skiplist_search_1");
+	
+	int cmp(void* a, void* b)
+	{
+		return strcmp((char*) a, (char*) b);
+	}
+
+	skiplist_t* list = skiplist_init(cmp);
+
+	if(list == NULL)
+	{
+		tfail("List failed to initialize.");
+	}
+
+	// preparation
+	char* names[] = { "isa", "ali", "isaz", "isab", "isac", "isad" };
+	int ages[] = { 23, 432, 35, 562 ,345234, 3452 };
+
+	int i = 0;
+	while(i < sizeof(names)/sizeof(names[0]))
+	{
+		skiplist_insert(list, names[i], sizeof(names[i]), ages + i, sizeof(ages[i]));
+		i++;
+	}
+
+
+	// tests
+	skiplist_node_t* node = skiplist_search(list, "isa");
+	if(node == NULL)
+	{
+		tfail("Search attempt returned NULL.");
+	}
+	if(strcmp(node->key, "isa") != 0)
+	{
+		printf("\n\t\tExpected:\t%s.\tActual:\t%s\n", "isa", (char*)node->key);
+		tfail("Search attempt found wrong element.");
+	}
+
+	node = skiplist_search(list, "does not exit");
+	if(node != NULL)
+	{
+		printf("\n\t\tSearch result: %s", (char*) node->key);
+		tfail("Search for non existing element returned not NULL.");
+	}
+
+	skiplist_destroy(&list);
+	tdone("test_skiplist_search_1");
 }
 
 
@@ -248,6 +309,7 @@ int main()
 	test_skiplist_init_1();
 	test_skiplist_destroy_1();
 	test_skiplist_insert_1();
+	test_skiplist_search_1();
 	puts("\n****\tSKIPLIST Tests Done\t****");
 
 	puts("\n****\tAll Tests Are Passed\t****");
