@@ -304,6 +304,46 @@ void test_skiplist_search_1()
 	tdone("test_skiplist_search_1");
 }
 
+void test_skiplist_remove_1()
+{
+	tstart("test_skiplist_remove_1");
+
+	int cmp(void* a, void* b)
+	{
+		return strcmp( (char*) a, (char*) b );
+	}
+
+	skiplist_t* list = skiplist_init(cmp);
+
+	char name1[] = "isa";
+	char surn1[] = "dzhumabaev";
+
+	skiplist_insert(list, name1, sizeof(name1), surn1, sizeof(surn1));
+
+	skiplist_node_t* res = skiplist_remove(list, name1);
+
+	if(list->length != 0)
+	{
+		printf("\t\tlist->length = %d\n", (int) list->length);
+		tfail("List is not empty after removing last element.");
+	}
+
+	char* names[] = { "isa", "ali", "isaz", "isab", "isac", "isad" };
+	int ages[] = { 23, 432, 35, 562 ,345234, 3452 };
+
+	int i = 0;
+	while(i < sizeof(names)/sizeof(names[0]))
+	{
+		skiplist_insert(list, names[i], sizeof(names[i]), ages + i, sizeof(ages[i]));
+		i++;
+	}
+
+	
+
+	skiplist_destroy(&list);
+	tdone("test_skiplist_remove_1");
+
+}
 
 int main() 
 {
@@ -320,6 +360,7 @@ int main()
 	test_skiplist_destroy_1();
 	test_skiplist_insert_1();
 	test_skiplist_search_1();
+	test_skiplist_remove_1();
 	puts("\n****\tSKIPLIST Tests Done\t****");
 
 	puts("\n****\tAll Tests Are Passed\t****");
