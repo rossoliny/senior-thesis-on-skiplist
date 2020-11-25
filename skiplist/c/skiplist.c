@@ -323,7 +323,7 @@ skiplist_node_t* skiplist_remove(skiplist_t* list, void* key)
 
 	curr = curr->next_at_lvl[0];
 
-	if(curr != NULL && list->cmp(curr->key, key) != 0)
+	if(curr != NULL && list->cmp(curr->key, key) == 0)
 	{
 		curr_lvl = 0;
 
@@ -338,7 +338,7 @@ skiplist_node_t* skiplist_remove(skiplist_t* list, void* key)
 				curr->next_at_lvl[curr_lvl];
 			curr_lvl++;
 
-			if(list->head->next_at_lvl[list->height] == NULL)
+			if(list->height > 0 && list->head->next_at_lvl[list->height] == NULL)
 			{
 				list->height--;
 			}
@@ -354,7 +354,7 @@ skiplist_node_t* skiplist_remove(skiplist_t* list, void* key)
 		skiplist_node_destroy(&curr);
 		list->length--;
 
-		return step_down_point_at[0];
+		return step_down_point_at[0]->next_at_lvl[0];
 	}
 
 	return NULL;
