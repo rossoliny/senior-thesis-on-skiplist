@@ -297,7 +297,68 @@ skiplist_node_t* skiplist_search(skiplist_t* list, void* key)
 }
 
 
+skiplist_node_t* skiplist_remove(skiplist_t* list, void* key)
+{
+	if(list == NULL || key == NULL)
+	{
+		return NULL;
+	}
 
+	skiplist_node_t* curr = (skiplist_node_t*) list->head;
+	ssize_t curr_lvl = list->height;
+
+	skiplist_node_t* step_down_point_at[MAX_SKIPLIST_HEIGHT];
+	memset(step_down_point_at, 0, sizeof(step_down_point_at));
+
+	while(curr_lvl >= 0)
+	{
+		while(curr->next_at_lvl[curr_lvl] != NULL && list->cmp(curr->next_at_lvl[curr_lvl]->key, key) < 0)
+		{
+			curr = curr->next_at_lvl[curr_lvl];
+		}
+
+		step_down_point_at[curr_lvl] = curr;
+		curr_lvl--;
+	}
+
+	curr = curr->next_at_lvl[0];
+
+	if(curr != NULL && list->cmp(curr->key, key) == 0)
+	{
+		curr_lvl = 0;
+
+		// If we made list-heights steps down during search
+		// and if curr_lvl runs from 0 to list->height
+		// Then it is 100% that step_down_point[curr_lvl] != NULL 
+		ssize_t height = list->height;
+		while(	curr_lvl <= height && 
+			step_down_point_at[curr_lvl]->next_at_lvl[curr_lvl] == curr)
+		{
+			step_down_point_at[curr_lvl]->next_at_lvl[curr_lvl] = 
+				curr->next_at_lvl[curr_lvl];
+			curr_lvl++;
+
+			if(list->height > 0 && list->head->next_at_lvl[list->height] == NULL)
+			{
+				list->height--;
+			}
+		}
+
+		/*
+		while(list->height > 0 && list->head->next_at_lvl[list->height] == NULL)
+		{
+			list->height--;
+		}
+		*/
+
+		skiplist_node_destroy(&curr);
+		list->length--;
+
+		return step_down_point_at[0]->next_at_lvl[0];
+	}
+
+	return NULL;
+}
 
 
 

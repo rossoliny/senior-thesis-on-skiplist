@@ -13,10 +13,19 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define DEBUG
+
 #define tstart(name) 	puts("\nTest Case:\t"  name); fflush(stdout)
 #define tdone(name) 	puts("Test Pass:\t"  name); fflush(stdout)
 #define tfail(msg) 	fputs("Test Failed:\t"  msg, stderr); fflush(stderr); exit(1)
-#define tmsg(msg)	puts("\t\t" msg); fflush(stdout)
+
+#ifdef TDEBUG
+	#define tmsg(msg)	puts("\t\t" msg); fflush(stdout)
+	#define print_skiplist(list) print_skiplist_func(list)
+#else
+	#define tmsg(msg)
+	#define print_skiplist(list)
+#endif
 
 // NODE TESTS
 void test_skiplist_node_init_1()
@@ -92,7 +101,8 @@ void test_skiplist_node_destroy_1()
 
 // SKIPLIST TESTS
 
-void print_skiplist(skiplist_t* list)
+
+void print_skiplist_func(skiplist_t* list)
 {
 	skiplist_node_t* node = list->head->next_at_lvl[0];
 	while(node != NULL)
@@ -266,7 +276,7 @@ void test_skiplist_search_1()
 	int i = 0;
 	while(i < sizeof(names)/sizeof(names[0]))
 	{
-		skiplist_insert(list, names[i], sizeof(names[i]), ages + i, sizeof(ages[i]));
+		skiplist_insert(list, names[i], strlen(names[i])+1, ages + i, sizeof(ages[i]));
 		i++;
 	}
 
@@ -294,6 +304,65 @@ void test_skiplist_search_1()
 	tdone("test_skiplist_search_1");
 }
 
+void test_skiplist_remove_1()
+{
+	tstart("test_skiplist_remove_1");
+
+	int cmp(void* a, void* b)
+	{
+		return strcmp( (char*) a, (char*) b );
+	}
+
+	skiplist_t* list = skiplist_init(cmp);
+
+	char name1[] = "isa";
+	char surn1[] = "dzhumabaev";
+
+	skiplist_insert(list, name1, sizeof(name1), surn1, sizeof(surn1));
+
+	skiplist_node_t* res = skiplist_remove(list, name1);
+
+	if(res != NULL)
+	{
+		tfail("After deletion of last element, runction did not return NULL.");
+	}
+	if(list->length != 0)
+	{
+		printf("\t\tlist->length = %d\n", (int) list->length);
+		tfail("List is not empty after removing last element.");
+	}
+
+	char* names[] = { "isa", "ali", "isaz", "isab", "isac", "isad" };
+	int ages[] = { 23, 432, 35, 562 ,345234, 3452 };
+
+	int i = 0;
+	while(i < sizeof(names)/sizeof(names[0]))
+	{
+		skiplist_insert(list, names[i], strlen(names[i]) + 1, ages + i, sizeof(ages[i]));
+		i++;
+	}
+
+	
+	res = skiplist_remove(list, "isa");
+	if(strcmp(res->key, "isab") != 0)
+	{
+		tfail("After removing element, function did not return next element after it.");
+	}
+
+	while(list->length > 0)
+	{
+		skiplist_remove(list, list->head->next_at_lvl[0]->key);
+	}
+	if(list->length != 0)
+	{
+		tfail("List not empty after removing all its elements.");
+	}
+
+
+	skiplist_destroy(&list);
+	tdone("test_skiplist_remove_1");
+
+}
 
 int main() 
 {
@@ -310,6 +379,7 @@ int main()
 	test_skiplist_destroy_1();
 	test_skiplist_insert_1();
 	test_skiplist_search_1();
+	test_skiplist_remove_1();
 	puts("\n****\tSKIPLIST Tests Done\t****");
 
 	puts("\n****\tAll Tests Are Passed\t****");
