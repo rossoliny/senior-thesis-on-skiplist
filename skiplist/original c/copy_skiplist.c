@@ -73,7 +73,7 @@ void free_list(list* list)
 	register node* curr;
 	register node* next;
 
-	next = list->header;
+	curr = list->header;
 
 	do
 	{
@@ -215,6 +215,7 @@ bool delete(register list* list, register key_t key)
 		{
 			curr = next;
 		}
+
 		update[curr_lvl] = curr;
 	} while(--curr_lvl >= 0);
 
@@ -244,33 +245,52 @@ bool delete(register list* list, register key_t key)
 }
 
 #define SAMLE_SIZE 65536
-int main() {
-    list* l;
-    register int i, k;
-    key_t keys[SAMLE_SIZE];
-    val_t v;
+int main() 
+{
+	list* l;
+	register int i, k;
 
-    init();
+	key_t keys[SAMLE_SIZE];
+	val_t v;
+	
+	init();
 
-    l = new_list();
+	l = new_list();
 
-    for (k = 0; k < SAMLE_SIZE; k++) {
-        keys[k] = rand();
-        insert(l, keys[k], keys[k]);
-    };
+	for (k = 0; k < SAMLE_SIZE; k++) 
+	{
+		keys[k] = rand();
+		insert(l, keys[k], keys[k]);
+	};
 
-    for (i = 0; i < 4; i++) {
-        for (k = 0; k < SAMLE_SIZE; k++) {
-            if (!search(l, keys[k], & v)) printf("error in search #%d,#%d\n", i, k);
-            if (v != keys[k]) printf("search returned wrong value\n");
-        };
-        for (k = 0; k < SAMLE_SIZE; k++) {
-            if (!delete(l, keys[k])) printf("error in delete\n");
-            keys[k] = rand();
-            insert(l, keys[k], keys[k]);
-        };
-    };
+	for (i = 0; i < 4; i++) 
+	{
+		for (k = 0; k < SAMLE_SIZE; k++) 
+		{
+			if (!search(l, keys[k], & v))
+			{
+				 printf("error in search #%d,#%d\n", i, k);
+			};
 
-    free_list(l);
+			if (v != keys[k])
+			{
+				 printf("search returned wrong value\n");
+			};
+	};
 
+	for (k = 0; k < SAMLE_SIZE; k++) 
+	{
+		if (!delete(l, keys[k])) 
+		{
+			printf("error in delete\n");
+		};
+
+		keys[k] = rand();
+		insert(l, keys[k], keys[k]);
+		};
+	};
+
+	free_list(l);
+
+	printf("done.\n");
 };
