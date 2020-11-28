@@ -174,7 +174,103 @@ insert_ret_t insert(register list* list, register key_t key, register val_t val)
 	#undef new_lvl
 }
 
+bool search(register list* list, register key_t key, register val_t* res)
+{
+	register int curr_lvl;
+	register node* curr;
+	register node* next;
+	curr_lvl = list->level;
+	curr = list->header;
 
-int main(void) {
-	return 0;
+	do
+	{
+		while(next = curr->forward[curr_lvl], next->key < key)
+		{
+			curr = next;
+		}
+	} while(--curr_lvl >= 0);
+
+	if(next->key != key)
+	{
+		return (false);
+	}
+	*res = next->val;
+	return (true);
 }
+
+bool delete(register list* list, register key_t key)
+{
+	register int curr_lvl, height;
+	register node* curr;
+	register node* next;
+
+	node* update[MAX_NUMBER_OF_LEVELS];
+
+	curr_lvl = height = list->level;
+	curr = list->header;
+
+	do
+	{
+		while(next = curr->forward[curr_lvl], next->key < key)
+		{
+			curr = next;
+		}
+		update[curr_lvl] = curr;
+	} while(--curr_lvl >= 0);
+
+	if(next->key == key)
+	{
+		curr = next;
+		curr_lvl = 0;
+		while(	curr_lvl <= height && 
+			(update[curr_lvl]->forward[curr_lvl] == curr) )
+		{
+			update[curr_lvl]->forward[curr_lvl] = curr->forward[curr_lvl];
+			curr_lvl++;
+		}
+
+		free(curr);
+
+		while(list->header->forward[height] == NIL && height > 0)
+		{
+			height--;
+		}
+		list->level = height;
+
+		return (true);
+	}
+
+	return (false);
+}
+
+#define SAMLE_SIZE 65536
+int main() {
+    list* l;
+    register int i, k;
+    key_t keys[SAMLE_SIZE];
+    val_t v;
+
+    init();
+
+    l = new_list();
+
+    for (k = 0; k < SAMLE_SIZE; k++) {
+        keys[k] = rand();
+        insert(l, keys[k], keys[k]);
+    };
+
+    for (i = 0; i < 4; i++) {
+        for (k = 0; k < SAMLE_SIZE; k++) {
+            if (!search(l, keys[k], & v)) printf("error in search #%d,#%d\n", i, k);
+            if (v != keys[k]) printf("search returned wrong value\n");
+        };
+        for (k = 0; k < SAMLE_SIZE; k++) {
+            if (!delete(l, keys[k])) printf("error in delete\n");
+            keys[k] = rand();
+            insert(l, keys[k], keys[k]);
+        };
+    };
+
+    free_list(l);
+
+};
