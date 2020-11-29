@@ -174,17 +174,16 @@ void test_skiplist_destroy_1()
 	tdone("test_skiplist_destroy_1");
 }
 
+int cmp_1(void* a, void* b)
+{
+	return strcmp((char*)a, (char*)b);
+}
 
 void test_skiplist_insert_1()
 {
-	tstart("test_skiplist_insert_1");
-	
-	int strcomp(void* a, void* b)
-	{
-		return strcmp((char*)a, (char*)b);
-	}
+	tstart("test_skiplist_insert_1");	
 
-	skiplist_t* list = skiplist_init(strcomp);
+	skiplist_t* list = skiplist_init(cmp_1);
 	
 	char name[] 	= "isa";
 	int age 	= 23;
@@ -252,17 +251,17 @@ void test_skiplist_insert_1()
 }
 
 
+int cmp_2(void* a, void* b)
+{
+	return strcmp((char*) a, (char*) b);
+}
 
 void test_skiplist_search_1()
 {
 	tstart("test_skiplist_search_1");
 	
-	int cmp(void* a, void* b)
-	{
-		return strcmp((char*) a, (char*) b);
-	}
 
-	skiplist_t* list = skiplist_init(cmp);
+	skiplist_t* list = skiplist_init(cmp_2);
 
 	if(list == NULL)
 	{
@@ -304,16 +303,17 @@ void test_skiplist_search_1()
 	tdone("test_skiplist_search_1");
 }
 
+int cmp_3(void* a, void* b)
+{
+	return strcmp( (char*) a, (char*) b );
+}
+
 void test_skiplist_remove_1()
 {
 	tstart("test_skiplist_remove_1");
 
-	int cmp(void* a, void* b)
-	{
-		return strcmp( (char*) a, (char*) b );
-	}
 
-	skiplist_t* list = skiplist_init(cmp);
+	skiplist_t* list = skiplist_init(cmp_3);
 
 	char name1[] = "isa";
 	char surn1[] = "dzhumabaev";

@@ -6,21 +6,15 @@
 #						#
 #################################################
 
-CC=gcc
-CFLAGS += -Wall -g -Wformat
+CC=cc
+CFLAGS += -Wall -g -Wformat -pedantic -std=c99
 
-skiplist_test: skiplist.o skiplist_test.o
-	$(CC) -o skiplist_test skiplist.o skiplist_test.o
-	rm -rf *.o
-
-skiplist: skiplist.c
-	$(CC) -c -o skiplist.o skiplist.c
-
+skiplist_test: skiplist.c skiplist_test.c
+	$(CC) $(CFLAGS) -o skiplist_test.out skiplist.c skiplist_test.c
 
 clean:
-	rm -rf *.o *.exe
+	rm -rf *.o *.exe *.out *.dSYM
 
-
-tdebug: skiplist.o skiplist_test.c
-	$(CC) -D TDEBUG -o skiplist_test skiplist.o skiplist_test.c
-	rm -rf *.o
+tdebug: skiplist.c skiplist_test.c
+	$(CC) -D TDEBUG $(CFLAGS) -g -o debug_skiplist_test.out skiplist.c skiplist_test.c
+	rm -rf *.o *.dSYM
