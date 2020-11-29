@@ -39,3 +39,7 @@
 
 #jetbrains
 .idea
+
+
+#lldb
+*.dSYM
