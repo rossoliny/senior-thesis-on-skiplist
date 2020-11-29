@@ -35,3 +35,7 @@
 
 # Vim
 *.swp
+
+
+#jetbrains
+.idea
