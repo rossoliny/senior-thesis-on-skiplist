@@ -43,3 +43,8 @@
 
 #lldb
 *.dSYM
+
+
+
+#cmake
+cmake-build-*
