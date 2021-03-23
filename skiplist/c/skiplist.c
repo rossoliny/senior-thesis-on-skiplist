@@ -167,7 +167,7 @@ skiplist_node_t* skiplist_insert(skiplist_t* list, void* key, size_t key_sz, voi
 	// times. And this array is used to create connections on all old and new levels.
 	// If it's lenght will be less than MAX_SKIPLIST_HEIGHT it is possible that this
 	// function will fail creating connections on new levels.
-	skiplist_node_t* step_down_point_at[MAX_SKIPLIST_HEIGHT];
+	skiplist_node_t* step_down_point_at[list->height+1];
 	memset(step_down_point_at, 0, sizeof(step_down_point_at));
 	
 	// By the way, maximum possible value for list->height is MAX_SKIPLIST_LVL - 1.
