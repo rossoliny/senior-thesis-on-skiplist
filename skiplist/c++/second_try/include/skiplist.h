@@ -2,7 +2,7 @@
 // Created by Isa on 3/26/21.
 //
 #pragma once
-#ifdnef _SKIPLIST_H
+#ifndef _SKIPLIST_H
 #define _SKIPLIST_H
 
 #include "skiplist_base.h"

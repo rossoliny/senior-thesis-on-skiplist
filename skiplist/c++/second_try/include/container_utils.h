@@ -2,8 +2,8 @@
 // Created by Isa on 3/15/21.
 //
 
-#ifndef TMP_UTILS_H
-#define TMP_UTILS_H
+#ifndef CONTAINER_UTILS_H
+#define CONTAINER_UTILS_H
 
 
 #define NOEXCEPT_IF(...) noexcept(__VA_ARGS__)
@@ -174,4 +174,4 @@ namespace gcc {
 
 }
 
-#endif //TMP_UTILS_H
+#endif //CONTAINER_UTILS_H
