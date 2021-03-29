@@ -48,3 +48,18 @@
 
 #cmake
 cmake-build-*
+
+
+*
+!/**/
+!*.c
+!*.cc
+!*.cpp
+!*.h
+!*.hh
+!*.hpp
+!CMakeLists.txt
+build/
+cmake-build-*
+!gcc_list
+!*.tcc
