@@ -39,7 +39,7 @@
 // Because REQUIREs trigger GCC's -Wparentheses, and because still
      // supported version of g++ have only buggy support for _Pragmas,
      // Wparentheses have to be suppressed globally.
-#    pragma GCC diagnostic ignored "-Wparentheses" // See #674 for details
+#    pragma GCC diagnostic ignored "-Wparentheses" // See #674 for detail
 
 #    pragma GCC diagnostic push
 #    pragma GCC diagnostic ignored "-Wunused-variable"
@@ -1872,18 +1872,18 @@ namespace Catch {
 #  define CATCH_CONFIG_ENABLE_OPTIONAL_STRINGMAKER
 #endif
 
-// Separate std::pair specialization
+// Separate std::pair_t specialization
 #if defined(CATCH_CONFIG_ENABLE_PAIR_STRINGMAKER)
 #include <utility>
 namespace Catch {
     template<typename T1, typename T2>
-    struct StringMaker<std::pair<T1, T2> > {
-        static std::string convert(const std::pair<T1, T2>& pair) {
+    struct StringMaker<std::pair_t<T1, T2> > {
+        static std::string convert(const std::pair_t<T1, T2>& pair_t) {
             ReusableStringStream rss;
             rss << "{ "
-                << ::Catch::Detail::stringify(pair.first)
+                << ::Catch::Detail::stringify(pair_t.first)
                 << ", "
-                << ::Catch::Detail::stringify(pair.second)
+                << ::Catch::Detail::stringify(pair_t.second)
                 << " }";
             return rss.str();
         }
@@ -2014,7 +2014,7 @@ namespace Catch {
 		return ::Catch::Detail::rangeToString( begin( range ), end( range ) );
 	}
 
-	// Handle vector<bool> specially
+	// Handle array_t<bool> specially
 	template<typename Allocator>
 	std::string rangeToString( std::vector<bool, Allocator> const& v ) {
 		ReusableStringStream rss;
@@ -3657,7 +3657,7 @@ namespace Catch {
 				bool match(std::vector<T, AllocMatch> const &v) const override {
 					// !TBD: This currently works if all elements can be compared using !=
 					// - a more general approach would be via a compare template that defaults
-					// to using !=. but could be specialised for, e.g. std::vector<T, Alloc> etc
+					// to using !=. but could be specialised for, e.g. std::array_t<T, Alloc> etc
 					// - then just call that directly
 					if (m_comparator.size() != v.size())
 						return false;
@@ -3841,7 +3841,7 @@ namespace Catch {
 		public:
 			GeneratorUntypedBase() = default;
 			virtual ~GeneratorUntypedBase();
-			// Attempts to move the generator to the next element
+			// Attempts to move the generator to the m_next element
 			//
 			// Returns true iff the move succeeded (and a valid element
 			// can be retrieved).
@@ -3939,7 +3939,7 @@ namespace Catch {
 			// Returns the current element of the generator
 			//
 			// \Precondition The generator is either freshly constructed,
-			// or the last call to `next()` returned true
+			// or the last call to `m_next()` returned true
 			virtual T const& get() const = 0;
 			using type = T;
 		};
@@ -3961,7 +3961,7 @@ namespace Catch {
 		template<typename T>
 		class FixedValuesGenerator final : public IGenerator<T> {
 			static_assert(!std::is_same<T, bool>::value,
-						  "FixedValuesGenerator does not support bools because of std::vector<bool>"
+						  "FixedValuesGenerator does not support bools because of std::array_t<bool>"
 						  "specialization, use SingleValue Generator instead.");
 			std::vector<T> m_values;
 			size_t m_idx = 0;
@@ -4190,7 +4190,7 @@ namespace Catch {
 		class RepeatGenerator : public IGenerator<T> {
 			static_assert(!std::is_same<T, bool>::value,
 						  "RepeatGenerator currently does not support bools"
-						  "because of std::vector<bool> specialization");
+						  "because of std::array_t<bool> specialization");
 			GeneratorWrapper<T> m_generator;
 			mutable std::vector<T> m_returned;
 			size_t m_target_repeats;
@@ -4702,7 +4702,7 @@ namespace Catch {
 		class IteratorGenerator final : public IGenerator<T> {
 			static_assert(!std::is_same<T, bool>::value,
 						  "IteratorGenerator currently does not support bools"
-						  "because of std::vector<bool> specialization");
+						  "because of std::array_t<bool> specialization");
 
 			std::vector<T> m_elems;
 			size_t m_current = 0;
@@ -7805,7 +7805,7 @@ namespace Catch {
                 auto stddev = &standard_deviation;
 
 #if defined(CATCH_CONFIG_USE_ASYNC)
-                auto Estimate = [=](double(*f)(std::vector<double>::iterator, std::vector<double>::iterator)) {
+                auto Estimate = [=](double(*f)(std::array_t<double>::iterator, std::array_t<double>::iterator)) {
                     auto seed = entropy();
                     return std::async(std::launch::async, [=] {
                         std::mt19937 rng(seed);
@@ -8257,7 +8257,7 @@ namespace Catch {
             // If you find your debugger stopping you here then go one level up on the
             // call-stack for the code that caused it (typically a failed assertion)
 
-            // (To go back to the test and change execution, jump over the throw, next)
+            // (To go back to the test and change execution, jump over the throw, m_next)
             CATCH_BREAK_INTO_DEBUGGER();
         }
         if (m_reaction.shouldThrow) {
@@ -8439,7 +8439,7 @@ namespace Catch {
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
-// See https://github.com/philsquared/Clara for more details
+// See https://github.com/philsquared/Clara for more detail
 
 // Clara v1.1.5
 
@@ -11434,7 +11434,7 @@ namespace {
     template <typename FP>
     bool almostEqualUlps(FP lhs, FP rhs, uint64_t maxUlpDiff) {
         // Comparison with NaN should always be false.
-        // This way we can rule it out before getting into the ugly details
+        // This way we can rule it out before getting into the ugly detail
         if (Catch::isnan(lhs) || Catch::isnan(rhs)) {
             return false;
         }
@@ -12623,7 +12623,7 @@ namespace Catch {
                     return false;
                 }();
 
-                // This check is a bit tricky, because m_generator->next()
+                // This check is a bit tricky, because m_generator->m_next()
                 // has a side-effect, where it consumes generator's current
                 // value, but we do not want to invoke the side-effect if
                 // this generator is still waiting for any child to start.
@@ -15497,7 +15497,7 @@ namespace {
                     break;
                 }
                 // The header is valid, check data
-                // The next encBytes bytes must together be a valid utf-8
+                // The m_next encBytes bytes must together be a valid utf-8
                 // This means: bitpattern 10XX XXXX and the extracted value is sane (ish)
                 bool valid = true;
                 uint32_t value = headerValue(c);

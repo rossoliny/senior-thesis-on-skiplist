@@ -217,8 +217,7 @@ skiplist_node_t* skiplist_insert(skiplist_t* list, void* key, size_t key_sz, voi
 		// if(new_node == NULL) is always false, so no checks.
 
 		size_t upto_which_lvl_to_insert = 0;
-		while(	upto_which_lvl_to_insert < MAX_SKIPLIST_HEIGHT - 1 &&
-			rand() < RAND_MAX / 2 ) 
+		while(upto_which_lvl_to_insert < MAX_SKIPLIST_HEIGHT - 1 && rand() < RAND_MAX / 2 )
 		{
 			upto_which_lvl_to_insert++;
 		}
