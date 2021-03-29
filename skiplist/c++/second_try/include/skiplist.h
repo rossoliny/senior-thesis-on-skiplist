@@ -2,11 +2,12 @@
 // Created by Isa on 3/26/21.
 //
 #pragma once
-
+#ifdnef _SKIPLIST_H
+#define _SKIPLIST_H
 
 #include "skiplist_base.h"
 #include "skiplist_iterator.h"
-#include "../gcc_temp_utils.h"
+#include "container_utils.h"
 
 
 namespace isa
@@ -269,6 +270,7 @@ namespace isa
 
 }
 
+#endif // _SKIPLIST_H
 
 
 

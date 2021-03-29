@@ -4,7 +4,8 @@
 
 #ifndef _SKIPLIST_NODE_H
 #define _SKIPLIST_NODE_H
-#include <array>
+#include <cstddef>
+#include <memory>
 
 namespace isa
 {
@@ -136,9 +137,6 @@ namespace isa
 
 			void steal_nodes(skiplist_impl&& rval)
 			{
-				//std::memcpy(this->m_next_data(), rval.m_next_data(), 1 + MAX_ADDITIONAL_LEVELS);
-				//std::memcpy(this->m_tail, rval.m_tail, 1 + MAX_ADDITIONAL_LEVELS);
-
 				for(size_t i = 0; i <= MAX_ADDITIONAL_LEVELS; ++i)
 				{
 					set_next(i, rval.get_next(i));

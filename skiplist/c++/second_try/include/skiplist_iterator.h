@@ -5,12 +5,6 @@
 #ifndef _SKIPLIST_ITERATOR_H
 #define _SKIPLIST_ITERATOR_H
 
-//
-// Created by Isa on 3/16/21.
-//
-
-#ifndef LIST_ITERATOR_H
-#define LIST_ITERATOR_H
 
 #include "skiplist_node.h"
 #include <iterator>
@@ -184,9 +178,5 @@ namespace isa
 		const node_base* curr;
 	};
 }
-
-#endif //LIST_ITERATOR_H
-
-
 
 #endif //_SKIPLIST_ITERATOR_H

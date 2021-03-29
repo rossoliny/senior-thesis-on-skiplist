@@ -18,7 +18,6 @@ namespace isa
 		enum
 		{
 			MAX_ADDITIONAL_LEVELS = detail::skiplist_node_base::MAX_ADDITIONAL_LEVELS
-//			END = detail::skiplist_node_base
 		};
 	protected:
 		using node_base = detail::skiplist_node_base;
