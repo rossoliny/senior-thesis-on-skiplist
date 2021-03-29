@@ -100,14 +100,6 @@ namespace isa
 			using node_base = skiplist_node_base;
 			using node = skiplist_node<Key, Tp>;
 
-			void init()
-			{
-				for(size_t i = 0; i < MIN_NEXT_SIZE; ++i)
-				{
-					m_next[i] = m_tail[i] = this;
-				}
-				m_size = m_height = 0;
-			}
 
 		public:
 			skiplist_node_base* m_tail[MIN_NEXT_SIZE];
@@ -133,6 +125,15 @@ namespace isa
 				{
 					steal_nodes(std::move(rval));
 				}
+			}
+
+			void init() noexcept
+			{
+				for(size_t i = 0; i < MIN_NEXT_SIZE; ++i)
+				{
+					m_next[i] = m_tail[i] = this;
+				}
+				m_size = m_height = 0;
 			}
 
 			void steal_nodes(skiplist_impl&& rval)

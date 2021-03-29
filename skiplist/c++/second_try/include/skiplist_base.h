@@ -229,6 +229,24 @@ namespace isa
 #endif
 		}
 
+		void clear() noexcept
+		{
+			node_pointer curr = static_cast<node_pointer> (m_head.m_next[0]);
+			while(curr != m_head.npos())
+			{
+				node_pointer nod = curr;
+				curr = static_cast<node_pointer> (curr->m_next[0]);
+
+				node_alloc_traits::destroy(m_node_allocator, nod->dataptr());
+				put_node(nod);
+			}
+		}
+
+		void init() noexcept
+		{
+			m_head.init();
+		}
+
 	public:
 		map_base() = default;
 
@@ -285,6 +303,11 @@ namespace isa
 		{
 		}
 
+
+		~map_base() noexcept
+		{
+			clear();
+		}
 	};
 
 }

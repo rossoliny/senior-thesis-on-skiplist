@@ -7,6 +7,7 @@ include_directories(include)
 set(TEST_WITH_CATCH_SRC
         tests/catch2_test.cpp
         tests/ctor.cpp
+        tests/dtor.cpp
 )
 
 add_compile_options(-std=c++11 -g)

@@ -207,12 +207,33 @@ namespace isa
 			_p_range_construct_unsorted(first, last);
 		}
 
-		map(std::initializer_list<value_type> il, key_compare const& comp = key_compare(), allocator_type const& alloc = allocator_type())
+		// initializer list
+		map(std::initializer_list<value_type> il, key_compare const& comp, allocator_type const& alloc)
 			: base(comp, alloc)
 		{
 			_p_range_construct_unsorted(il.begin(), il.end());
 		}
 
+		map(std::initializer_list<value_type> il, key_compare const& comp)
+			: base(comp)
+		{
+			_p_range_construct_unsorted(il.begin(), il.end());
+		}
+
+		map(std::initializer_list<value_type> il)
+			: base()
+		{
+			_p_range_construct_unsorted(il.begin(), il.end());
+		}
+
+
+		~map() noexcept = default;
+
+		void clear() noexcept
+		{
+			base::clear();
+			base::init();
+		}
 		// capacity
 		size_type max_size() const
 		{

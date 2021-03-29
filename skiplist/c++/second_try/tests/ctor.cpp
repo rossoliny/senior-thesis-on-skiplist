@@ -221,29 +221,3 @@ TEST_CASE("initializer_list ctor", tag)
 
 	MAPS_REQUIRE_EQUAL(actual, expected);
 }
-/*
-
-TEST_CASE("clear", "[clear]")
-{
-	SECTION("int")
-	{
-		CREATE_LISTS_OF_INT(res);
-
-		gcc_res.clear();
-		std_res.clear();
-
-		MAPS_REQUIRE_EQUAL(gcc_res, std_res);
-	}
-	SECTION("string")
-	{
-		my_map<string, int> act(vec_pair_1.begin(), vec_pair_1.end());
-		std_map<string, int> exp(vec_pair_1.begin(), vec_pair_1.end());
-
-		act.clear();
-		exp.clear();
-
-		MAPS_REQUIRE_EQUAL(act, exp);
-	}
-}
-
-*/

@@ -23,11 +23,11 @@ static int dummy = seed_rand();
 
 
 // INPUTS
-char rand_char()
+static char rand_char()
 {
 	return rand() % 127 + 32;
 }
-std::string rand_string()
+static std::string rand_string()
 {
 	int len = rand() % 50 + 1;
 	std::string s;
@@ -132,9 +132,9 @@ bool check_neq(isa::map<Key, Tp, Cmp, Alloc>& my_map, std::map<Key, Tp, Cmp, All
 
 
 #define CREATE_MAPS_INT_STRING(name) \
-	std::initializer_list<int> ___init_list_input___##name = rand_pairs; \
-	my_map<int, string> my_##name = ___init_list_input___##name; \
-	std_map<int, string> std_##name = ___init_list_input___##name
+	std::initializer_list<std::pair<int, string>> ___init_list_input___##name = rand_pairs; \
+	my_map<int, string> my_##name(___init_list_input___##name.begin(), ___init_list_input___##name.end()); \
+	std_map<int, string> std_##name(___init_list_input___##name.begin(), ___init_list_input___##name.end());
 
 #define my_map isa::map
 #define std_map std::map
