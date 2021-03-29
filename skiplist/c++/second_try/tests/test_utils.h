@@ -74,8 +74,8 @@ void verify(isa::map<Key, Tp, Cmp, Alloc>& my_map, std::map<Key, Tp, Cmp, Alloc>
 
 	while(act != my_map.end())
 	{
-
-		REQUIRE(*act == *exp);
+		REQUIRE(act->first == exp->first);
+		REQUIRE(act->second == exp->second);
 
 		++act;
 		++exp;
@@ -94,8 +94,8 @@ void verify(isa::map<Key, Tp, Cmp, Alloc>& my_map, isa::map<Key, Tp, Cmp, Alloc>
 
 	while(act != my_map.end())
 	{
-
-		REQUIRE(*act == *exp);
+		REQUIRE(act->first == exp->first);
+		REQUIRE(act->second == exp->second);
 
 		++act;
 		++exp;
@@ -116,7 +116,7 @@ bool check_neq(isa::map<Key, Tp, Cmp, Alloc>& my_map, std::map<Key, Tp, Cmp, All
 	bool full_match = true;
 	while(act != my_map.end())
 	{
-		if(*act != *exp)
+		if(act->first != exp->first || act->second != exp->second)
 		{
 			full_match = false;
 			break;
