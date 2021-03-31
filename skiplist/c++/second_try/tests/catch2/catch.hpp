@@ -133,7 +133,7 @@ namespace Catch {
 #endif
 
 // We have to avoid both ICC and Clang, because they try to mask themselves
-// as gcc, and we want only GCC in this block
+// as isa, and we want only GCC in this block
 #if defined(__GNUC__) && !defined(__clang__) && !defined(__ICC) && !defined(__CUDACC__)
 #    define CATCH_INTERNAL_START_WARNINGS_SUPPRESSION _Pragma( "GCC diagnostic push" )
 #    define CATCH_INTERNAL_STOP_WARNINGS_SUPPRESSION  _Pragma( "GCC diagnostic pop" )
@@ -4866,7 +4866,7 @@ namespace Catch {
         OcMethod( Class cls, SEL sel ) : m_cls( cls ), m_sel( sel ) {}
 
         virtual void invoke() const {
-            id obj = [[m_cls alloc] init];
+            id obj = [[m_cls alloc] init_head];
 
             performOptionalSelector( obj, @selector(setUp)  );
             performOptionalSelector( obj, m_sel );
@@ -8833,7 +8833,7 @@ namespace detail {
 
     class TokenStream;
 
-    // Transport for raw args (copied from main args, or supplied via init list for testing)
+    // Transport for raw args (copied from main args, or supplied via init_head list for testing)
     class Args {
         friend TokenStream;
         std::string m_exeName;
@@ -12736,7 +12736,7 @@ namespace Catch {
         }
 
         // We have no use for the return value (whether messages should be cleared), because messages were made scoped
-        // and should be let to clear themselves out.
+        // and should be let to clear_nodes themselves out.
         static_cast<void>(m_reporter->assertionEnded(AssertionStats(result, m_messages, m_totals)));
 
         if (result.getResultType() != ResultWas::Warning)
@@ -17453,7 +17453,7 @@ int main (int argc, char * argv[]) {
 // Objective-C entry point
 int main (int argc, char * const argv[]) {
 #if !CATCH_ARC_ENABLED
-    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init_head];
 #endif
 
     Catch::registerTestMethods();

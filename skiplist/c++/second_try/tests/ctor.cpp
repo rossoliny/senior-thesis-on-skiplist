@@ -28,24 +28,24 @@ TEST_CASE("range ctor", tag)
 {
 	SECTION("no compare, no alloc")
 	{
-		my_map<string, int> act(vec_pair_1.begin(), vec_pair_1.end());
-		std_map<string, int> exp(vec_pair_1.begin(), vec_pair_1.end());
+		my_map<string, int> act(vec_pairs.begin(), vec_pairs.end());
+		std_map<string, int> exp(vec_pairs.begin(), vec_pairs.end());
 
 		MAPS_REQUIRE_EQUAL(act, exp);
 	}
 	SECTION("with compare, no alloc")
 	{
 		std::greater<string> compare;
-		my_map<string, int, greater<string>> act(vec_pair_1.begin(), vec_pair_1.end(), compare);
-		std_map<string, int, greater<string>> exp(vec_pair_1.begin(), vec_pair_1.end(), compare);
+		my_map<string, int, greater<string>> act(vec_pairs.begin(), vec_pairs.end(), compare);
+		std_map<string, int, greater<string>> exp(vec_pairs.begin(), vec_pairs.end(), compare);
 
 		MAPS_REQUIRE_EQUAL(act, exp);
 	}
 /*
     SECTION("no compare, with alloc")
 	{
-		my_map<string, int> act(vec_pair_1.begin(), vec_pair_1.end());
-		std_map<string, int> exp(vec_pair_1.begin(), vec_pair_1.end());
+		my_map<string, int> act(vec_pairs.begin(), vec_pairs.end());
+		std_map<string, int> exp(vec_pairs.begin(), vec_pairs.end());
 
 		MAPS_REQUIRE_EQUAL(act, exp);
 	}
@@ -54,15 +54,15 @@ TEST_CASE("range ctor", tag)
 	{
 		std::greater<string> compare;
 		std::allocator<pair<string, int>> alloc;
-		my_map<string, int, greater<string>> act(vec_pair_1.begin(), vec_pair_1.end(), compare, alloc);
-		std_map<string, int, greater<string>> exp(vec_pair_1.begin(), vec_pair_1.end(), compare, alloc);
+		my_map<string, int, greater<string>> act(vec_pairs.begin(), vec_pairs.end(), compare, alloc);
+		std_map<string, int, greater<string>> exp(vec_pairs.begin(), vec_pairs.end(), compare, alloc);
 
 		MAPS_REQUIRE_EQUAL(act, exp);
 	}
 	SECTION("with move iter")
 	{
-		auto v1 = vec_pair_1;
-		auto v2 = vec_pair_1;
+		auto v1 = vec_pairs;
+		auto v2 = vec_pairs;
 
 		auto v1begin = make_move_iterator(v1.begin());
 		auto v1end = make_move_iterator(v1.end());
@@ -80,8 +80,8 @@ TEST_CASE("range ctor", tag)
 	}
 	SECTION("with reverse iter")
 	{
-		auto v1 = vec_pair_1;
-		auto v2 = vec_pair_1;
+		auto v1 = vec_pairs;
+		auto v2 = vec_pairs;
 
 		my_map<string, int> act(v1.rbegin(), v1.rend());
 		std_map<string, int> exp(v2.rbegin(), v2.rend());
@@ -94,8 +94,8 @@ TEST_CASE("range ctor", tag)
 	}
 	SECTION("with reverse move iter")
 	{
-		auto v1 = vec_pair_1;
-		auto v2 = vec_pair_1;
+		auto v1 = vec_pairs;
+		auto v2 = vec_pairs;
 
 		auto v1begin = make_move_iterator(v1.rbegin());
 		auto v1end = make_move_iterator(v1.rend());
@@ -113,8 +113,8 @@ TEST_CASE("range ctor", tag)
 	}
 	SECTION("with const move iter")
 	{
-		auto v1 = vec_pair_1;
-		auto v2 = vec_pair_1;
+		auto v1 = vec_pairs;
+		auto v2 = vec_pairs;
 
 		auto v1begin = make_move_iterator(v1.cbegin());
 		auto v1end = make_move_iterator(v1.cend());
@@ -132,8 +132,8 @@ TEST_CASE("range ctor", tag)
 	}
 	SECTION("with const reverse move iter")
 	{
-		auto v1 = vec_pair_1;
-		auto v2 = vec_pair_1;
+		auto v1 = vec_pairs;
+		auto v2 = vec_pairs;
 
 		auto v1begin = make_move_iterator(v1.crbegin());
 		auto v1end = make_move_iterator(v1.crend());
@@ -154,11 +154,11 @@ TEST_CASE("range ctor", tag)
 
 TEST_CASE("copy ctor", tag)
 {
+	my_map<string, int> act_inp(vec_pairs.begin(), vec_pairs.end());
+	std_map<string, int> exp_inp(vec_pairs.begin(), vec_pairs.end());
+
 	SECTION("with default allocator")
 	{
-		my_map<string, int> act_inp(vec_pair_1.begin(), vec_pair_1.end());
-		std_map<string, int> exp_inp(vec_pair_1.begin(), vec_pair_1.end());
-
 		my_map<string, int> act(act_inp);
 		std_map<string, int> exp(exp_inp);
 
@@ -167,9 +167,6 @@ TEST_CASE("copy ctor", tag)
 	}
 	SECTION("with given allocator")
 	{
-		my_map<string, int> act_inp(vec_pair_1.begin(), vec_pair_1.end());
-		std_map<string, int> exp_inp(vec_pair_1.begin(), vec_pair_1.end());
-
 		std::allocator<void*> alloc;
 		my_map<string, int> act(act_inp, alloc);
 		std_map<string, int> exp(exp_inp, alloc);
@@ -183,8 +180,8 @@ TEST_CASE("move ctor", tag)
 {
 	SECTION("with default allocator argument")
 	{
-		my_map<string, int> act_inp(vec_pair_1.begin(), vec_pair_1.end());
-		std_map<string, int> exp_inp(vec_pair_1.begin(), vec_pair_1.end());
+		my_map<string, int> act_inp(vec_pairs.begin(), vec_pairs.end());
+		std_map<string, int> exp_inp(vec_pairs.begin(), vec_pairs.end());
 
 		my_map<string, int> act(std::move(act_inp));
 		std_map<string, int> exp(std::move(exp_inp));

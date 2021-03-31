@@ -28,12 +28,12 @@ namespace isa
 		using reference = pair_type&;
 
 		skiplist_iterator() noexcept
-			: curr()
+			: nodeptr()
 		{
 		}
 
 		explicit skiplist_iterator(node_base* node) noexcept
-			: curr(node)
+			: nodeptr(node)
 		{
 		}
 
@@ -45,51 +45,51 @@ namespace isa
 		// dereference begin() of empty list is UB
 		reference operator*() const noexcept
 		{
-			return *static_cast<node*>(curr)->dataptr();
+			return *static_cast<node*>(nodeptr)->dataptr();
 		}
 
 		pointer operator->() const noexcept
 		{
-			return static_cast<node*>(curr)->dataptr();
+			return static_cast<node*>(nodeptr)->dataptr();
 		}
 
 		self& operator++() noexcept
 		{
-			curr = curr->m_next[0];
+			nodeptr = nodeptr->m_next[0];
 			return *this;
 		}
 
 		self operator++(int) noexcept
 		{
 			self old = *this;
-			curr = curr->m_next[0];
+			nodeptr = nodeptr->m_next[0];
 			return old;
 		}
 
 		self& operator--() noexcept
 		{
-			curr = static_cast<node*> (curr)->get_prev();
+			nodeptr = static_cast<node*> (nodeptr)->get_prev();
 			return *this;
 		}
 
 		self operator--(int) noexcept
 		{
 			self old = *this;
-			curr = static_cast<node*> (curr)->get_prev();
+			nodeptr = static_cast<node*> (nodeptr)->get_prev();
 			return old;
 		}
 
 		friend bool operator==(const self& a, const self& b) noexcept
 		{
-			return a.curr == b.curr;
+			return a.nodeptr == b.nodeptr;
 		}
 
 		friend bool operator!=(const self& a, const self& b) noexcept
 		{
-			return a.curr != b.curr;
+			return a.nodeptr != b.nodeptr;
 		}
 
-		node_base* curr;
+		node_base* nodeptr;
 	};
 
 	template<typename Key, typename Tp>
@@ -110,72 +110,72 @@ namespace isa
 		using reference = pair_type const&;
 
 		skiplist_const_iterator() noexcept
-			: curr()
+			: nodeptr()
 		{
 		}
 
 		explicit skiplist_const_iterator(const node_base* node) noexcept
-			: curr(node)
+			: nodeptr(node)
 		{
 		}
 
 		explicit skiplist_const_iterator(const iterator& other) noexcept
-			: curr(other.curr)
+			: nodeptr(other.nodeptr)
 		{
 		}
 
 		iterator m_const_cast() const noexcept
 		{
-			return iterator(const_cast<node_base*> (curr));
+			return iterator(const_cast<node_base*> (nodeptr));
 		}
 
 		reference operator*() const noexcept
 		{
-			return *static_cast<node*> (curr)->dataptr();
+			return *static_cast<node*> (nodeptr)->dataptr();
 		}
 
 		pointer operator->() const noexcept
 		{
-			return *static_cast<node*> (curr)->dataptr();
+			return static_cast<node*> (nodeptr)->dataptr();
 		}
 
 		self& operator++() noexcept
 		{
-			curr = curr->m_next[0];
+			nodeptr = nodeptr->m_next[0];
 			return *this;
 		}
 
 		self operator++(int) noexcept
 		{
 			self old = *this;
-			curr = curr->m_next[0];
+			nodeptr = nodeptr->m_next[0];
 			return old;
 		}
 
 		self& operator--() noexcept
 		{
-			curr = static_cast<const node*> (curr)->get_prev();
+			nodeptr = static_cast<const node*> (nodeptr)->get_prev();
 			return *this;
 		}
 
 		self& operator--(int) noexcept
 		{
 			self old = *this;
-			curr = static_cast<const node*> (curr)->get_prev();
+			nodeptr = static_cast<const node*> (nodeptr)->get_prev();
 			return old;
 		}
 
 		friend bool operator==(const self& a, const self& b) noexcept
 		{
-			return a.curr == b.curr;
+			return a.nodeptr == b.nodeptr;
 		}
 
 		friend bool operator!=(const self& a, const self& b) noexcept
 		{
-			return a.curr != b.curr;
+			return a.nodeptr != b.nodeptr;
 		}
 
-		const node_base* curr;
+		const node_base* nodeptr;
 	};
 }
 

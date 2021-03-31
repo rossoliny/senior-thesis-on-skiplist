@@ -78,9 +78,9 @@ namespace isa
 			return equals(_s_node_key(node), pair.first);
 		}
 
-		size_t length() const
+		constexpr size_t length() const
 		{
-			return m_head.m_size;
+			return m_head.m_length;
 		}
 
 		pair_comparator_type& get_pair_comparator()
@@ -131,12 +131,18 @@ namespace isa
 			return ptr;
 		}
 
+		void delete_node(node_pointer ptr)
+		{
+			node_alloc_traits::destroy(m_node_allocator, ptr->dataptr());
+			put_node(ptr);
+		}
+
 		template<typename... Args>
 		inline void append_first(Args&& ... args)
 		{
 			node_pointer node = create_node(std::forward<Args>(args)...);
 			m_head.append_first(node, random_level());
-			++m_head.m_size;
+			++m_head.m_length;
 		}
 
 		template<typename... Args>
@@ -151,7 +157,7 @@ namespace isa
 				size_t node_height = random_level();
 				m_head.append_node(new_node, node_height);
 
-				++m_head.m_size;
+				++m_head.m_length;
 				return true;
 			}
 
@@ -174,7 +180,7 @@ namespace isa
 				node_pointer new_node = create_node(std::move(element));
 				m_head.insert_node(new_node, random_level(), update);
 
-				++m_head.m_size;
+				++m_head.m_length;
 				return true;
 			}
 			return false;
@@ -192,7 +198,7 @@ namespace isa
 				size_t node_height = random_level();
 				m_head.append_node(new_node, node_height);
 
-				++m_head.m_size;
+				++m_head.m_length;
 				return true;
 			}
 
@@ -202,6 +208,58 @@ namespace isa
 			}
 
 			return false;
+		}
+
+		template<typename... Args>
+		void assign_item(node_base* node, Args&&... args) const
+		{
+//			pair_type data(std::forward<Args>(args)...);
+			static_cast<node_pointer> (node)->mutable_dataptr()->operator=(std::forward<Args>(args)...);
+		}
+
+		void remove_tail(node_base* begin)
+		{
+			node_base* update[1 + MAX_ADDITIONAL_LEVELS];
+			node_base* first = m_head.find_node(_s_node_key(begin), get_key_comparator(), update);
+			node_base* last = std::addressof(m_head);
+
+			if(first == begin)
+			{
+				m_head.remove_range(first, last, update, m_head.m_tail);
+
+				int i = 0;
+				while(first != last)
+				{
+					auto next = first->m_next[0];
+					delete_node(static_cast<node*> (first));
+					first = next;
+					--m_head.m_length;
+					i++;
+				}
+				i = i * 2;
+			}
+		}
+
+		// begin and end must never be equal to head, it's caller's responsibility to check it
+		void remove_range(node_base* begin, node_base* end)
+		{
+			node_base* update1[1 + MAX_ADDITIONAL_LEVELS];
+			node_base* update2[1 + MAX_ADDITIONAL_LEVELS];
+
+			node_base* first = m_head.find_node(_s_node_key(begin), get_key_comparator(), update1);
+			node_base* last = m_head.find_node(_s_node_key(end), get_key_comparator(), update2);
+
+			if(first == begin && last == end)
+			{
+				m_head.remove_range(first, last, update1, update2);
+				while(first != last)
+				{
+					auto next = first->m_next[0];
+					delete_node(static_cast<node*> (first));
+					first = next;
+					--m_head.m_length;
+				}
+			}
 		}
 
 		bool is_empty() const
@@ -220,7 +278,7 @@ namespace isa
 			return d(e);
 #else
 			size_t res = 0;
-			while(res <= MAX_ADDITIONAL_LEVELS && rand() < RAND_MAX / 2)
+			while(res < MAX_ADDITIONAL_LEVELS && rand() < RAND_MAX / 2)
 			{
 				res++;
 			}
@@ -229,7 +287,7 @@ namespace isa
 #endif
 		}
 
-		void clear() noexcept
+		void clear_nodes() noexcept
 		{
 			node_pointer curr = static_cast<node_pointer> (m_head.m_next[0]);
 			while(curr != m_head.npos())
@@ -242,7 +300,7 @@ namespace isa
 			}
 		}
 
-		void init() noexcept
+		void init_head() noexcept
 		{
 			m_head.init();
 		}
@@ -289,7 +347,7 @@ namespace isa
 	protected:
 		void steal_nodes(map_base&& rval)
 		{
-			m_head.m_size = rval.m_head.m_size;
+			m_head.m_length = rval.m_head.m_length;
 			m_head.m_height = rval.m_head.m_height;
 			m_head.steal_nodes(std::move(rval.m_head));
 		}
@@ -306,7 +364,7 @@ namespace isa
 
 		~map_base() noexcept
 		{
-			clear();
+			clear_nodes();
 		}
 	};
 

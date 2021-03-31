@@ -8,7 +8,7 @@
 #include <cstdlib>
 static int seed_rand()
 {
-	srand(time(0));
+	srand(1);
 	return 1;
 }
 
@@ -17,15 +17,23 @@ static int dummy = seed_rand();
 //#define CATCH_CONFIG_ENABLE_BENCHMARKING
 #include "catch2/catch.hpp"
 #include <string>
+#include <initializer_list>
 
 #include <map>
+#include <set>
 #include "skiplist.h"
 
 
 // INPUTS
+
+static int rand_int(int min, int max)
+{
+	return (rand() % (max - min + 1)) + min;
+}
+
 static char rand_char()
 {
-	return rand() % 127 + 32;
+	return rand_int(65, 90);
 }
 static std::string rand_string()
 {
@@ -38,7 +46,10 @@ static std::string rand_string()
 	return s;
 }
 
-#define rand_pair() std::make_pair<int, std::string>(rand(), rand_string())
+
+
+
+#define rand_pair() std::make_pair<int, std::string>(rand_int(0, 100), rand_string())
 #define rand_pairs {rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair()}
 #define rand_pairs_L {rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), \
 					 rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair()}
@@ -47,15 +58,40 @@ const static std::initializer_list<std::pair<int, std::string>> init_list_1 = ra
 const static std::initializer_list<std::pair<int, std::string>> init_list_2 = rand_pairs;
 const static std::initializer_list<std::pair<int, std::string>> init_list_L = rand_pairs;
 
-const static std::vector<std::pair<std::string, int>> vec_pair_1 = {
+const static std::vector<std::pair<std::string, int>> vec_pairs = {
 	 std::make_pair("skiplist", 1), std::make_pair("unit", 2), std::make_pair("test", 3),  std::make_pair("auca", 4),
 	 std::make_pair("std::map", 5), std::make_pair("ab", 6),   std::make_pair("cd", 7),    std::make_pair("ef", 8),
 	 std::make_pair("gh", 9),       std::make_pair("ij", 10),  std::make_pair("kl", 11),   std::make_pair("mnop", 12),
 	 std::make_pair("qrstuv", 13),  std::make_pair("wxy", 14), std::make_pair("z", 15)
 };
 
+const std::vector<std::pair<int, std::string>> vec_pairs_2 = {
+	std::make_pair(1, "skiplist"), std::make_pair(2, "unit"), std::make_pair(3, "test"),  std::make_pair(4, "auca"),
+	std::make_pair(5, "std::map"), std::make_pair(6, "ab"),   std::make_pair(7, "cd"),    std::make_pair(8, "ef"),
+	std::make_pair(9, "gh"),       std::make_pair(10, "ij"),  std::make_pair(11, "kl"),   std::make_pair(12, "mnop"),
+	std::make_pair(13, "qrstuv"),  std::make_pair(14, "wxy"), std::make_pair(15, "z")
+};
 
-//const static std::vector<std::string> vec_pair_2 = {"list2", "unit2", "test2", "learn2", "gcc std::list2", "ab2", "cd2", "ef2", "gh2", "ij2", "kl2", "mnop2", "qrstuv2", "wxy2", "z2"};
+const std::vector<std::pair<int, std::string>> vec_pairs_2_L = {
+	std::make_pair(1, "skiplist"), std::make_pair(2, "unit"),   std::make_pair(3, "test"),  std::make_pair(4, "auca"),
+	std::make_pair(5, "std::map"), std::make_pair(6, "ab"),     std::make_pair(7, "cd"),    std::make_pair(8, "ef"),
+	std::make_pair(9, "gh"),       std::make_pair(10, "ij"),    std::make_pair(11, "kl"),   std::make_pair(12, "mnop"),
+	std::make_pair(13, "qrstuv"),  std::make_pair(14, "wxy"),   std::make_pair(15, "z"),    std::make_pair(16, "16"),
+	std::make_pair(17, "qwer"),    std::make_pair(18, "tyui"),  std::make_pair(19, "op[]"), std::make_pair(20, "20"),
+	std::make_pair(21, "asdf"),    std::make_pair(22, "ghjk"),  std::make_pair(23, "zxcv"), std::make_pair(24, "24"),
+};
+
+//const static std::vector<std::string> vec_pair_2 = {"list2", "unit2", "test2", "learn2", "isa std::list2", "ab2", "cd2", "ef2", "gh2", "ij2", "kl2", "mnop2", "qrstuv2", "wxy2", "z2"};
+
+static std::set<std::pair<int const, std::string>> rand_pairs_of_len(int len)
+{
+	std::set<std::pair<int const, std::string>> res;
+	while(res.size() != len)
+	{
+		res.insert(rand_pair());
+	}
+	return res;
+}
 
 // UTILS
 #define MAPS_REQUIRE_EQUAL(my_map, std_map) (verify((my_map), (std_map)))
@@ -134,7 +170,7 @@ bool check_neq(isa::map<Key, Tp, Cmp, Alloc>& my_map, std::map<Key, Tp, Cmp, All
 #define CREATE_MAPS_INT_STRING(name) \
 	std::initializer_list<std::pair<int, string>> ___init_list_input___##name = rand_pairs; \
 	my_map<int, string> my_##name(___init_list_input___##name.begin(), ___init_list_input___##name.end()); \
-	std_map<int, string> std_##name(___init_list_input___##name.begin(), ___init_list_input___##name.end());
+	std_map<int, string> std_##name(___init_list_input___##name.begin(), ___init_list_input___##name.end())
 
 #define my_map isa::map
 #define std_map std::map

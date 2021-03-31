@@ -8,6 +8,7 @@
 #include "skiplist_base.h"
 #include "skiplist_iterator.h"
 #include "container_utils.h"
+#include <iostream>
 
 
 namespace isa
@@ -130,6 +131,37 @@ namespace isa
 		}
 
 
+		void print_map()
+		{
+			auto it = begin();
+			int i = 0;
+			while(it != end())
+			{
+				std::cout << i++ << "\t(" << it->first << ", " << it->second << ")\n";
+				++it;
+			}
+			--it;
+			*it;
+			std::cout << std::endl;
+		}
+
+		void print_map_r()
+		{
+			auto it = end(); --it;
+
+			int i = 0;
+			while(it != end())
+			{
+				std::cout << i++ << "\t(" << it->first << ", " << it->second << ")\n";
+				--it;
+			}
+
+
+			--it;
+			*it;
+			std::cout << std::endl;
+		}
+
 		// constructors
 
 		// empty ctors
@@ -185,8 +217,8 @@ namespace isa
 			}
 			else
 			{
-				auto mbegin = gcc::make_move_iterator_if_noexcept(rval.begin());
-				auto mend = gcc::make_move_iterator_if_noexcept(rval.end());
+				auto mbegin = utils::make_move_iterator_if_noexcept(rval.begin());
+				auto mend = utils::make_move_iterator_if_noexcept(rval.end());
 
 				_p_range_construct_sorted(mbegin, mend);
 			}
@@ -199,7 +231,7 @@ namespace isa
 		}
 
 		// optimize: default args must be default constructed (not default constructed and then copied)
-		template<typename Input_iterator, typename = gcc::require_input_iter<Input_iterator>>
+		template<typename Input_iterator, typename = utils::require_input_iter<Input_iterator>>
 		map(Input_iterator first, Input_iterator last, key_compare const& comp = key_compare(), allocator_type const& alloc = allocator_type())
 			: base(comp, alloc)
 		{
@@ -226,21 +258,43 @@ namespace isa
 			_p_range_construct_unsorted(il.begin(), il.end());
 		}
 
-
-		~map() noexcept = default;
-
-		void clear() noexcept
+		map& operator=(map const& other)
 		{
-			base::clear();
-			base::init();
+			if(this != std::addressof(other))
+			{
+				if(base::node_alloc_traits::propagate_on_container_copy_assignment::value)
+				{
+					node_alloc_type this_alloc = this->get_node_allocator();
+					node_alloc_type other_alloc = other.get_node_allocator();
+
+					if(!base::node_alloc_traits::is_always_equal::value &&
+						this_alloc != other_alloc)
+					{
+						// replacement allocator cannot free existing storage
+						this->clear();
+					}
+					utils::copy_alloc_on_container_assignment(this_alloc, other_alloc);
+				}
+				base::m_pair_comparator = other.get_pair_comparator();
+				_p_sorted_range_assign_dispatch(other.begin(), other.end(), other.size());
+			}
+
+			return *this;
 		}
+
+		map& operator=(map&& rval)
+		{
+			constexpr bool steal_nodes = base::node_alloc_traits::propagate_on_container_move_assignment::value || base::node_alloc_traits::is_always_equal::value;
+			_p_move_assign_sorted(std::move(rval), std::integral_constant<bool, steal_nodes> ());
+		}
+
 		// capacity
 		size_type max_size() const
 		{
 			return node_alloc_traits::max_size(base::get_node_allocator());
 		}
 
-		size_type size() const
+		constexpr size_type size() const
 		{
 			return base::length();
 		}
@@ -248,6 +302,14 @@ namespace isa
 		bool empty() const
 		{
 			return base::is_empty();
+		}
+
+		~map() noexcept = default;
+
+		void clear() noexcept
+		{
+			base::clear_nodes();
+			base::init_head();
 		}
 
 	protected:
@@ -286,6 +348,84 @@ namespace isa
 			}
 		}
 
+		template<typename Input_iterator>
+		void _p_sorted_range_assign_dispatch(Input_iterator first, Input_iterator last, size_type const count)
+		{
+/*			constexpr bool const shorter = count < this->size();
+			_p_sorted_range_assign(first, last, count, std::integral_constant<bool, shorter>());*/
+
+			if(count < size())
+			{
+				_p_sorted_range_assign_shorter(first, last, count);
+			}
+			else
+			{
+				_p_sorted_range_assign_longer(first, last);
+			}
+		}
+
+		template<typename Input_iterator>
+		void _p_sorted_range_assign_longer(Input_iterator first, Input_iterator last)
+		{
+			_p_sorted_range_assign_equal(first, last);
+
+			while(first != last)
+			{
+				base::append(*first);
+				++first;
+			}
+		}
+
+		template<typename Input_iterator>
+		void _p_sorted_range_assign_shorter(Input_iterator first, Input_iterator last, size_type new_len)
+		{
+			iterator this_first = begin();
+			std::advance(this_first, new_len);
+
+			base::remove_tail(this_first.nodeptr);
+
+			_p_sorted_range_assign_equal(first, last);
+		}
+
+		template<typename Input_iterator>
+		void _p_sorted_range_assign_equal(Input_iterator& first, Input_iterator& last)
+		{
+			iterator this_first = this->begin();
+			iterator this_last = this->end();
+
+			while(first != last &&
+			this_first != this_last)
+			{
+				base::assign_item(this_first.nodeptr, *first);
+
+				++first;
+				++this_first;
+			}
+		}
+
+		// allocators are equal or curr alloc can free stealed nodes.
+		void _p_move_assign_sorted(map&& rval, std::true_type)
+		{
+			clear();
+			base::steal_nodes(std::move(rval));
+			utils::move_alloc_on_container_assignment(base::m_node_allocator, rval.m_node_allocator);
+		}
+
+		void _p_move_assign_sorted(map&& rval, std::false_type)
+		{
+			if(base::m_node_allocator == rval.m_node_allocator)
+			{
+				_p_move_assign_sorted(std::move(rval), std::true_type());
+			}
+			else
+			{
+				auto mbegin = utils::make_move_iterator_if_noexcept(rval.begin());
+				auto mend = utils::make_move_iterator_if_noexcept(rval.end());
+
+				_p_sorted_range_assign(mbegin, mend, rval.size());
+			}
+
+		}
 	};
 
 

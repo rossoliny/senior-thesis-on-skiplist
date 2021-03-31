@@ -51,12 +51,17 @@ namespace isa
 		template<typename Key, typename Tp>
 		class skiplist_node : public skiplist_node_base
 		{
-			using pair_t = std::pair<Key const, Tp>;
+			using pair_t = std::pair<Key, Tp>;
+			using pair_const_key_t = std::pair<Key const, Tp>;
 
 		protected:
 
 			skiplist_node_base* m_prev[1]; // TEMP FIX so end() Iterator could move back: same offset as head's m_tail;
-			pair_t m_data; // min 2 bytes <char, char>
+			union
+			{
+				pair_t m_data; // min 2 bytes <char, char>
+				pair_const_key_t m_const_key_data;
+			};
 
 		public:
 
@@ -75,20 +80,31 @@ namespace isa
 				return m_prev[0];
 			}
 
-			inline pair_t* dataptr()
+			inline pair_const_key_t* dataptr()
 			{
-				return std::addressof(m_data);
+				return std::addressof(m_const_key_data);
 			}
 
-			inline pair_t const* dataptr() const
+			inline pair_const_key_t const* dataptr() const
 			{
-				return std::addressof(m_data);
+				return std::addressof(m_const_key_data);
 			}
 
 			inline Key const* keyptr() const
 			{
 				return std::addressof(m_data.first);
 			}
+
+			inline pair_t* mutable_dataptr()
+			{
+				return std::addressof(m_data);
+			}
+
+			inline pair_t const* mutable_dataptr() const
+			{
+				return std::addressof(m_data);
+			}
+
 		};
 
 
@@ -103,18 +119,18 @@ namespace isa
 
 		public:
 			skiplist_node_base* m_tail[MIN_NEXT_SIZE];
-			size_t m_size;
+			size_t m_length;
 			size_t m_height; // count additional levels
 
 			skiplist_impl()
-				: m_size(0)
+				: m_length(0)
 				, m_height(0)
 			{
 				init();
 			}
 
-			skiplist_impl(skiplist_impl&& rval)
-				: m_size(rval.m_size)
+			explicit skiplist_impl(skiplist_impl&& rval)
+				: m_length(rval.m_length)
 				, m_height(rval.m_height)
 			{
 				if(rval.m_next[0] == std::addressof(rval)) // empty
@@ -129,11 +145,16 @@ namespace isa
 
 			void init() noexcept
 			{
-				for(size_t i = 0; i < MIN_NEXT_SIZE; ++i)
+				for(size_t i = 0; i <= MAX_ADDITIONAL_LEVELS; ++i)
 				{
 					m_next[i] = m_tail[i] = this;
 				}
-				m_size = m_height = 0;
+				m_length = m_height = 0;
+			}
+
+			node_base* baseptr()
+			{
+				return this;
 			}
 
 			void steal_nodes(skiplist_impl&& rval)
@@ -155,6 +176,7 @@ namespace isa
 				return this;
 			}
 
+/*
 			inline skiplist_node_base const* get_prev() const noexcept
 			{
 				return m_tail[0];
@@ -164,6 +186,7 @@ namespace isa
 			{
 				return m_tail[0];
 			}
+*/
 
 			template<typename Comparator>
 			node_base* find_node(const Key& key, const Comparator& comp, node_base** update) const
@@ -187,19 +210,19 @@ namespace isa
 			}
 
 			// not needed if head->m_prev is initialized to point to head
-			void append_first(node* node, size_t height) // height must be max 10
+			void append_first(node* new_node, size_t height) // height must be max 10
 			{
-				// 1 case first node
-				node->set_prev(this);
-				node->set_next(0, this);
-				m_tail[0] = m_next[0] = node;
+				// lvl 0
+				new_node->set_prev(this);
+				new_node->m_next[0] = this;
+				m_tail[0] = m_next[0] = new_node;
 
 				size_t lvl = 1;
 				while(lvl <= height)
 				{
-					this->set_next(lvl, node);
-					node->set_next(lvl, this);
-					m_tail[lvl] = node;
+					this->set_next(lvl, new_node);
+					new_node->set_next(lvl, this);
+					m_tail[lvl] = new_node;
 					lvl++;
 				}
 				m_height = height;
@@ -207,16 +230,15 @@ namespace isa
 
 			void append_node(node* new_node, size_t height)
 			{
-				// 2 case not first node
-				this->m_tail[0]->m_next[0] = new_node;
-				new_node->set_prev(this->m_tail[0]);
+				m_tail[0]->m_next[0] = new_node;
+				new_node->set_prev(m_tail[0]);
 				new_node->m_next[0] = this;
-				this->m_tail[0] = new_node;
+				m_tail[0] = new_node;
 
 				size_t lvl = 1;
 				while(lvl <= height)
 				{
-					this->m_tail[lvl]->set_next(lvl, new_node);
+					m_tail[lvl]->set_next(lvl, new_node);
 					new_node->set_next(lvl, this);
 					this->m_tail[lvl] = new_node;
 					lvl++;
@@ -227,7 +249,7 @@ namespace isa
 				}
 			}
 
-			void insert_node(node* node, size_t node_height, node_base** update)
+			void insert_node(node* new_node, size_t node_height, node_base** update)
 			{
 				//node_base* head = const_cast<node_base*> (this);
 				size_t list_height = m_height;
@@ -240,15 +262,16 @@ namespace isa
 					m_height++;
 				}
 
-				node->m_next[0] = update[0]->m_next[0];
-				node->set_prev(update[0]);
-				node->get_prev()->m_next[0] = node; // update[0]->m_next[0] = node;
+				new_node->m_next[0] = update[0]->m_next[0];
+				static_cast<node*> (new_node->m_next[0])->set_prev(new_node);
+				new_node->set_prev(update[0]);
+				new_node->get_prev()->m_next[0] = new_node; // update[0]->m_next[0] = new_node;
 
 				lvl = 1;
-				while(lvl <= m_height)
+				while(lvl <= node_height)
 				{
-					node->set_next(lvl, update[lvl]->get_next(lvl));
-					update[lvl]->set_next(lvl, node);
+					new_node->set_next(lvl, update[lvl]->get_next(lvl));
+					update[lvl]->set_next(lvl, new_node);
 					lvl++;
 				}
 			}
@@ -273,10 +296,13 @@ namespace isa
 			}
 
 			// remove [first, last)
-			void remove_range(node* first, node* last, node_base** update_first, node_base** update_last)
+			void remove_range(node_base* begin, node_base* end, node_base** update_first, node_base** update_last)
 			{
-				last->m_prev = first->m_prev;
-				first->m_prev->m_next[0] = last; // update_first[0]->m_next[0] = update_last[0]->m_next[0];
+				node* first = static_cast<node*> (begin);
+				node* last = static_cast<node*> (end);
+
+				last->set_prev(first->get_prev());
+				first->get_prev()->m_next[0] = last; // update_first[0]->m_next[0] = update_last[0]->m_next[0];
 
 				size_t lvl = 1;
 				while(lvl <= m_height)
