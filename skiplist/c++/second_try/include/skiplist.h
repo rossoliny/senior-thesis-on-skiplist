@@ -286,6 +286,7 @@ namespace isa
 		{
 			constexpr bool steal_nodes = base::node_alloc_traits::propagate_on_container_move_assignment::value || base::node_alloc_traits::is_always_equal::value;
 			_p_move_assign_sorted(std::move(rval), std::integral_constant<bool, steal_nodes> ());
+			return *this;
 		}
 
 		// capacity

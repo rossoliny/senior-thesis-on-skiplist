@@ -76,7 +76,6 @@ TEST_CASE("copy assignment operator")
 	}
 }
 
-/*
 TEST_CASE("move assignment operator")
 {
 	SECTION("equal size")
@@ -118,14 +117,14 @@ TEST_CASE("move assignment operator")
 		MAPS_REQUIRE_EQUAL(act, exp);
 		MAPS_REQUIRE_EQUAL(act_inp, exp_inp);
 	}
-	SECTION("long = short")
+	SECTION("long <-- short")
 	{
-		initializer_list<int> input = rand_ints;
+		initializer_list<pair<int const, string>> input = rand_pairs;
 		my_map<int, string> act_inp = input;
 		std_map<int, string> exp_inp = input;
 
-		my_map<int, string> act = rand_ints_L;
-		std_map<int, string> exp = rand_ints_L;
+		my_map<int, string> act = rand_pairs_L;
+		std_map<int, string> exp = rand_pairs_L;
 
 		act = std::move(act_inp);
 		exp = std::move(exp_inp);
@@ -135,6 +134,7 @@ TEST_CASE("move assignment operator")
 	}
 }
 
+/*
 TEST_CASE("initializer_list assignment operator")
 {
 	SECTION("short <- long")
