@@ -289,6 +289,12 @@ namespace isa
 			return *this;
 		}
 
+		map& operator=(std::initializer_list<value_type> il)
+		{
+			_p_unsorted_range_assign_dispatch(il.begin(), il.end(), il.size());
+			return *this;
+		}
+
 		// capacity
 		size_type max_size() const
 		{
@@ -426,6 +432,37 @@ namespace isa
 				_p_sorted_range_assign(mbegin, mend, rval.size());
 			}
 
+		}
+
+		template<typename Input_iterator>
+		void _p_unsorted_range_assign_dispatch(Input_iterator first, Input_iterator last, size_type const count)
+		{
+			if(count < size())
+			{
+				_p_unsorted_range_assign_shorter(first, last, count);
+			}
+			else
+			{
+				_p_unsorted_range_assign_longer(first, last);
+			}
+		}
+
+		template<typename Input_iterator>
+		void _p_unsorted_range_assign_longer(Input_iterator first, Input_iterator last)
+		{
+			// TODO: implement
+		}
+
+		template<typename Input_iterator>
+		void _p_unsorted_range_assign_shorter(Input_iterator first, Input_iterator last, size_type new_len)
+		{
+			// TODO: implement
+		}
+
+		template<typename Input_iterator>
+		void _p_unsorted_range_assign_equal(Input_iterator& first, Input_iterator& last)
+		{
+			// TODO: implement
 		}
 	};
 
