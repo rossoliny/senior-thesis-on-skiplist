@@ -63,3 +63,4 @@ build/
 cmake-build-*
 !gcc_list
 !*.tcc
+!*.sh
