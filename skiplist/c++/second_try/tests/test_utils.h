@@ -51,7 +51,7 @@ static std::string rand_string()
 
 
 
-#define rand_pair() std::make_pair<int, std::string>(rand_int(0, 100), rand_string())
+#define rand_pair() std::make_pair<int const, std::string>(rand_int(0, 1000), rand_string())
 #define rand_pairs {rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair()}
 #define rand_pairs_L {rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), \
 					 rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair()}
@@ -118,6 +118,18 @@ void verify(isa::map<Key, Tp, Cmp, Alloc>& my_map, std::map<Key, Tp, Cmp, Alloc>
 		++act;
 		++exp;
 	}
+
+	auto ract = my_map.rbegin();
+	auto rexp = std_map.rbegin();
+
+	while(ract != my_map.rend())
+	{
+		REQUIRE(ract->first == rexp->first);
+		REQUIRE(ract->second == rexp->second);
+
+		++ract;
+		++rexp;
+	}
 }
 
 template<typename Key, typename Tp, typename Cmp, typename Alloc>
@@ -137,6 +149,18 @@ void verify(isa::map<Key, Tp, Cmp, Alloc>& my_map, isa::map<Key, Tp, Cmp, Alloc>
 
 		++act;
 		++exp;
+	}
+
+	auto ract = my_map.rbegin();
+	auto rexp = my_map_2.rbegin();
+
+	while(ract != my_map.rend())
+	{
+		REQUIRE(ract->first == rexp->first);
+		REQUIRE(ract->second == rexp->second);
+
+		++ract;
+		++rexp;
 	}
 }
 
@@ -169,10 +193,12 @@ bool check_neq(isa::map<Key, Tp, Cmp, Alloc>& my_map, std::map<Key, Tp, Cmp, All
 }
 
 
-#define CREATE_MAPS_INT_STRING(name) \
-	std::initializer_list<std::pair<int, string>> ___init_list_input___##name = rand_pairs; \
-	my_map<int, string> my_##name(___init_list_input___##name.begin(), ___init_list_input___##name.end()); \
-	std_map<int, string> std_##name(___init_list_input___##name.begin(), ___init_list_input___##name.end())
+#define CREATE_MAPS_INT_STRING(name1, name2) \
+	std::initializer_list<std::pair<int, string>> ___init_list_input___ = rand_pairs; \
+	my_map<int, string> name1(___init_list_input___.begin(), ___init_list_input___.end()); \
+	std_map<int, string> name2(___init_list_input___.begin(), ___init_list_input___.end()); \
+	MAPS_REQUIRE_EQUAL(name1, name2)
+
 
 #define my_map isa::map
 #define std_map std::map

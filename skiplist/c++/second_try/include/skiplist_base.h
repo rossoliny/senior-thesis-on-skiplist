@@ -29,8 +29,12 @@ namespace isa
 		using node_pointer = typename node_alloc_traits::pointer;
 		using node_const_pointer = typename node_alloc_traits::const_pointer;
 
-		using pair_type = std::pair<Key const, Tp>;
-		using mutable_key_pair = std::pair<Key, Tp>;
+		template<typename K, typename V>
+		using pair_t = std::pair<K, V>;
+		using insert_return_t = pair_t<node_pointer, bool>;
+
+		using pair_type = pair_t<Key const, Tp>;
+		using mutable_key_pair = pair_t<Key, Tp>;
 
 		struct pair_comparator_type
 		{
@@ -166,7 +170,7 @@ namespace isa
 		}
 
 		template<typename... Args>
-		bool insert(Args&& ... args)
+		insert_return_t insert(Args&& ... args)
 		{
 			// find node pos
 			node_base* update[1 + MAX_ADDITIONAL_LEVELS];
@@ -182,13 +186,14 @@ namespace isa
 				m_head.insert_node(new_node, random_level(), update);
 
 				++m_head.m_length;
-				return true;
+				return insert_return_t(new_node, true);
 			}
-			return false;
+
+			return insert_return_t(static_cast<node_pointer> (pos), false);
 		}
 
 		template<typename... Args>
-		bool append_or_insert(Args&& ... args)
+		insert_return_t append_or_insert(Args&& ... args)
 		{
 			pair_type data(std::forward<Args>(args)...);
 			Key const& last = _s_node_key(m_head.m_tail[0]);
@@ -200,15 +205,15 @@ namespace isa
 				m_head.append_node(new_node, node_height);
 
 				++m_head.m_length;
-				return true;
-			}
 
+				return insert_return_t(new_node, true);
+			}
 			if(greater(last, data.first))
 			{
 				return insert(std::move(data));
 			}
 
-			return false;
+			return insert_return_t(static_cast<node_pointer> (m_head.m_tail[0]), false);
 		}
 
 		template<typename... Args>

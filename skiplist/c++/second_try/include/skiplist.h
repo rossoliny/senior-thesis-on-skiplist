@@ -31,6 +31,7 @@ namespace isa
 
 		using node = typename base::node;
 		using node_pointer = typename base::node_pointer;
+
 		using pair_type = typename base::pair_type;
 		using mutable_key_pair = typename base::mutable_key_pair;
 		using pair_compare_type = typename base::pair_comparator_type;
@@ -191,14 +192,14 @@ namespace isa
 			: base(other.get_pair_comparator(), node_alloc_traits::select_on_container_copy_construction(other.get_node_allocator()))
 		{
 			// 100% sorted
-			_p_range_construct_sorted(other.begin(), other.end());
+			_p_sorted_range_construct_(other.begin(), other.end());
 		}
 
 		map(map const& other, allocator_type const& alloc)
 			: base(other.get_pair_comparator(), alloc)
 		{
 			// 100% sorted
-			_p_range_construct_sorted(other.begin(), other.end());
+			_p_sorted_range_construct_(other.begin(), other.end());
 		}
 
 		// move ctors
@@ -222,7 +223,7 @@ namespace isa
 				auto mbegin = utils::make_move_iterator_if_noexcept(rval.begin());
 				auto mend = utils::make_move_iterator_if_noexcept(rval.end());
 
-				_p_range_construct_sorted(mbegin, mend);
+				_p_sorted_range_construct_(mbegin, mend);
 			}
 		}
 
@@ -238,26 +239,26 @@ namespace isa
 			: base(comp, alloc)
 		{
 			// not 100% sorted
-			_p_range_construct_unsorted(first, last);
+			_p_unsorted_range_construct(first, last);
 		}
 
 		// initializer list
 		map(std::initializer_list<value_type> il, key_compare const& comp, allocator_type const& alloc)
 			: base(comp, alloc)
 		{
-			_p_range_construct_unsorted(il.begin(), il.end());
+			_p_unsorted_range_construct(il.begin(), il.end());
 		}
 
 		map(std::initializer_list<value_type> il, key_compare const& comp)
 			: base(comp)
 		{
-			_p_range_construct_unsorted(il.begin(), il.end());
+			_p_unsorted_range_construct(il.begin(), il.end());
 		}
 
 		map(std::initializer_list<value_type> il)
 			: base()
 		{
-			_p_range_construct_unsorted(il.begin(), il.end());
+			_p_unsorted_range_construct(il.begin(), il.end());
 		}
 
 		map& operator=(map const& other)
@@ -294,9 +295,29 @@ namespace isa
 		map& operator=(std::initializer_list<value_type> il)
 		{
 			map tmp(il, base::get_key_comparator(), base::get_node_allocator()); // O(N log(N)) and heap allocations.
-			*this = std::move(tmp); // O(N)
+			if(!tmp.empty())
+			{
+				*this = std::move(tmp); // O(N) deallocations
+			}
 
 			return *this;
+		}
+
+		std::pair<iterator, bool> insert(value_type const& element)
+		{
+			auto res = base::append_or_insert(element);
+			return std::pair<iterator, bool> (iterator(res.first), res.second);
+		}
+
+		template<typename Input_iterator, typename = utils::require_input_iter<Input_iterator>>
+		void insert(Input_iterator first, Input_iterator last)
+		{
+			_p_unsorted_range_insert(first, last);
+		}
+
+		void insert(std::initializer_list<value_type> il)
+		{
+			_p_unsorted_range_insert(il.begin(), il.end());
 		}
 
 		key_compare key_comp() const noexcept
@@ -331,7 +352,17 @@ namespace isa
 	protected:
 
 		template<typename Input_iterator>
-		void _p_range_construct_unsorted(Input_iterator first, Input_iterator last)
+		void _p_unsorted_range_insert(Input_iterator first, Input_iterator last)
+		{
+			while(first != last)
+			{
+				base::append_or_insert(*first);
+				++first;
+			}
+		}
+
+		template<typename Input_iterator>
+		void _p_unsorted_range_construct(Input_iterator first, Input_iterator last)
 		{
 			if(first != last)
 			{
@@ -339,14 +370,11 @@ namespace isa
 				++first;
 			}
 
-			for(; first != last; ++first)
-			{
-				base::append_or_insert(*first);
-			}
+			_p_unsorted_range_insert(first, last);
 		}
 
 		template<typename Input_iterator>
-		void _p_range_construct_sorted(Input_iterator first, Input_iterator last)
+		void _p_sorted_range_construct_(Input_iterator first, Input_iterator last)
 		{
 			// in case when N is known we may balance H to be exactly logN
 			// and also perfectly distribute nodes across levels

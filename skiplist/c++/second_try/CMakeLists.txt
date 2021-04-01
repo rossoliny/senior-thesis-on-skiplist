@@ -9,6 +9,7 @@ set(TEST_WITH_CATCH_SRC
         tests/ctor.cpp
         tests/dtor.cpp
         tests/operator=.cpp
+        tests/insert.cpp
 )
 
 add_compile_options(-std=c++11 -g)

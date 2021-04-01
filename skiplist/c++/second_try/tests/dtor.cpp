@@ -9,12 +9,12 @@ TEST_CASE("clear_nodes", "[clear_nodes]")
 {
 	SECTION("int")
 	{
-		CREATE_MAPS_INT_STRING(res);
+		CREATE_MAPS_INT_STRING(act, exp);
 
-		my_res.clear();
-		std_res.clear();
+		act.clear();
+		exp.clear();
 
-		MAPS_REQUIRE_EQUAL(my_res, std_res);
+		MAPS_REQUIRE_EQUAL(act, exp);
 	}
 	SECTION("string")
 	{
