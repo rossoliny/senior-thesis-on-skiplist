@@ -1,9 +1,9 @@
 #pragma once
 #define USE_C_RAND
-#include "old_skiplist_node.h"
+#include "skiplist_node.h"
 #include <random>
 #include "gcc_temp_utils.h"
-#include "old_skiplist_iterator.h"
+#include "skiplist_iterator.h"
 
 namespace isa
 {

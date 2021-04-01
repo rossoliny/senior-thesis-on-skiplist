@@ -12,7 +12,7 @@
 #ifndef LIST_ITERATOR_H
 #define LIST_ITERATOR_H
 
-#include "old_skiplist_node.h"
+#include "skiplist_node.h"
 #include <iterator>
 
 namespace isa
