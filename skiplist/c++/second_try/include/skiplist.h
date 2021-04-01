@@ -261,6 +261,7 @@ namespace isa
 			_p_unsorted_range_construct(il.begin(), il.end());
 		}
 
+		// assignment operators
 		map& operator=(map const& other)
 		{
 			if(this != std::addressof(other))
@@ -303,10 +304,34 @@ namespace isa
 			return *this;
 		}
 
+		// insert functions
 		std::pair<iterator, bool> insert(value_type const& element)
 		{
 			auto res = base::append_or_insert(element);
 			return std::pair<iterator, bool> (iterator(res.first), res.second);
+		}
+
+		template <class Pair,
+				typename = utils::require_constructible<value_type, Pair&&>
+			>
+		std::pair<iterator, bool> insert(Pair&& val)
+		{
+			auto res = base::append_or_insert(std::forward<Pair>(val));
+			return std::pair<iterator, bool> (iterator(res.first), res.second);
+		}
+
+		// insert with hint
+		iterator insert(const_iterator hint, value_type const& val)
+		{
+			// TODO: figure out how to implement
+		}
+
+		template<typename Pair,
+				typename = utils::require_constructible<value_type, Pair&&>
+			>
+		iterator insert(const_iterator hint, Pair&& val)
+		{
+			// TODO: figure out how to implement
 		}
 
 		template<typename Input_iterator, typename = utils::require_input_iter<Input_iterator>>
@@ -319,6 +344,36 @@ namespace isa
 		{
 			_p_unsorted_range_insert(il.begin(), il.end());
 		}
+
+
+		// erase functions
+		iterator erase(const_iterator position)
+		{
+			return iterator(base::remove_node(position.nodeptr));
+		}
+
+		size_type erase(key_type const& key)
+		{
+			return base::remove_key(key);
+		}
+
+		iterator erase(const_iterator first, const_iterator last)
+		{
+			if(first == begin() && last == end())
+			{
+				clear();
+				return end();
+			}
+			if(last == end())
+			{
+				return iterator(base::remove_tail(first.nodeptr));
+			}
+			else
+			{
+				return iterator(base::remove_range(first.nodeptr, last.nodeptr));
+			}
+		}
+
 
 		key_compare key_comp() const noexcept
 		{

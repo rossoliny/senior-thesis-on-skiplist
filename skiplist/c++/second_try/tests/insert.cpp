@@ -14,7 +14,7 @@ TEST_CASE("insert single element", tag)
 		my_map<int, string> act;
 		std_map<int, string> exp;
 
-		pair<int const, string> val = rand_pair();
+		pair<int const, string> const val = rand_pair();
 
 		auto p1 = act.insert(val);
 		auto p2 = exp.insert(val);
@@ -32,7 +32,7 @@ TEST_CASE("insert single element", tag)
 	{
 		CREATE_MAPS_INT_STRING(act, exp);
 
-		pair<int const, string> val = rand_pair();
+		pair<int const, string> const val = rand_pair();
 
 		auto p1 = act.insert(val);
 		auto p2 = exp.insert(val);
@@ -46,7 +46,7 @@ TEST_CASE("insert single element", tag)
 	{
 		CREATE_MAPS_INT_STRING(act, exp);
 
-		pair<int const, string> val = make_pair(-1, "min");
+		pair<int const, string> const val = make_pair(-1, "min");
 
 		auto p1 = act.insert(val);
 		auto p2 = exp.insert(val);
@@ -66,7 +66,7 @@ TEST_CASE("insert single element", tag)
 	{
 		CREATE_MAPS_INT_STRING(act, exp);
 
-		pair<int const, string> val = make_pair(INT_MAX, "max");
+		pair<int const, string> const val = make_pair(INT_MAX, "max");
 
 		auto p1 = act.insert(val);
 		auto p2 = exp.insert(val);
@@ -86,7 +86,7 @@ TEST_CASE("insert single element", tag)
 	{
 		CREATE_MAPS_INT_STRING(act, exp);
 
-		auto it = act.begin();
+		auto it = act.cbegin();
 		std::advance(it, rand_int(0, act.size() - 1));
 
 		auto p1 = act.insert(*it);
@@ -97,7 +97,70 @@ TEST_CASE("insert single element", tag)
 
 		MAPS_REQUIRE_EQUAL(act, exp);
 	}
+}
 
+
+TEST_CASE("template insert single element", tag)
+{
+	SECTION("empty map")
+	{
+		my_map<int, string> act;
+		std_map<int, string> exp;
+
+		pair<int const, string> val = rand_pair();
+
+		auto p11 = act.insert(val); // instantiate P as reference
+		auto p22 = exp.insert(val);
+
+		REQUIRE(p11.first == act.begin());
+		REQUIRE(p22.first == exp.begin());
+		REQUIRE(p11.second == p22.second);
+		REQUIRE(*act.begin() == val);
+		REQUIRE(*exp.begin() == val);
+
+		// rvalue
+		pair<int const, string> vall = rand_pair();
+		pair<int const, string> val1 = vall;
+		pair<int const, string> val2 = vall;
+
+		auto p1 = act.insert(std::move(val1));
+		auto p2 = exp.insert(std::move(val2));
+
+		REQUIRE(val1 == val2);
+		REQUIRE(*p1.first == vall);
+		REQUIRE(*p2.first == vall);
+		REQUIRE(p1.second == p2.second);
+
+		MAPS_REQUIRE_EQUAL(act, exp);
+	}
+	SECTION("non empty map")
+	{
+		CREATE_MAPS_INT_STRING(act, exp);
+
+		pair<int const, string> val = rand_pair();
+
+		auto p11 = act.insert(val); // instantiate P as reference
+		auto p22 = exp.insert(val);
+
+		REQUIRE(*p11.first == val);
+		REQUIRE(*p22.first == val);
+		REQUIRE(p11.second == p22.second);
+
+		// rvalue
+		pair<int const, string> vall = rand_pair();
+		pair<int const, string> val1 = vall;
+		pair<int const, string> val2 = vall;
+
+		auto p1 = act.insert(std::move(val1));
+		auto p2 = exp.insert(std::move(val2));
+
+		REQUIRE(val1 == val2);
+		REQUIRE(*p1.first == vall);
+		REQUIRE(*p2.first == vall);
+		REQUIRE(p1.second == p2.second);
+
+		MAPS_REQUIRE_EQUAL(act, exp);
+	}
 }
 
 TEST_CASE("range insert", tag)
@@ -119,11 +182,22 @@ TEST_CASE("range insert", tag)
 		exp.insert(input2.begin(), input2.end());
 		MAPS_REQUIRE_EQUAL(act, exp);
 	}
+	SECTION("insert existing")
+	{
+		CREATE_MAPS_INT_STRING(act, exp);
 
-}
+		auto start = exp.begin();
+		auto stop = exp.end();
+		advance(start, rand_int(0, exp.size() - 1));
 
-TEST_CASE("move insert", tag)
-{
+		vector<pair<int, string>> input(start, stop);
+		input.insert(input.end(), rand_pairs);
+
+		act.insert(input.begin(), input.end());
+		exp.insert(input.begin(), input.end());
+
+		MAPS_REQUIRE_EQUAL(act, exp);
+	}
 
 }
 
@@ -146,4 +220,10 @@ TEST_CASE("initializer list insert", tag)
 		exp.insert(init_list_2);
 		MAPS_REQUIRE_EQUAL(act, exp);
 	}
+}
+
+
+TEST_CASE("insert with hint", tag)
+{
+
 }

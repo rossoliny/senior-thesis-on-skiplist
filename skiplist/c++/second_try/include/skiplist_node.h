@@ -297,9 +297,10 @@ namespace isa
 				}
 			}
 
-			void remove_node(node* nod, node_base** update)
+			void remove_node(node_base* pos, node_base** update)
 			{
-				node_base const* head = static_cast<node_base const*> (this);
+				node* nod = static_cast<node*> (pos);
+
 				nod->get_prev()->m_next[0] = nod->m_next[0];
 				static_cast<node*> (nod->m_next[0])->set_prev(nod->get_prev());
 
@@ -310,7 +311,7 @@ namespace isa
 					lvl++;
 				}
 
-				while(m_height > 0 && head->get_next(m_height) == npos())
+				while(m_height > 0 && this->get_next(m_height) == npos())
 				{
 					m_height--;
 				}

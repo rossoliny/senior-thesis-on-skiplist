@@ -40,24 +40,29 @@ namespace isa
 
 		template<typename Input_iterator>
 		using require_input_iter =
-		typename std::enable_if<
-		std::is_convertible<
-		typename std::iterator_traits<Input_iterator>::iterator_category,
-		std::input_iterator_tag
-		>::value
-		>::type;
+			typename std::enable_if<
+				std::is_convertible<
+					typename std::iterator_traits<Input_iterator>::iterator_category,
+					std::input_iterator_tag
+				>::value
+			>::type;
+
+		template<typename Tp, typename From>
+		using require_constructible =
+			typename std::enable_if<
+				std::is_constructible<Tp, From>::value
+			>::type;
 
 		// if iterator is noexcept_move_constructible or only_move_type then make move_iterator else iterator
-		template
-		<
-		typename Iterator,
-		typename Return_type =
-		typename std::conditional<
-		!std::is_nothrow_move_constructible<Iterator>::value && std::is_copy_constructible<Iterator>::value,
-		Iterator,
-		std::move_iterator < Iterator>
-		> ::type
-		>
+		template<
+			typename Iterator,
+			typename Return_type =
+				typename std::conditional<
+					!std::is_nothrow_move_constructible<Iterator>::value && std::is_copy_constructible<Iterator>::value,
+					Iterator,
+					std::move_iterator<Iterator>
+				>::type
+			>
 		inline constexpr Return_type make_move_iterator_if_noexcept(Iterator i)
 		{
 			return Return_type(i);
@@ -65,17 +70,15 @@ namespace isa
 
 		// Overload for pointers that matches std::move_if_noexcept more closely,
 		// returning a constant iterator when we don't want to move.
-		template
-		<
-		typename Iterator_maybe_ptr,
-		typename Return_type =
-		typename std::conditional<
-		!std::is_nothrow_move_constructible<Iterator_maybe_ptr>::value && std::is_copy_constructible<Iterator_maybe_ptr>::value,
-		const Iterator_maybe_ptr*,
-		std::move_iterator < Iterator_maybe_ptr* >
-		> ::type
-		>
-
+		template<
+			typename Iterator_maybe_ptr,
+			typename Return_type =
+				typename std::conditional<
+					!std::is_nothrow_move_constructible<Iterator_maybe_ptr>::value && std::is_copy_constructible<Iterator_maybe_ptr>::value,
+					const Iterator_maybe_ptr*,
+					std::move_iterator<Iterator_maybe_ptr*>
+				>::type
+			>
 		inline constexpr Return_type make_move_iterator_if_noexcept(Iterator_maybe_ptr* i)
 		{
 			return Return_type(i);
@@ -125,7 +128,6 @@ namespace isa
 		}
 
 
-
 		// copy assign allocator if possible
 		template<typename Alloc>
 		inline void copy_if_pocca(Alloc& a, const Alloc& b, std::true_type)
@@ -169,7 +171,7 @@ namespace isa
 			swap_alloc_if(a, b, pocs());
 		}
 
-		template <bool B>
+		template<bool B>
 		using bool_constant = std::integral_constant<bool, B>;
 
 	}

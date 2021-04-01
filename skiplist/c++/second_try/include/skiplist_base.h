@@ -83,6 +83,11 @@ namespace isa
 			return equals(_s_node_key(node), pair.first);
 		}
 
+		inline bool equals(node_base const* a, node_base const* b)
+		{
+			return a == b || equals(_s_node_key(a), _s_node_key(b));
+		}
+
 		constexpr size_t length() const
 		{
 			return m_head.m_length;
@@ -134,6 +139,11 @@ namespace isa
 			node_pointer ptr = get_node();
 			node_alloc_traits::construct(m_node_allocator, ptr->dataptr(), std::forward<Args>(args)...);
 			return ptr;
+		}
+
+		void delete_node(node_base* ptr)
+		{
+			delete_node(static_cast<node_pointer> (ptr));
 		}
 
 		void delete_node(node_pointer ptr)
@@ -222,29 +232,68 @@ namespace isa
 			static_cast<node_pointer> (node)->mutable_dataptr()->operator=(std::forward<Args>(args)...);
 		}
 
+		node_pointer find_node(Key const& key)
+		{
+			node_base* update[1 + MAX_ADDITIONAL_LEVELS];
+			node_base* pos = m_head.find_node(key, get_key_comparator(), update);
 
-		void remove_tail(node_base* begin)
+			if(pos == m_head.npos() || !equals(_s_node_key(pos), key))
+			{
+				return m_head.npos();
+			}
+			return pos;
+		}
+
+		size_t remove_key(Key const& key)
+		{
+			char node_buff[sizeof(node)];
+			node_pointer node = reinterpret_cast<node_pointer> (node_buff);
+			node->mutable_dataptr()->first = key;
+
+			return remove_node(node) != node;
+		}
+
+		node_base* remove_node(node_base const* node)
+		{
+			node_base* update[1 + MAX_ADDITIONAL_LEVELS];
+			node_base* pos = m_head.find_node(_s_node_key(node), get_key_comparator(), update);
+
+			if(equals(node, pos))
+			{
+				node_base* next = pos->m_next[0];
+				m_head.remove_node(pos, update);
+				delete_node(pos);
+				--m_head.m_length;
+
+				return next;
+			}
+			return const_cast<node_base*> (node);
+		}
+
+		node_base* remove_tail(node_base const* begin)
 		{
 			node_base* update[1 + MAX_ADDITIONAL_LEVELS];
 			node_base* first = m_head.find_node(_s_node_key(begin), get_key_comparator(), update);
 			node_base* last = std::addressof(m_head);
 
-			if(first == begin)
+			if(equals(begin, first))
 			{
 				m_head.remove_range(first, last, update, m_head.m_tail);
 
 				while(first != last)
 				{
-					auto next = first->m_next[0];
-					delete_node(static_cast<node*> (first));
+					node_base* next = first->m_next[0];
+					delete_node(first);
 					first = next;
 					--m_head.m_length;
 				}
+				return first;
 			}
+			return const_cast<node_base*> (begin);
 		}
 
 		// begin and end must never be equal to head, it's caller's responsibility to check it
-		void remove_range(node_base* begin, node_base* end)
+		node_base* remove_range(node_base const* begin, node_base const* end)
 		{
 			node_base* update1[1 + MAX_ADDITIONAL_LEVELS];
 			node_base* update2[1 + MAX_ADDITIONAL_LEVELS];
@@ -252,7 +301,7 @@ namespace isa
 			node_base* first = m_head.find_node(_s_node_key(begin), get_key_comparator(), update1);
 			node_base* last = m_head.find_node(_s_node_key(end), get_key_comparator(), update2);
 
-			if(first == begin && last == end)
+			if((first == begin && last == end) || (equals(begin, first) && equals(end, last)))
 			{
 				m_head.remove_range(first, last, update1, update2);
 				while(first != last)
@@ -262,7 +311,9 @@ namespace isa
 					first = next;
 					--m_head.m_length;
 				}
+				return first;
 			}
+			return const_cast<node_base*> (begin);
 		}
 
 		bool is_empty() const

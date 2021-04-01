@@ -119,7 +119,7 @@ namespace isa
 		{
 		}
 
-		explicit skiplist_const_iterator(const iterator& other) noexcept
+		skiplist_const_iterator(iterator const& other) noexcept
 			: nodeptr(other.nodeptr)
 		{
 		}
