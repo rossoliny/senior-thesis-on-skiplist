@@ -276,20 +276,41 @@ namespace isa
 				}
 			}
 
-
-			void remove_node(node* node, size_t height, node_base** update)
+			void remove_last(node_base** update)
 			{
-				node_base const* head = static_cast<node_base const*> (this);
-				node->m_prev->m_next[0] = node->m_next[0];
+				node* last = static_cast<node*> (m_tail[0]);
 
-				size_t lvl = 0;
-				while(lvl <= m_height && update[lvl]->m_next[lvl] == node)
+				last->get_prev()->m_next[0] = this;
+				this->m_tail[0] = last->get_prev();
+
+				size_t lvl = 1;
+				while(lvl <= m_height && update[lvl]->get_next(m_height) == last)
 				{
-					update[lvl]->set_next(lvl, node->get_next(lvl));
+					update[lvl]->set_next(lvl, this);
+					m_tail[lvl] = update[lvl];
 					lvl++;
 				}
 
-				while(m_height > 0 && head->get_next(m_height) == nullptr)
+				while(m_height > 0 && this->get_next(m_height) == npos())
+				{
+					m_height--;
+				}
+			}
+
+			void remove_node(node* nod, node_base** update)
+			{
+				node_base const* head = static_cast<node_base const*> (this);
+				nod->get_prev()->m_next[0] = nod->m_next[0];
+				static_cast<node*> (nod->m_next[0])->set_prev(nod->get_prev());
+
+				size_t lvl = 1;
+				while(lvl <= m_height && update[lvl]->get_next(lvl) == nod)
+				{
+					update[lvl]->set_next(lvl, nod->get_next(lvl));
+					lvl++;
+				}
+
+				while(m_height > 0 && head->get_next(m_height) == npos())
 				{
 					m_height--;
 				}

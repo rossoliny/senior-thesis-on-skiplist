@@ -9,7 +9,8 @@
 #include "skiplist_iterator.h"
 #include "container_utils.h"
 #include <iostream>
-
+#include <iterator>
+#include <algorithm>
 
 namespace isa
 {
@@ -31,6 +32,7 @@ namespace isa
 		using node = typename base::node;
 		using node_pointer = typename base::node_pointer;
 		using pair_type = typename base::pair_type;
+		using mutable_key_pair = typename base::mutable_key_pair;
 		using pair_compare_type = typename base::pair_comparator_type;
 
 	public:
@@ -291,8 +293,15 @@ namespace isa
 
 		map& operator=(std::initializer_list<value_type> il)
 		{
-			_p_unsorted_range_assign_dispatch(il.begin(), il.end(), il.size());
+			map tmp(il, base::get_key_comparator(), base::get_node_allocator()); // O(N log(N)) and heap allocations.
+			*this = std::move(tmp); // O(N)
+
 			return *this;
+		}
+
+		key_compare key_comp() const noexcept
+		{
+			return base::get_key_comparator();
 		}
 
 		// capacity
@@ -403,7 +412,7 @@ namespace isa
 			while(first != last &&
 			this_first != this_last)
 			{
-				base::assign_item(this_first.nodeptr, *first);
+				base::assign_pair(this_first.nodeptr, *first);
 
 				++first;
 				++this_first;
@@ -434,36 +443,6 @@ namespace isa
 
 		}
 
-		template<typename Input_iterator>
-		void _p_unsorted_range_assign_dispatch(Input_iterator first, Input_iterator last, size_type const count)
-		{
-			if(count < size())
-			{
-				_p_unsorted_range_assign_shorter(first, last, count);
-			}
-			else
-			{
-				_p_unsorted_range_assign_longer(first, last);
-			}
-		}
-
-		template<typename Input_iterator>
-		void _p_unsorted_range_assign_longer(Input_iterator first, Input_iterator last)
-		{
-			// TODO: implement
-		}
-
-		template<typename Input_iterator>
-		void _p_unsorted_range_assign_shorter(Input_iterator first, Input_iterator last, size_type new_len)
-		{
-			// TODO: implement
-		}
-
-		template<typename Input_iterator>
-		void _p_unsorted_range_assign_equal(Input_iterator& first, Input_iterator& last)
-		{
-			// TODO: implement
-		}
 	};
 
 

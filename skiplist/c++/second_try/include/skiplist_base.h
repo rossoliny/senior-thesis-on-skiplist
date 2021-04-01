@@ -30,6 +30,7 @@ namespace isa
 		using node_const_pointer = typename node_alloc_traits::const_pointer;
 
 		using pair_type = std::pair<Key const, Tp>;
+		using mutable_key_pair = std::pair<Key, Tp>;
 
 		struct pair_comparator_type
 		{
@@ -211,11 +212,11 @@ namespace isa
 		}
 
 		template<typename... Args>
-		void assign_item(node_base* node, Args&&... args) const
+		void assign_pair(node_base* node, Args&&... args) const
 		{
-//			pair_type data(std::forward<Args>(args)...);
 			static_cast<node_pointer> (node)->mutable_dataptr()->operator=(std::forward<Args>(args)...);
 		}
+
 
 		void remove_tail(node_base* begin)
 		{
@@ -227,16 +228,13 @@ namespace isa
 			{
 				m_head.remove_range(first, last, update, m_head.m_tail);
 
-				int i = 0;
 				while(first != last)
 				{
 					auto next = first->m_next[0];
 					delete_node(static_cast<node*> (first));
 					first = next;
 					--m_head.m_length;
-					i++;
 				}
-				i = i * 2;
 			}
 		}
 

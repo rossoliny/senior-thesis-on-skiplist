@@ -4,6 +4,8 @@
 
 #ifndef _TEST_UTILS_H
 #define _TEST_UTILS_H
+#define CATCH_CONFIG_ENABLE_BENCHMARKING
+
 #include <ctime>
 #include <cstdlib>
 static int seed_rand()
@@ -54,25 +56,25 @@ static std::string rand_string()
 #define rand_pairs_L {rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), \
 					 rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair()}
 
-const static std::initializer_list<std::pair<int, std::string>> init_list_1 = rand_pairs;
-const static std::initializer_list<std::pair<int, std::string>> init_list_2 = rand_pairs;
-const static std::initializer_list<std::pair<int, std::string>> init_list_L = rand_pairs;
+const static std::initializer_list<std::pair<int const, std::string>> init_list_1 = rand_pairs;
+const static std::initializer_list<std::pair<int const, std::string>> init_list_2 = rand_pairs;
+const static std::initializer_list<std::pair<int const, std::string>> init_list_L = rand_pairs;
 
-const static std::vector<std::pair<std::string, int>> vec_pairs = {
+const static std::vector<std::pair<std::string const, int>> vec_pairs = {
 	 std::make_pair("skiplist", 1), std::make_pair("unit", 2), std::make_pair("test", 3),  std::make_pair("auca", 4),
 	 std::make_pair("std::map", 5), std::make_pair("ab", 6),   std::make_pair("cd", 7),    std::make_pair("ef", 8),
 	 std::make_pair("gh", 9),       std::make_pair("ij", 10),  std::make_pair("kl", 11),   std::make_pair("mnop", 12),
 	 std::make_pair("qrstuv", 13),  std::make_pair("wxy", 14), std::make_pair("z", 15)
 };
 
-const std::vector<std::pair<int, std::string>> vec_pairs_2 = {
+const std::initializer_list<std::pair<int const, std::string>> initializer_list_pairs = {
 	std::make_pair(1, "skiplist"), std::make_pair(2, "unit"), std::make_pair(3, "test"),  std::make_pair(4, "auca"),
 	std::make_pair(5, "std::map"), std::make_pair(6, "ab"),   std::make_pair(7, "cd"),    std::make_pair(8, "ef"),
 	std::make_pair(9, "gh"),       std::make_pair(10, "ij"),  std::make_pair(11, "kl"),   std::make_pair(12, "mnop"),
 	std::make_pair(13, "qrstuv"),  std::make_pair(14, "wxy"), std::make_pair(15, "z")
 };
 
-const std::vector<std::pair<int, std::string>> vec_pairs_2_L = {
+const std::initializer_list<std::pair<int const, std::string>> initializer_list_pairs_L = {
 	std::make_pair(1, "skiplist"), std::make_pair(2, "unit"),   std::make_pair(3, "test"),  std::make_pair(4, "auca"),
 	std::make_pair(5, "std::map"), std::make_pair(6, "ab"),     std::make_pair(7, "cd"),    std::make_pair(8, "ef"),
 	std::make_pair(9, "gh"),       std::make_pair(10, "ij"),    std::make_pair(11, "kl"),   std::make_pair(12, "mnop"),

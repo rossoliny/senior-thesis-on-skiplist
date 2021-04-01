@@ -134,28 +134,42 @@ TEST_CASE("move assignment operator")
 	}
 }
 
-/*
+
 TEST_CASE("initializer_list assignment operator")
 {
-	SECTION("short <- long")
+	SECTION("equal size")
 	{
-		my_map<int, string> act = init_list_1;
-		std_map<int, string> exp = init_list_1;
+		auto init1 = rand_pairs_of_len(initializer_list_pairs.size());
+		auto init2 = rand_pairs_of_len(init1.size());
 
-		act = init_list_L;
-		exp = init_list_L;
+		my_map<int, string> act(init1.begin(), init1.end());
+		std_map<int, string> exp(init2.begin(), init2.end());
+		CHECK_MAPS_NEQ(act, exp);
+
+		act = initializer_list_pairs;
+		exp = initializer_list_pairs;
 
 		MAPS_REQUIRE_EQUAL(act, exp);
 	}
-	SECTION("long <- short")
+	SECTION("short <-- long")
 	{
-		my_map<int, string> act = init_list_L;
-		std_map<int, string> exp = init_list_L;
+		my_map<int, string> act = initializer_list_pairs;
+		std_map<int, string> exp = initializer_list_pairs;
 
-		act = init_list_1;
-		exp = init_list_1;
+		act = initializer_list_pairs_L;
+		exp = initializer_list_pairs_L;
+
+		MAPS_REQUIRE_EQUAL(act, exp);
+	}
+	SECTION("long <-- short")
+	{
+		my_map<int, string> act = initializer_list_pairs_L;
+		std_map<int, string> exp = initializer_list_pairs_L;
+
+		act = initializer_list_pairs;
+		exp = initializer_list_pairs;
 
 		MAPS_REQUIRE_EQUAL(act, exp);
 	}
 }
-*/
+
