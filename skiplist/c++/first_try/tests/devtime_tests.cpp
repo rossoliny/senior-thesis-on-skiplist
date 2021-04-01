@@ -19,14 +19,8 @@ int main()
 	isa::map<int, std::string> mrange(v.rbegin(), v.rend());
 	isa::map<int, std::string> mcpy(mrange);
 	isa::map<int, std::string> mcpyalloc(mcpy, std::allocator<std::pair<int, string>>());
-	cout << mcpy.size() << endl;
 	isa::map<int, std::string> mmove(std::move(mcpy));
-	cout << mcpy.size() << endl;
-	cout << mmove.size() << endl;
 	isa::map<int, std::string> mmovealloc(std::move(mmove), std::allocator<std::pair<int, string>>());
-	cout << mmove.size() << endl;
-	cout << mmovealloc.size() << endl;
-
 
 	std::map<int, string> sm(v.begin(), v.end());
 	cout << sm.begin()->first << endl;

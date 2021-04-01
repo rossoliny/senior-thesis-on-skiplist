@@ -58,6 +58,8 @@ namespace isa
 			node_comparator_type(const node_comparator_type&) noexcept(std::is_nothrow_copy_constructible<Comparator>::value) = default;
 			node_comparator_type(node_comparator_type&&) noexcept(std::is_nothrow_move_constructible<Comparator>::value) = default;
 
+			node_comparator_type() = default;
+
 			explicit node_comparator_type(const Comparator& cmp)
 				: Comparator(cmp)
 			{

@@ -15,13 +15,11 @@ namespace isa
 			std::vector<skiplist_node_base*> m_next;
 			skiplist_node_base* m_prev;
 
-/*
 			skiplist_node_base()
 				: m_next(1, nullptr)
 				, m_prev(nullptr)
 			{
 			}
-*/
 
 			// must only called on header
 			skiplist_node_base(skiplist_node_base&& rval)
@@ -227,19 +225,19 @@ namespace isa
 			// removes nodes in range [F, L)
 			void m_remove_range(skiplist_node_base* F, skiplist_node_base* L)
 			{
-				skiplist_node_base* f_upd[m_max_height() + 1];
-				skiplist_node_base* l_upd[m_max_height() + 1];
-				skiplist_node_base* first = m_find_node(F, f_upd);
-				skiplist_node_base* last = m_find_node(L, l_upd);
+//				skiplist_node_base* f_upd[m_max_height() + 1];
+//				skiplist_node_base* l_upd[m_max_height() + 1];
+//				skiplist_node_base* first = m_find_node(F, f_upd);
+//				skiplist_node_base* last = m_find_node(L, l_upd);
 
-				last->m_prev = first->m_prev;	//
-
-				size_t lvl = 0;
-				while(lvl < m_height)
-				{
-					f_upd[lvl]->m_next[lvl] = l_upd[lvl]->m_next[lvl];
-					lvl++;
-				}
+//				last->m_prev = first->m_prev;	//
+//
+//				size_t lvl = 0;
+//				while(lvl < m_height)
+//				{
+//					f_upd[lvl]->m_next[lvl] = l_upd[lvl]->m_next[lvl];
+//					lvl++;
+//				}
 //				f_upd[0]->m_next[0] = l_upd[0]->m_next[0];
 //				f_upd[1]->m_next[1] = l_upd[1]->m_next[1];
 //				f_upd[2]->m_next[2] = l_upd[2]->m_next[2];
