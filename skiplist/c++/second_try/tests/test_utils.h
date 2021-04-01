@@ -8,6 +8,8 @@
 
 #include <ctime>
 #include <cstdlib>
+#include <climits>
+
 static int seed_rand()
 {
 	srand(1);
