@@ -26,6 +26,8 @@ TEST_CASE("operator[]", tag)
 		act[k] = v;
 		exp[k] = v;
 
+		REQUIRE(act[k] == (*((act.insert(make_pair(k, v))).first)).second);
+		REQUIRE(exp[k] == (*((exp.insert(make_pair(k, v))).first)).second);
 		MAPS_REQUIRE_EQUAL(act, exp);
 	}
 	SECTION("find arg lvalue")

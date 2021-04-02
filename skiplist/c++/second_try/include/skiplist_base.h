@@ -73,17 +73,17 @@ namespace isa
 			return m_pair_comparator.m_key_comparator(b, a);
 		}
 
-		inline bool equals(Key const& a, Key const& b)
+		inline bool equals(Key const& a, Key const& b) const
 		{
 			return !less(a, b) && !greater(a, b);
 		}
 
-		inline bool equals(node_base const* node, pair_type const& pair)
+		inline bool equals(node_base const* node, pair_type const& pair) const
 		{
 			return equals(_s_node_key(node), pair.first);
 		}
 
-		inline bool equals(node_base const* a, node_base const* b)
+		inline bool equals(node_base const* a, node_base const* b) const
 		{
 			return a == b || equals(_s_node_key(a), _s_node_key(b));
 		}
@@ -312,6 +312,32 @@ namespace isa
 				return first;
 			}
 			return const_cast<node_base*> (begin);
+		}
+
+		node_pointer find_node(Key const& key)
+		{
+			node_base* update[1 + MAX_ADDITIONAL_LEVELS];
+			node_base* pos = m_head.find_node(key, get_key_comparator(), update);
+
+			if(pos != m_head.npos() && equals(_s_node_key(pos), key))
+			{
+				return static_cast<node_pointer> (pos);
+			}
+
+			return static_cast<node_pointer> (m_head.npos());
+		}
+
+		node_const_pointer find_node(Key const& key) const
+		{
+			node_base* update[1 + MAX_ADDITIONAL_LEVELS];
+			node_base* pos = m_head.find_node(key, get_key_comparator(), update);
+
+			if(pos != m_head.npos() && equals(_s_node_key(pos), key))
+			{
+				return static_cast<node_const_pointer> (pos);
+			}
+
+			return static_cast<node_const_pointer> (m_head.npos());
 		}
 
 		template<typename K>

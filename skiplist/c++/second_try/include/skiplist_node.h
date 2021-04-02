@@ -158,7 +158,12 @@ namespace isa
 				m_length = m_height = 0;
 			}
 
-			node_base* baseptr()
+			inline node_base* baseptr()
+			{
+				return this;
+			}
+
+			inline node_base const* baseptr() const
 			{
 				return this;
 			}
@@ -175,6 +180,11 @@ namespace isa
 				static_cast<node*> (m_next[0])->set_prev(this);
 
 				rval.init();
+			}
+
+			inline node_base* npos()
+			{
+				return this;
 			}
 
 			inline node_base const* npos() const

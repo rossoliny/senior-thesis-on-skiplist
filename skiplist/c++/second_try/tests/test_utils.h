@@ -101,7 +101,7 @@ static std::set<std::pair<int const, std::string>> rand_pairs_of_len(int len)
 #define MAPS_REQUIRE_EQUAL(my_map, std_map) (verify((my_map), (std_map)))
 
 template<typename Key, typename Tp, typename Cmp, typename Alloc>
-void verify(isa::map<Key, Tp, Cmp, Alloc>& my_map, std::map<Key, Tp, Cmp, Alloc>& std_map)
+void verify(isa::map<Key, Tp, Cmp, Alloc> const& my_map, std::map<Key, Tp, Cmp, Alloc> const& std_map)
 {
 	REQUIRE(my_map.size() == std_map.size());
 	REQUIRE(my_map.get_allocator() == std_map.get_allocator());

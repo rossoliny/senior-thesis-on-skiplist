@@ -31,6 +31,7 @@ namespace isa
 
 		using node = typename base::node;
 		using node_pointer = typename base::node_pointer;
+		using node_const_pointer = typename base::node_const_pointer;
 
 		using pair_type = typename base::pair_type;
 		using mutable_key_pair = typename base::mutable_key_pair;
@@ -130,38 +131,6 @@ namespace isa
 		const_reverse_iterator crend() const noexcept
 		{
 			return const_reverse_iterator(begin());
-		}
-
-
-		void print_map()
-		{
-			auto it = begin();
-			int i = 0;
-			while(it != end())
-			{
-				std::cout << i++ << "\t(" << it->first << ", " << it->second << ")\n";
-				++it;
-			}
-			--it;
-			*it;
-			std::cout << std::endl;
-		}
-
-		void print_map_r()
-		{
-			auto it = end(); --it;
-
-			int i = 0;
-			while(it != end())
-			{
-				std::cout << i++ << "\t(" << it->first << ", " << it->second << ")\n";
-				--it;
-			}
-
-
-			--it;
-			*it;
-			std::cout << std::endl;
 		}
 
 		// constructors
@@ -314,6 +283,28 @@ namespace isa
 			return base::find_or_insert(std::move(key));
 		}
 
+		mapped_type& at(key_type const& key)
+		{
+			node_pointer node = base::find_node(key);
+			if(node == base::m_head.baseptr())
+			{
+				throw std::out_of_range("map::at: key not found");
+			}
+
+			return node->dataptr()->second;
+		}
+
+		mapped_type const& at(key_type const& key) const
+		{
+			node_const_pointer node = base::find_node(key);
+			if(node == base::m_head.baseptr())
+			{
+				throw std::out_of_range("map::at: key not found");
+			}
+
+			return node->dataptr()->second;
+		}
+
 		// insert functions
 		insert_return_type insert(value_type const& element)
 		{
@@ -395,6 +386,17 @@ namespace isa
 		iterator emplace_hint(const_iterator hint, Args&&... args)
 		{
 			// TODO: implement
+		}
+
+		// search
+		iterator find(key_type const& key)
+		{
+			return iterator(base::find_node(key));
+		}
+
+		const_iterator find(key_type const& key) const
+		{
+			return const_iterator(base::find_node(key));
 		}
 
 		// alloc and compar

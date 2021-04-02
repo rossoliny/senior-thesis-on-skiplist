@@ -13,6 +13,8 @@ set(TEST_WITH_CATCH_SRC
         tests/erase.cpp
         tests/emplace.cpp
         tests/operator[].cpp
+        tests/at.cpp
+        tests/find.cpp
 )
 
 add_compile_options(-std=c++11 -g)
