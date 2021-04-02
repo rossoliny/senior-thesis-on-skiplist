@@ -306,12 +306,12 @@ namespace isa
 		// subscript operator
 		mapped_type& operator[](key_type const& key)
 		{
-
+			return base::find_or_insert(key);
 		}
 
 		mapped_type& operator[](key_type&& key)
 		{
-
+			return base::find_or_insert(std::move(key));
 		}
 
 		// insert functions

@@ -158,6 +158,7 @@ namespace isa
 			node_pointer new_node = create_node(std::forward<Args>(args)...);
 			size_t node_height = random_level();
 			m_head.append_node(new_node, node_height);
+			++m_head.m_length;
 
 			return new_node;
 		}
@@ -168,6 +169,7 @@ namespace isa
 			node_pointer new_node = create_node(std::forward<Args>(args)...);
 			size_t node_height = random_level();
 			m_head.insert_node(new_node, node_height, update);
+			++m_head.m_length;
 
 			return new_node;
 		}
@@ -190,7 +192,6 @@ namespace isa
 			if(less(last, data.first))
 			{
 				do_append_node(std::move(data));
-				++m_head.m_length;
 				return true;
 			}
 
@@ -208,7 +209,6 @@ namespace isa
 			if(pos == m_head.npos() || !equals(pos, element))
 			{
 				node_pointer new_node = do_insert_node(update, std::move(element));
-				++m_head.m_length;
 				return insert_return_t(new_node, true);
 			}
 
@@ -224,7 +224,6 @@ namespace isa
 			if(less(last, data.first))
 			{
 				node_pointer new_node = do_append_node(std::move(data));
-				++m_head.m_length;
 
 				return insert_return_t(new_node, true);
 			}
