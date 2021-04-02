@@ -286,7 +286,7 @@ namespace isa
 		mapped_type& at(key_type const& key)
 		{
 			node_pointer node = base::find_node(key);
-			if(node == base::m_head.baseptr())
+			if(node->baseptr() == base::m_head.npos())
 			{
 				throw std::out_of_range("map::at: key not found");
 			}
@@ -297,7 +297,7 @@ namespace isa
 		mapped_type const& at(key_type const& key) const
 		{
 			node_const_pointer node = base::find_node(key);
-			if(node == base::m_head.baseptr())
+			if(node->baseptr() == base::m_head.npos())
 			{
 				throw std::out_of_range("map::at: key not found");
 			}
@@ -397,6 +397,11 @@ namespace isa
 		const_iterator find(key_type const& key) const
 		{
 			return const_iterator(base::find_node(key));
+		}
+
+		size_type count(key_type const& key) const
+		{
+			return base::count_key(key);
 		}
 
 		// alloc and compar

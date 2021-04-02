@@ -241,7 +241,6 @@ namespace isa
 			static_cast<node_pointer> (node)->mutable_dataptr()->operator=(std::forward<Args>(args)...);
 		}
 
-
 		size_t remove_key(Key const& key)
 		{
 			char node_buff[sizeof(node)];
@@ -338,6 +337,21 @@ namespace isa
 			}
 
 			return static_cast<node_const_pointer> (m_head.npos());
+		}
+
+		size_t count_key(Key const& key) const
+		{
+			node_base* update[1 + MAX_ADDITIONAL_LEVELS];
+			node_base* pos = m_head.find_node(key, get_key_comparator(), update);
+			size_t count = 0;
+
+			while(pos != m_head.npos() && equals(_s_node_key(pos), key))
+			{
+				pos = pos->m_next[0];
+				++count;
+			}
+
+			return count;
 		}
 
 		template<typename K>

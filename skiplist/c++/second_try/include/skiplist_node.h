@@ -105,6 +105,15 @@ namespace isa
 				return std::addressof(m_data);
 			}
 
+			inline skiplist_node_base* baseptr()
+			{
+				return this;
+			}
+
+			inline skiplist_node_base const* baseptr() const
+			{
+				return this;
+			}
 		};
 
 
@@ -156,16 +165,6 @@ namespace isa
 					m_next[i] = m_tail[i] = this;
 				}
 				m_length = m_height = 0;
-			}
-
-			inline node_base* baseptr()
-			{
-				return this;
-			}
-
-			inline node_base const* baseptr() const
-			{
-				return this;
 			}
 
 			void steal_nodes(skiplist_impl&& rval)
