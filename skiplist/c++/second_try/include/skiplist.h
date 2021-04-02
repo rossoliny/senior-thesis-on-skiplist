@@ -424,6 +424,28 @@ namespace isa
 			return const_iterator(base::find_node(key));
 		}
 
+		iterator upper_bound(key_type const& key)
+		{
+			node_pointer node = base::find_node(key);
+			if(node->baseptr() != base::m_head.npos() && base::equals(*node->keyptr(), key))
+			{
+				return iterator(node->m_next[0]);
+			}
+
+			return iterator(node);
+		}
+
+		const_iterator upper_bound(key_type const& key) const
+		{
+			node_const_pointer node = base::find_node(key);
+			if(node->baseptr() != base::m_head.npos() && base::equals(*node->keyptr(), key))
+			{
+				return const_iterator(node->m_next[0]);
+			}
+
+			return const_iterator(node);
+		}
+
 		// alloc and compar
 		key_compare key_comp() const noexcept
 		{
