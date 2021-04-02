@@ -119,7 +119,12 @@ namespace isa
 
 		public:
 			skiplist_node_base* m_tail[MIN_NEXT_SIZE];
+
+#if defined(__GNUC__) && !defined(__clang__) && !defined(_MSC_VER)
+			volatile size_t m_length;
+#else
 			size_t m_length;
+#endif
 			size_t m_height; // count additional levels
 
 			skiplist_impl()
