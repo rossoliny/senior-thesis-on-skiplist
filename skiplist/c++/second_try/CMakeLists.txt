@@ -18,6 +18,7 @@ set(TEST_WITH_CATCH_SRC
         tests/count.cpp
         tests/lower_bound.cpp
         tests/upper_bound.cpp
+        tests/equal_range.cpp
 )
 
 add_compile_options(-std=c++11 -g)

@@ -37,5 +37,14 @@ TEST_CASE("uppper bound search", tag)
 		REQUIRE(*it1 == *it2);
 		MAPS_REQUIRE_EQUAL(act, exp);
 	}
+	SECTION("key exists and is max")
+	{
+		auto it1 = act.upper_bound((--act.end())->first);
+		auto it2 = exp.upper_bound((--exp.end())->first);
+
+		REQUIRE(it1 == act.end());
+		REQUIRE(it2 == exp.end());
+		MAPS_REQUIRE_EQUAL(act, exp);
+	}
 
 }

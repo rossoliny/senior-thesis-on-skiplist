@@ -446,6 +446,17 @@ namespace isa
 			return const_iterator(node);
 		}
 
+		std::pair<iterator, iterator> equal_range(key_type const& key)
+		{
+			return std::pair<iterator, iterator> (lower_bound(key), upper_bound(key));
+		}
+
+
+		std::pair<const_iterator, const_iterator> equal_range(key_type const& key) const
+		{
+			return std::pair<const_iterator, const_iterator> (lower_bound(key), upper_bound(key));
+		}
+
 		// alloc and compar
 		key_compare key_comp() const noexcept
 		{
