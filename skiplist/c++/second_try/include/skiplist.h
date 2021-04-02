@@ -54,14 +54,13 @@ namespace isa
 		using const_iterator = skiplist_const_iterator<Key, Tp>;
 		using reverse_iterator = std::reverse_iterator<iterator>;
 		using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+	protected:
+		using insert_return_type = std::pair<iterator, bool>;
+
+	public:
 
 		using difference_type = typename std::iterator_traits<iterator>::difference_type;
 		using size_type = std::size_t;
-
-		allocator_type get_allocator() const
-		{
-			return base::get_node_allocator();
-		}
 
 		// iterator getters
 		iterator begin() noexcept
@@ -304,20 +303,31 @@ namespace isa
 			return *this;
 		}
 
-		// insert functions
-		std::pair<iterator, bool> insert(value_type const& element)
+		// subscript operator
+		mapped_type& operator[](key_type const& key)
 		{
-			auto res = base::append_or_insert(element);
-			return std::pair<iterator, bool> (iterator(res.first), res.second);
+
+		}
+
+		mapped_type& operator[](key_type&& key)
+		{
+
+		}
+
+		// insert functions
+		insert_return_type insert(value_type const& element)
+		{
+			typename base::insert_return_t res = base::append_or_insert(element);
+			return insert_return_type (iterator(res.first), res.second);
 		}
 
 		template <class Pair,
 				typename = utils::require_constructible<value_type, Pair&&>
 			>
-		std::pair<iterator, bool> insert(Pair&& val)
+		insert_return_type insert(Pair&& val)
 		{
-			auto res = base::append_or_insert(std::forward<Pair>(val));
-			return std::pair<iterator, bool> (iterator(res.first), res.second);
+			typename base::insert_return_t res = base::append_or_insert(std::forward<Pair>(val));
+			return insert_return_type (iterator(res.first), res.second);
 		}
 
 		// insert with hint
@@ -374,10 +384,28 @@ namespace isa
 			}
 		}
 
+		template<typename... Args>
+		insert_return_type emplace(Args&&... args)
+		{
+			typename base::insert_return_t res = base::append_or_insert(std::forward<Args>(args)...);
+			return insert_return_type(iterator(res.first), res.second);
+		}
 
+		template<typename... Args>
+		iterator emplace_hint(const_iterator hint, Args&&... args)
+		{
+			// TODO: implement
+		}
+
+		// alloc and compar
 		key_compare key_comp() const noexcept
 		{
 			return base::get_key_comparator();
+		}
+
+		allocator_type get_allocator() const noexcept
+		{
+			return base::get_node_allocator();
 		}
 
 		// capacity
@@ -396,6 +424,7 @@ namespace isa
 			return base::is_empty();
 		}
 
+		// dtor
 		~map() noexcept = default;
 
 		void clear() noexcept

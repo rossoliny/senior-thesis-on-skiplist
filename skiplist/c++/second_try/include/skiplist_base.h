@@ -88,47 +88,47 @@ namespace isa
 			return a == b || equals(_s_node_key(a), _s_node_key(b));
 		}
 
-		constexpr size_t length() const
+		inline constexpr size_t length() const
 		{
 			return m_head.m_length;
 		}
 
-		pair_comparator_type& get_pair_comparator()
+		inline pair_comparator_type& get_pair_comparator()
 		{
 			return m_pair_comparator;
 		}
 
-		pair_comparator_type const& get_pair_comparator() const
+		inline pair_comparator_type const& get_pair_comparator() const
 		{
 			return m_pair_comparator;
 		}
 
-		Comparator& get_key_comparator()
+		inline Comparator& get_key_comparator()
 		{
 			return m_pair_comparator.m_key_comparator;
 		}
 
-		Comparator const& get_key_comparator() const
+		inline Comparator const& get_key_comparator() const
 		{
 			return m_pair_comparator.m_key_comparator;
 		}
 
-		node_alloc_type& get_node_allocator()
+		inline node_alloc_type& get_node_allocator()
 		{
 			return m_node_allocator;
 		}
 
-		node_alloc_type const& get_node_allocator() const
+		inline node_alloc_type const& get_node_allocator() const
 		{
 			return m_node_allocator;
 		}
 
-		node_pointer get_node()
+		inline node_pointer get_node()
 		{
 			return node_alloc_traits::allocate(m_node_allocator, 1);
 		}
 
-		void put_node(node_pointer ptr)
+		inline void put_node(node_pointer ptr)
 		{
 			node_alloc_traits::deallocate(m_node_allocator, ptr, 1);
 		}
@@ -141,7 +141,7 @@ namespace isa
 			return ptr;
 		}
 
-		void delete_node(node_base* ptr)
+		inline void delete_node(node_base* ptr)
 		{
 			delete_node(static_cast<node_pointer> (ptr));
 		}
@@ -151,6 +151,27 @@ namespace isa
 			node_alloc_traits::destroy(m_node_allocator, ptr->dataptr());
 			put_node(ptr);
 		}
+
+		template<typename... Args>
+		node_pointer do_append_node(Args&&... args)
+		{
+			node_pointer new_node = create_node(std::forward<Args>(args)...);
+			size_t node_height = random_level();
+			m_head.append_node(new_node, node_height);
+
+			return new_node;
+		}
+
+		template<typename... Args>
+		node_pointer do_insert_node(node_base* update[], Args&&... args)
+		{
+			node_pointer new_node = create_node(std::forward<Args>(args)...);
+			size_t node_height = random_level();
+			m_head.insert_node(new_node, node_height, update);
+
+			return new_node;
+		}
+
 
 		template<typename... Args>
 		inline void append_first(Args&& ... args)
@@ -168,10 +189,7 @@ namespace isa
 
 			if(less(last, data.first))
 			{
-				node_pointer new_node = create_node(std::move(data));
-				size_t node_height = random_level();
-				m_head.append_node(new_node, node_height);
-
+				do_append_node(std::move(data));
 				++m_head.m_length;
 				return true;
 			}
@@ -182,19 +200,14 @@ namespace isa
 		template<typename... Args>
 		insert_return_t insert(Args&& ... args)
 		{
-			// find node pos
 			node_base* update[1 + MAX_ADDITIONAL_LEVELS];
-//			memset(update, 0, sizeof(update));
 
 			pair_type element(std::forward<Args>(args)...);
 			node_base* pos = m_head.find_node(element.first, get_key_comparator(), update);
 
-			// insert if not found
 			if(pos == m_head.npos() || !equals(pos, element))
 			{
-				node_pointer new_node = create_node(std::move(element));
-				m_head.insert_node(new_node, random_level(), update);
-
+				node_pointer new_node = do_insert_node(update, std::move(element));
 				++m_head.m_length;
 				return insert_return_t(new_node, true);
 			}
@@ -210,10 +223,7 @@ namespace isa
 
 			if(less(last, data.first))
 			{
-				node_pointer new_node = create_node(std::move(data));
-				size_t node_height = random_level();
-				m_head.append_node(new_node, node_height);
-
+				node_pointer new_node = do_append_node(std::move(data));
 				++m_head.m_length;
 
 				return insert_return_t(new_node, true);
@@ -227,22 +237,11 @@ namespace isa
 		}
 
 		template<typename... Args>
-		void assign_pair(node_base* node, Args&&... args) const
+		inline void assign_pair(node_base* node, Args&&... args) const
 		{
 			static_cast<node_pointer> (node)->mutable_dataptr()->operator=(std::forward<Args>(args)...);
 		}
 
-		node_pointer find_node(Key const& key)
-		{
-			node_base* update[1 + MAX_ADDITIONAL_LEVELS];
-			node_base* pos = m_head.find_node(key, get_key_comparator(), update);
-
-			if(pos == m_head.npos() || !equals(_s_node_key(pos), key))
-			{
-				return m_head.npos();
-			}
-			return pos;
-		}
 
 		size_t remove_key(Key const& key)
 		{
@@ -316,7 +315,22 @@ namespace isa
 			return const_cast<node_base*> (begin);
 		}
 
-		bool is_empty() const
+		template<typename K>
+		Tp& find_or_insert(K&& key)
+		{
+			node_base* update[1 + MAX_ADDITIONAL_LEVELS];
+			node_base* pos = m_head.find_node(key, get_key_comparator(), update);
+
+			if(pos == m_head.npos() || !equals(_s_node_key(pos), key))
+			{
+				pair_type new_element(std::forward<K> (key), Tp());
+				return do_insert_node(update, std::move(new_element))->dataptr()->second;
+			}
+
+			return static_cast<node_pointer> (pos)->dataptr()->second;
+		}
+
+		inline bool is_empty() const
 		{
 			return m_head.m_next[0] == m_head.npos();
 		}
