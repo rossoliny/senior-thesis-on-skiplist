@@ -13,13 +13,18 @@ TEST_CASE("operator[]", tag)
 		my_map<string, string> act;
 		std_map<string, string> exp;
 
-		string key1 = "skiplist";
-		string key2 = key1;
+		string const k = "skiplist";
+		string const v = rand_string();
+		string key1 = k;
+		string key2 = k;
+
 		auto r1 = act[std::move(key1)];
 		auto r2 = exp[std::move(key2)];
-
 		REQUIRE(key1 == key2);
 		REQUIRE(r1 == r2);
+
+		act[k] = v;
+		exp[k] = v;
 
 		MAPS_REQUIRE_EQUAL(act, exp);
 	}
@@ -33,10 +38,14 @@ TEST_CASE("operator[]", tag)
 		auto r1 = act[key];
 		auto r2 = exp[key];
 
+		REQUIRE(r1 == r2);
+
+		act[key] = "value";
+		exp[key] = "value";
+
 		REQUIRE(key == "skiplist");
 		REQUIRE(r1 == r2);
 
 		MAPS_REQUIRE_EQUAL(act, exp);
 	}
-
 }
