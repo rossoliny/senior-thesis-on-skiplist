@@ -16,6 +16,7 @@ set(TEST_WITH_CATCH_SRC
         tests/at.cpp
         tests/find.cpp
         tests/count.cpp
+        tests/lower_bound.cpp
 )
 
 add_compile_options(-std=c++11 -g)

@@ -286,7 +286,7 @@ namespace isa
 		mapped_type& at(key_type const& key)
 		{
 			node_pointer node = base::find_node(key);
-			if(node->baseptr() == base::m_head.npos())
+			if(node->baseptr() == base::m_head.npos() || !base::equals(*node->keyptr(), key))
 			{
 				throw std::out_of_range("map::at: key not found");
 			}
@@ -297,7 +297,7 @@ namespace isa
 		mapped_type const& at(key_type const& key) const
 		{
 			node_const_pointer node = base::find_node(key);
-			if(node->baseptr() == base::m_head.npos())
+			if(node->baseptr() == base::m_head.npos() || !base::equals(*node->keyptr(), key))
 			{
 				throw std::out_of_range("map::at: key not found");
 			}
@@ -391,17 +391,37 @@ namespace isa
 		// search
 		iterator find(key_type const& key)
 		{
-			return iterator(base::find_node(key));
+			node_pointer pos = base::find_node(key);
+			if(base::equals(*pos->keyptr(), key))
+			{
+				return iterator(pos);
+			}
+			return end();
 		}
 
 		const_iterator find(key_type const& key) const
 		{
-			return const_iterator(base::find_node(key));
+			node_const_pointer pos = base::find_node(key);
+			if(base::equals(*pos->keyptr(), key))
+			{
+				return const_iterator(pos);
+			}
+			return cend();
 		}
 
 		size_type count(key_type const& key) const
 		{
 			return base::count_key(key);
+		}
+
+		iterator lower_bound(key_type const& key)
+		{
+			return iterator(base::find_node(key));
+		}
+
+		const_iterator lower_bound(key_type const& key) const
+		{
+			return const_iterator(base::find_node(key));
 		}
 
 		// alloc and compar

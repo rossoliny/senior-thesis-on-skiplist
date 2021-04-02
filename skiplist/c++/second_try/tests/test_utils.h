@@ -63,7 +63,7 @@ const static std::initializer_list<std::pair<int const, std::string>> init_list_
 const static std::initializer_list<std::pair<int const, std::string>> init_list_L = rand_pairs;
 
 const static std::vector<std::pair<std::string const, int>> vec_pairs = {
-	 std::make_pair("smap", 1), std::make_pair("unit", 2), std::make_pair("test", 3),  std::make_pair("auca", 4),
+	 std::make_pair("smap", 1),     std::make_pair("unit", 2), std::make_pair("test", 3),  std::make_pair("auca", 4),
 	 std::make_pair("std::map", 5), std::make_pair("ab", 6),   std::make_pair("cd", 7),    std::make_pair("ef", 8),
 	 std::make_pair("gh", 9),       std::make_pair("ij", 10),  std::make_pair("kl", 11),   std::make_pair("mnop", 12),
 	 std::make_pair("qrstuv", 13),  std::make_pair("wxy", 14), std::make_pair("z", 15)

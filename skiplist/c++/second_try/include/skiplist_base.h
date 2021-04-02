@@ -318,12 +318,7 @@ namespace isa
 			node_base* update[1 + MAX_ADDITIONAL_LEVELS];
 			node_base* pos = m_head.find_node(key, get_key_comparator(), update);
 
-			if(pos != m_head.npos() && equals(_s_node_key(pos), key))
-			{
-				return static_cast<node_pointer> (pos);
-			}
-
-			return static_cast<node_pointer> (m_head.npos());
+			return static_cast<node_pointer> (pos);
 		}
 
 		node_const_pointer find_node(Key const& key) const
@@ -331,12 +326,7 @@ namespace isa
 			node_base* update[1 + MAX_ADDITIONAL_LEVELS];
 			node_base* pos = m_head.find_node(key, get_key_comparator(), update);
 
-			if(pos != m_head.npos() && equals(_s_node_key(pos), key))
-			{
-				return static_cast<node_const_pointer> (pos);
-			}
-
-			return static_cast<node_const_pointer> (m_head.npos());
+			return static_cast<node_const_pointer> (pos);
 		}
 
 		size_t count_key(Key const& key) const
