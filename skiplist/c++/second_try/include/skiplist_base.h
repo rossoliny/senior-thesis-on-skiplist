@@ -158,7 +158,7 @@ namespace isa
 			node_pointer new_node = create_node(std::forward<Args>(args)...);
 			size_t node_height = random_level();
 			m_head.append_node(new_node, node_height);
-			++m_head.m_length;
+			m_head.m_length += 1;
 
 			return new_node;
 		}
@@ -169,7 +169,7 @@ namespace isa
 			node_pointer new_node = create_node(std::forward<Args>(args)...);
 			size_t node_height = random_level();
 			m_head.insert_node(new_node, node_height, update);
-			++m_head.m_length;
+			m_head.m_length += 1;
 
 			return new_node;
 		}
