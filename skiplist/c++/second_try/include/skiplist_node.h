@@ -122,10 +122,11 @@ namespace isa
 
 #if defined(__GNUC__) && !defined(__clang__) && !defined(_MSC_VER)
 			volatile size_t m_length;
+			volatile size_t m_height;
 #else
 			size_t m_length;
-#endif
 			size_t m_height; // count additional levels
+#endif
 
 			skiplist_impl()
 				: m_length(0)
