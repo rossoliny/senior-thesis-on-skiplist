@@ -141,7 +141,7 @@ namespace isa
 				: m_length(0)
 				, m_height(0)
 			{
-				init();
+				init_full();
 			}
 
 			explicit skiplist_impl(skiplist_impl&& rval)
@@ -150,7 +150,7 @@ namespace isa
 			{
 				if(rval.m_next[0] == std::addressof(rval)) // empty
 				{
-					init();
+					init_full();
 				}
 				else
 				{
@@ -158,7 +158,12 @@ namespace isa
 				}
 			}
 
-			void init() noexcept
+			inline void init_at(size_t i) noexcept
+			{
+				m_next[i] = m_tail[i] = this;
+			}
+
+			void init_full() noexcept
 			{
 				for(size_t i = 0; i <= MAX_ADDITIONAL_LEVELS; ++i)
 				{
@@ -178,7 +183,7 @@ namespace isa
 				}
 				static_cast<node*> (m_next[0])->set_prev(this);
 
-				rval.init();
+				rval.init_full();
 			}
 
 			inline node_base* npos()
@@ -224,27 +229,10 @@ namespace isa
 				return curr->m_next[0];
 			}
 
-			// not needed if head->m_prev is initialized to point to head
-			void append_first(node* new_node, size_t height) // height must be max 10
-			{
-				// lvl 0
-				new_node->set_prev(this);
-				new_node->m_next[0] = this;
-				m_tail[0] = m_next[0] = new_node;
-
-				size_t lvl = 1;
-				while(lvl <= height)
-				{
-					this->set_next(lvl, new_node);
-					new_node->set_next(lvl, this);
-					m_tail[lvl] = new_node;
-					lvl++;
-				}
-				m_height = height;
-			}
-
 			void append_node(node* new_node, size_t height)
 			{
+				insert_node(new_node, height, m_tail);
+				/*
 				m_tail[0]->m_next[0] = new_node;
 				new_node->set_prev(m_tail[0]);
 				new_node->m_next[0] = this;
@@ -262,9 +250,10 @@ namespace isa
 				{
 					m_height = height;
 				}
+				 */
 			}
 
-			void insert_node(node* new_node, size_t node_height, node_base** update)
+			void insert_node(node* new_node, size_t const node_height, node_base** update)
 			{
 				//node_base* head = const_cast<node_base*> (this);
 				size_t list_height = m_height;
@@ -278,51 +267,40 @@ namespace isa
 				}
 
 				new_node->m_next[0] = update[0]->m_next[0];
-				static_cast<node*> (new_node->m_next[0])->set_prev(new_node);
 				new_node->set_prev(update[0]);
 				new_node->get_prev()->m_next[0] = new_node; // update[0]->m_next[0] = new_node;
+				static_cast<node*> (new_node->m_next[0])->set_prev(new_node);
 
 				lvl = 1;
 				while(lvl <= node_height)
 				{
 					new_node->set_next(lvl, update[lvl]->get_next(lvl));
 					update[lvl]->set_next(lvl, new_node);
+					if(new_node->get_next(lvl) == this)
+					{
+						this->m_tail[lvl] = new_node;
+					}
+
 					lvl++;
-				}
-			}
-
-			void remove_last(node_base** update)
-			{
-				node* last = static_cast<node*> (m_tail[0]);
-
-				last->get_prev()->m_next[0] = this;
-				this->m_tail[0] = last->get_prev();
-
-				size_t lvl = 1;
-				while(lvl <= m_height && update[lvl]->get_next(m_height) == last)
-				{
-					update[lvl]->set_next(lvl, this);
-					m_tail[lvl] = update[lvl];
-					lvl++;
-				}
-
-				while(m_height > 0 && this->get_next(m_height) == npos())
-				{
-					m_height--;
 				}
 			}
 
 			void remove_node(node_base* pos, node_base** update)
 			{
+
 				node* nod = static_cast<node*> (pos);
 
-				nod->get_prev()->m_next[0] = nod->m_next[0];
-				static_cast<node*> (nod->m_next[0])->set_prev(nod->get_prev());
+				update[0]->m_next[0] = nod->m_next[0];
+				static_cast<node*> (update[0]->m_next[0])->set_prev(update[0]);
 
 				size_t lvl = 1;
 				while(lvl <= m_height && update[lvl]->get_next(lvl) == nod)
 				{
 					update[lvl]->set_next(lvl, nod->get_next(lvl));
+					if(update[lvl]->get_next(lvl) == this)
+					{
+						m_tail[lvl] = update[lvl];
+					}
 					lvl++;
 				}
 
@@ -349,9 +327,60 @@ namespace isa
 				}
 			}
 
-			void swap(skiplist_impl<Key, Tp>& b)
+			void swap(skiplist_impl& _other)
 			{
-				std::swap(*this, b);
+				skiplist_impl* other = std::addressof(_other);
+
+				for(int i = 0; i <= MAX_ADDITIONAL_LEVELS; ++i)
+				{
+					if(this->m_next[i] != npos())
+					{
+						if(other->m_next[i] != other->npos())
+						{
+							// both not empty
+							node_base* tmp = this->m_tail[i];
+							this->m_tail[i] = other->m_tail[i];
+							other->m_tail[i] = tmp;
+
+							this->m_tail[i]->m_next[i] = this;
+							other->m_tail[i]->m_next[i] = other;
+
+							tmp = this->m_next[i];
+							this->m_next[i] = other->m_next[i];
+							other->m_next[i] = tmp;
+						}
+						else
+						{
+							// this is not empty, other is empty
+							other->m_tail[i] = this->m_tail[i];
+							other->m_next[i] = this->m_next[i];
+
+							this->init_at(i); // make this be empty
+						}
+					}
+					else
+					{
+						if(other->m_next[i] != other->npos())
+						{
+							// this is empty, other is not empty
+							this->m_tail[i] = other->m_tail[i];
+							this->m_next[i] = other->m_next[i];
+
+							other->init_at(i); // make other be empty
+						}
+						else
+						{
+							// both empty -> do nothing
+							continue;
+						}
+
+					}
+				}
+				((node*) other->m_next[0])->set_prev(other);
+				((node*) this->m_next[0])->set_prev(this);
+
+				std::swap(this->m_length, other->m_length);
+				std::swap(this->m_height, other->m_height);
 			}
 
 		};

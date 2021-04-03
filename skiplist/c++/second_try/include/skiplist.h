@@ -272,6 +272,21 @@ namespace isa
 			return *this;
 		}
 
+		void swap(map& other)
+		{
+			if(this != std::addressof(other))
+			{
+				// swap headers
+				base::swap_headers(other);
+				// swap size and height
+
+				// swap allocs
+				utils::swap_alloc_on_container_swap(base::m_node_allocator, other.m_node_allocator);
+				// swap compar
+				std::swap(this->m_pair_comparator, other.m_pair_comparator);
+			}
+		}
+
 		// subscript operator
 		mapped_type& operator[](key_type const& key)
 		{
@@ -355,7 +370,7 @@ namespace isa
 
 		size_type erase(key_type const& key)
 		{
-			return base::remove_key(key);
+			return base::remove_node(key);
 		}
 
 		iterator erase(const_iterator first, const_iterator last)
@@ -367,7 +382,7 @@ namespace isa
 			}
 			if(last == end())
 			{
-				return iterator(base::remove_tail(first.nodeptr));
+				return iterator(base::truncate_tail(first.nodeptr));
 			}
 			else
 			{
@@ -451,7 +466,6 @@ namespace isa
 			return std::pair<iterator, iterator> (lower_bound(key), upper_bound(key));
 		}
 
-
 		std::pair<const_iterator, const_iterator> equal_range(key_type const& key) const
 		{
 			return std::pair<const_iterator, const_iterator> (lower_bound(key), upper_bound(key));
@@ -508,12 +522,6 @@ namespace isa
 		template<typename Input_iterator>
 		void _p_unsorted_range_construct(Input_iterator first, Input_iterator last)
 		{
-			if(first != last)
-			{
-				base::append_first(*first);
-				++first;
-			}
-
 			_p_unsorted_range_insert(first, last);
 		}
 
@@ -524,12 +532,6 @@ namespace isa
 			// and also perfectly distribute nodes across levels
 			// but it can lead to performance degradation
 			// in further insert/delete operations
-			if(first != last)
-			{
-				base::append_first(*first);
-				++first;
-			}
-
 			for(; first != last; ++first)
 			{
 				base::append(*first);
@@ -570,7 +572,7 @@ namespace isa
 			iterator this_first = begin();
 			std::advance(this_first, new_len);
 
-			base::remove_tail(this_first.nodeptr);
+			base::truncate_tail(this_first.nodeptr);
 
 			_p_sorted_range_assign_equal(first, last);
 		}
@@ -617,7 +619,12 @@ namespace isa
 
 	};
 
+}
 
+template<typename Key, typename Tp, typename Comp, typename Alloc>
+inline void swap(isa::map<Key, Tp, Comp, Alloc>& a, isa::map<Key, Tp, Comp, Alloc>& b) NOEXCEPT_IF(noexcept(a.swap(b)))
+{
+	a.swap(b);
 }
 
 #endif // _SKIPLIST_H

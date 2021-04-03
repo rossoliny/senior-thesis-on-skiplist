@@ -9,12 +9,6 @@
 
 #define tag "[operator=] [assign operator] [operator] [operators]"
 
-
-void print_map(my_map<int, string> const& m)
-{
-
-}
-
 TEST_CASE("copy assignment operator")
 {
 	SECTION("equal size")

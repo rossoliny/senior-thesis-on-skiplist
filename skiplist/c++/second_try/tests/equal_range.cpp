@@ -61,7 +61,7 @@ TEST_CASE("equal range search", tag)
 
 		REQUIRE(p1.second == act.end());
 		REQUIRE(p2.second == exp.end());
-		
+
 		MAPS_REQUIRE_EQUAL(act, exp);
 	}
 

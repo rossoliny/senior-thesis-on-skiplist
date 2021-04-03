@@ -162,7 +162,7 @@ TEST_CASE("copy ctor", tag)
 		my_map<string, int> act(act_inp);
 		std_map<string, int> exp(exp_inp);
 
-		MAPS_REQUIRE_EQUAL(act_inp, act);
+		MAPS_REQUIRE_EQUAL(act, act_inp);
 		MAPS_REQUIRE_EQUAL(act, exp);
 	}
 	SECTION("with given allocator")

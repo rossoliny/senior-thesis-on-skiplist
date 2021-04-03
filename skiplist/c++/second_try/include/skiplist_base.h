@@ -8,6 +8,7 @@
 
 #include "skiplist_node.h"
 #include <random>
+#include <iostream>
 
 namespace isa
 {
@@ -123,20 +124,10 @@ namespace isa
 			return m_node_allocator;
 		}
 
-		inline node_pointer get_node()
-		{
-			return node_alloc_traits::allocate(m_node_allocator, 1);
-		}
-
-		inline void put_node(node_pointer ptr)
-		{
-			node_alloc_traits::deallocate(m_node_allocator, ptr, 1);
-		}
-
 		template<typename... Args>
 		node_pointer create_node(Args&& ... args)
 		{
-			node_pointer ptr = get_node();
+			node_pointer ptr = node_alloc_traits::allocate(m_node_allocator, 1);
 			node_alloc_traits::construct(m_node_allocator, ptr->dataptr(), std::forward<Args>(args)...);
 			return ptr;
 		}
@@ -149,7 +140,7 @@ namespace isa
 		void delete_node(node_pointer ptr)
 		{
 			node_alloc_traits::destroy(m_node_allocator, ptr->dataptr());
-			put_node(ptr);
+			node_alloc_traits::deallocate(m_node_allocator, ptr, 1);
 		}
 
 		template<typename... Args>
@@ -157,6 +148,7 @@ namespace isa
 		{
 			node_pointer new_node = create_node(std::forward<Args>(args)...);
 			size_t node_height = random_level();
+//			std::cout << "inserting: (H = "<<node_height<<", " << new_node->dataptr()->first << ", " << new_node->dataptr()->second << ")" << std::endl;
 			m_head.append_node(new_node, node_height);
 			m_head.m_length += 1;
 
@@ -168,34 +160,24 @@ namespace isa
 		{
 			node_pointer new_node = create_node(std::forward<Args>(args)...);
 			size_t node_height = random_level();
+//			std::cout << "inserting: (H = "<<node_height<<", " << new_node->dataptr()->first << ", " << new_node->dataptr()->second << ")" << std::endl;
+
 			m_head.insert_node(new_node, node_height, update);
 			m_head.m_length += 1;
 
 			return new_node;
 		}
 
-
 		template<typename... Args>
-		inline void append_first(Args&& ... args)
-		{
-			node_pointer node = create_node(std::forward<Args>(args)...);
-			m_head.append_first(node, random_level());
-			++m_head.m_length;
-		}
-
-		template<typename... Args>
-		bool append(Args&& ... args)
+		void append(Args&& ... args)
 		{
 			pair_type data(std::forward<Args>(args)...);
 			Key const& last = _s_node_key(m_head.m_tail[0]);
 
-			if(less(last, data.first))
+			if(m_head.m_tail[0] == m_head.npos() || less(last, data.first))
 			{
 				do_append_node(std::move(data));
-				return true;
 			}
-
-			return false;
 		}
 
 		template<typename... Args>
@@ -221,7 +203,7 @@ namespace isa
 			pair_type data(std::forward<Args>(args)...);
 			Key const& last = _s_node_key(m_head.m_tail[0]);
 
-			if(less(last, data.first))
+			if(m_head.m_tail[0] == m_head.npos() || less(last, data.first))
 			{
 				node_pointer new_node = do_append_node(std::move(data));
 
@@ -241,13 +223,23 @@ namespace isa
 			static_cast<node_pointer> (node)->mutable_dataptr()->operator=(std::forward<Args>(args)...);
 		}
 
-		size_t remove_key(Key const& key)
+		size_t remove_node(Key const& key)
 		{
-			char node_buff[sizeof(node)];
-			node_pointer node = reinterpret_cast<node_pointer> (node_buff);
-			node->mutable_dataptr()->first = key;
+			node_base* update[1 + MAX_ADDITIONAL_LEVELS];
+			node_base* pos = m_head.find_node(key, get_key_comparator(), update);
 
-			return remove_node(node) != node;
+			size_t count = 0;
+			if(pos != m_head.npos() && equals(_s_node_key(pos), key))
+			{
+				node_base* next = pos->m_next[0];
+				m_head.remove_node(pos, update);
+				delete_node(pos);
+				pos = next;
+				++count;
+			}
+			m_head.m_length -= count;
+
+			return count;
 		}
 
 		node_base* remove_node(node_base const* node)
@@ -267,7 +259,7 @@ namespace isa
 			return const_cast<node_base*> (node);
 		}
 
-		node_base* remove_tail(node_base const* begin)
+		node_base* truncate_tail(node_base const* begin)
 		{
 			node_base* update[1 + MAX_ADDITIONAL_LEVELS];
 			node_base* first = m_head.find_node(_s_node_key(begin), get_key_comparator(), update);
@@ -392,14 +384,18 @@ namespace isa
 				node_pointer nod = curr;
 				curr = static_cast<node_pointer> (curr->m_next[0]);
 
-				node_alloc_traits::destroy(m_node_allocator, nod->dataptr());
-				put_node(nod);
+				delete_node(nod);
 			}
 		}
 
 		void init_head() noexcept
 		{
-			m_head.init();
+			m_head.init_full();
+		}
+
+		inline void swap_headers(map_base& other)
+		{
+			this->m_head.swap(other.m_head);
 		}
 
 	public:

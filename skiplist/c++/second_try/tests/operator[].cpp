@@ -4,7 +4,7 @@
 
 #include "test_utils.h"
 
-#define tag "[operator[]]"
+#define tag "[operator subscript]"
 
 TEST_CASE("operator[]", tag)
 {

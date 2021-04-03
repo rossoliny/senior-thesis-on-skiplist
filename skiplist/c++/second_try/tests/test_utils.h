@@ -12,11 +12,11 @@
 
 static int seed_rand()
 {
-	srand(1);
+//	srand(1);
 	return 1;
 }
 
-static int dummy = seed_rand();
+static volatile int dummy = seed_rand();
 
 //#define CATCH_CONFIG_ENABLE_BENCHMARKING
 #include "catch2/catch.hpp"
@@ -194,12 +194,50 @@ bool check_neq(isa::map<Key, Tp, Cmp, Alloc>& my_map, std::map<Key, Tp, Cmp, All
 	return not full_match;
 }
 
+#define DO_RANDOM_OPERATIONS(my_map, std_map, num) (do_random_insertions_and_deletions((my_map), (std_map), (num)))
+
+template<typename Key, typename Tp, typename Cmp, typename Alloc>
+static void do_random_insertions_and_deletions(isa::map<Key, Tp, Cmp, Alloc> & my_map, std::map<Key, Tp, Cmp, Alloc> & std_map, int num)
+{
+	int N = rand_int(10, 20);
+//	N = num;
+	std::vector<std::pair<Key const, Tp>> history;
+	history.reserve(N);
+
+	while(N--)
+	{
+		bool insert = rand() < INT_MAX / 2;
+		if(insert || history.size() == 0)
+		{
+			auto p = rand_pair();
+			int k = p.first;
+
+			history.push_back(p);
+
+//			std::cout << "insert " << k << std::endl;
+			my_map.insert(p);
+			std_map.insert(p);
+		}
+		else
+		{
+			auto pos = history.begin();
+			std::advance(pos, rand_int(0, history.size()-1));
+			int k = pos->first;
+
+//			std::cout << "erase " << k << std::endl;
+			my_map.erase(pos->first);
+			std_map.erase(pos->first);
+		}
+	}
+}
 
 #define CREATE_MAPS_INT_STRING(name1, name2) \
-	std::initializer_list<std::pair<int, string>> ___init_list_input___ = rand_pairs; \
-	my_map<int, string> name1(___init_list_input___.begin(), ___init_list_input___.end()); \
-	std_map<int, string> name2(___init_list_input___.begin(), ___init_list_input___.end()); \
+	std::initializer_list<std::pair<int, string>> ___init_list_input___##name1##name2 = rand_pairs; \
+	my_map<int, string> name1(___init_list_input___##name1##name2.begin(), ___init_list_input___##name1##name2.end()); \
+	std_map<int, string> name2(___init_list_input___##name1##name2.begin(), ___init_list_input___##name1##name2.end()); \
 	MAPS_REQUIRE_EQUAL(name1, name2)
+
+
 
 
 #define my_map isa::map

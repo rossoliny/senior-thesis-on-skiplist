@@ -110,6 +110,24 @@ TEST_CASE("erase single by key", tag)
 		REQUIRE(res1 == res2);
 		MAPS_REQUIRE_EQUAL(act, exp);
 	}
+	SECTION("pop back")
+	{
+		CREATE_MAPS_INT_STRING(act, exp);
+		my_map<int, string> act_cpy = act;
+
+		pair<int const, string> val = make_pair(9999, "BACK");
+		int key = val.first;
+
+		auto it1 = act.insert(val);
+		auto it2 = exp.insert(val);
+
+		size_t res1 = act.erase(key);
+		size_t res2 = exp.erase(key);
+
+		REQUIRE(res1 == res2);
+		MAPS_REQUIRE_EQUAL(act, act_cpy);
+		MAPS_REQUIRE_EQUAL(act, exp);
+	}
 }
 
 TEST_CASE("erase range", tag)
