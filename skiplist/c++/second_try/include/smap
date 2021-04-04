@@ -1,6 +1,0 @@
-//
-// Created by Isa on 4/01/21.
-//
-
-#pragma once
-#include "skiplist.h"
