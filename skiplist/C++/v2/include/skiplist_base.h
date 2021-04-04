@@ -150,7 +150,6 @@ namespace isa
 			size_t node_height = random_level();
 //			std::cout << "inserting: (H = "<<node_height<<", " << new_node->dataptr()->first << ", " << new_node->dataptr()->second << ")" << std::endl;
 			m_head.append_node(new_node, node_height);
-			m_head.m_length += 1;
 
 			return new_node;
 		}
@@ -163,7 +162,6 @@ namespace isa
 //			std::cout << "inserting: (H = "<<node_height<<", " << new_node->dataptr()->first << ", " << new_node->dataptr()->second << ")" << std::endl;
 
 			m_head.insert_node(new_node, node_height, update);
-			m_head.m_length += 1;
 
 			return new_node;
 		}
@@ -237,7 +235,6 @@ namespace isa
 				pos = next;
 				++count;
 			}
-			m_head.m_length -= count;
 
 			return count;
 		}
@@ -252,7 +249,6 @@ namespace isa
 				node_base* next = pos->m_next[0];
 				m_head.remove_node(pos, update);
 				delete_node(pos);
-				--m_head.m_length;
 
 				return next;
 			}
@@ -440,8 +436,6 @@ namespace isa
 	protected:
 		void steal_nodes(map_base&& rval)
 		{
-			m_head.m_length = rval.m_head.m_length;
-			m_head.m_height = rval.m_head.m_height;
 			m_head.steal_nodes(std::move(rval.m_head));
 		}
 

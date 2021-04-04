@@ -182,6 +182,8 @@ namespace isa
 					m_tail[i]->set_next(i, this);
 				}
 				static_cast<node*> (m_next[0])->set_prev(this);
+				m_length = rval.m_length;
+				m_height = rval.m_height;
 
 				rval.init_full();
 			}
@@ -213,6 +215,7 @@ namespace isa
 			{
 				node_base const* head = static_cast<node_base const*> (this);
 				node_base* curr = const_cast<node_base*> (head);
+				using ssize_t = signed long long int;
 				ssize_t lvl = m_height;
 
 				while(lvl >= 0)
@@ -283,6 +286,7 @@ namespace isa
 
 					lvl++;
 				}
+				++m_length;
 			}
 
 			void remove_node(node_base* pos, node_base** update)
@@ -308,6 +312,7 @@ namespace isa
 				{
 					m_height--;
 				}
+				--m_length;
 			}
 
 			// remove [first, last)
