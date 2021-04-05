@@ -37,10 +37,14 @@ TEST_CASE("erase single by position", tag)
 		auto p1 = act.insert(val);
 		auto p2 = exp.insert(val);
 
+		auto it1 = p1.first;
+		auto it2 = p2.first;
+
+		REQUIRE(*it1 == *it2);
 		REQUIRE(p1.second == p2.second);
 
-		auto it1 = act.erase(p1.first);
-		auto it2 = exp.erase(p2.first);
+		it1 = act.erase(p1.first);
+		it2 = exp.erase(p2.first);
 
 		REQUIRE(*it1 == *it2);
 		MAPS_REQUIRE_EQUAL(act, exp);
