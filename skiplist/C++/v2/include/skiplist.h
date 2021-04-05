@@ -66,17 +66,11 @@ namespace isa
 		// iterator getters
 		iterator begin() noexcept
 		{
-			// TODO: fix temp solution
-//			if(base::m_head.m_next[0] == base::m_head.npos())
-//				return end();
 			return iterator(base::m_head.m_next[0]);
 		}
 
 		const_iterator begin() const noexcept
 		{
-			// TODO: fix temp solution
-//			if(base::m_head.m_next[0] == base::m_head.npos())
-//				return end();
 			return const_iterator(base::m_head.m_next[0]);
 		}
 
@@ -112,9 +106,6 @@ namespace isa
 
 		const_iterator cbegin() const noexcept
 		{
-			// TODO: fix temp solution
-//			if(base::m_head.m_next[0] == base::m_head.npos())
-//				return end();
 			return const_iterator(base::m_head.m_next[0]);
 		}
 
@@ -138,8 +129,6 @@ namespace isa
 		// empty ctors
 		map() = default;
 
-
-
 		explicit map(key_compare const& comp)
 			: base(comp)
 		{
@@ -160,14 +149,14 @@ namespace isa
 			: base(other.get_pair_comparator(), node_alloc_traits::select_on_container_copy_construction(other.get_node_allocator()))
 		{
 			// 100% sorted
-			_p_sorted_range_construct_(other.begin(), other.end());
+			_p_range_construct(other.begin(), other.end());
 		}
 
 		map(map const& other, allocator_type const& alloc)
 			: base(other.get_pair_comparator(), alloc)
 		{
 			// 100% sorted
-			_p_sorted_range_construct_(other.begin(), other.end());
+			_p_range_construct(other.begin(), other.end());
 		}
 
 		// move ctors
@@ -191,7 +180,7 @@ namespace isa
 				auto mbegin = utils::make_move_iterator_if_noexcept(rval.begin());
 				auto mend = utils::make_move_iterator_if_noexcept(rval.end());
 
-				_p_sorted_range_construct_(mbegin, mend);
+				_p_range_construct(mbegin, mend);
 			}
 		}
 
@@ -207,26 +196,26 @@ namespace isa
 			: base(comp, alloc)
 		{
 			// not 100% sorted
-			_p_unsorted_range_construct(first, last);
+			_p_range_construct(first, last);
 		}
 
 		// initializer list
 		map(std::initializer_list<value_type> il, key_compare const& comp, allocator_type const& alloc)
 			: base(comp, alloc)
 		{
-			_p_unsorted_range_construct(il.begin(), il.end());
+			_p_range_construct(il.begin(), il.end());
 		}
 
 		map(std::initializer_list<value_type> il, key_compare const& comp)
 			: base(comp)
 		{
-			_p_unsorted_range_construct(il.begin(), il.end());
+			_p_range_construct(il.begin(), il.end());
 		}
 
 		map(std::initializer_list<value_type> il)
 			: base()
 		{
-			_p_unsorted_range_construct(il.begin(), il.end());
+			_p_range_construct(il.begin(), il.end());
 		}
 
 		// assignment operators
@@ -248,7 +237,7 @@ namespace isa
 					utils::copy_alloc_on_container_assignment(this_alloc, other_alloc);
 				}
 				base::m_pair_comparator = other.get_pair_comparator();
-				_p_sorted_range_assign_dispatch(other.begin(), other.end(), other.size());
+				_p_range_assign_dispatch(other.begin(), other.end(), other.size());
 			}
 
 			return *this;
@@ -256,8 +245,9 @@ namespace isa
 
 		map& operator=(map&& rval)
 		{
+			base::m_pair_comparator = std::move(rval.get_pair_comparator());
 			constexpr bool steal_nodes = base::node_alloc_traits::propagate_on_container_move_assignment::value || base::node_alloc_traits::is_always_equal::value;
-			_p_move_assign_sorted(std::move(rval), std::integral_constant<bool, steal_nodes> ());
+			_p_move_assign(std::move(rval), std::integral_constant<bool, steal_nodes>());
 			return *this;
 		}
 
@@ -270,21 +260,6 @@ namespace isa
 			}
 
 			return *this;
-		}
-
-		void swap(map& other)
-		{
-			if(this != std::addressof(other))
-			{
-				// swap headers
-				base::swap_headers(other);
-				// swap size and height
-
-				// swap allocs
-				utils::swap_alloc_on_container_swap(base::m_node_allocator, other.m_node_allocator);
-				// swap compar
-				std::swap(this->m_pair_comparator, other.m_pair_comparator);
-			}
 		}
 
 		// subscript operator
@@ -353,12 +328,12 @@ namespace isa
 		template<typename Input_iterator, typename = utils::require_input_iter<Input_iterator>>
 		void insert(Input_iterator first, Input_iterator last)
 		{
-			_p_unsorted_range_insert(first, last);
+			_p_range_insert(first, last);
 		}
 
 		void insert(std::initializer_list<value_type> il)
 		{
-			_p_unsorted_range_insert(il.begin(), il.end());
+			_p_range_insert(il.begin(), il.end());
 		}
 
 
@@ -373,6 +348,7 @@ namespace isa
 			return base::remove_node(key);
 		}
 
+		// if first == last then is it UB?
 		iterator erase(const_iterator first, const_iterator last)
 		{
 			if(first == begin() && last == end())
@@ -510,7 +486,7 @@ namespace isa
 	protected:
 
 		template<typename Input_iterator>
-		void _p_unsorted_range_insert(Input_iterator first, Input_iterator last)
+		void _p_range_insert(Input_iterator first, Input_iterator last)
 		{
 			while(first != last)
 			{
@@ -520,65 +496,56 @@ namespace isa
 		}
 
 		template<typename Input_iterator>
-		void _p_unsorted_range_construct(Input_iterator first, Input_iterator last)
-		{
-			_p_unsorted_range_insert(first, last);
-		}
-
-		template<typename Input_iterator>
-		void _p_sorted_range_construct_(Input_iterator first, Input_iterator last)
+		inline void _p_range_construct(Input_iterator first, Input_iterator last)
 		{
 			// in case when N is known we may balance H to be exactly logN
 			// and also perfectly distribute nodes across levels
 			// but it can lead to performance degradation
 			// in further insert/delete operations
-			for(; first != last; ++first)
-			{
-				base::append(*first);
-			}
+			_p_range_insert(first, last);
 		}
 
 		template<typename Input_iterator>
-		void _p_sorted_range_assign_dispatch(Input_iterator first, Input_iterator last, size_type const count)
+		void _p_range_assign_dispatch(Input_iterator first, Input_iterator last, size_type const count)
 		{
 /*			constexpr bool const shorter = count < this->size();
-			_p_sorted_range_assign(first, last, count, std::integral_constant<bool, shorter>());*/
+			_p_range_assign(first, last, count, std::integral_constant<bool, shorter>());*/
 
 			if(count < size())
 			{
-				_p_sorted_range_assign_shorter(first, last, count);
+				_p_range_assign_shorter(first, last, count);
 			}
 			else
 			{
-				_p_sorted_range_assign_longer(first, last);
+				_p_range_assign_longer(first, last);
 			}
 		}
 
 		template<typename Input_iterator>
-		void _p_sorted_range_assign_longer(Input_iterator first, Input_iterator last)
+		void _p_range_assign_longer(Input_iterator first, Input_iterator last)
 		{
-			_p_sorted_range_assign_equal(first, last);
+			_p_range_assign_equal(first, last);
 
 			while(first != last)
 			{
-				base::append(*first);
+				base::append_or_insert(*first);
 				++first;
 			}
 		}
 
 		template<typename Input_iterator>
-		void _p_sorted_range_assign_shorter(Input_iterator first, Input_iterator last, size_type new_len)
+		void _p_range_assign_shorter(Input_iterator first, Input_iterator last, size_type new_len)
 		{
 			iterator this_first = begin();
 			std::advance(this_first, new_len);
 
 			base::truncate_tail(this_first.nodeptr);
 
-			_p_sorted_range_assign_equal(first, last);
+			_p_range_assign_equal(first, last);
 		}
 
 		template<typename Input_iterator>
-		void _p_sorted_range_assign_equal(Input_iterator& first, Input_iterator& last)
+		void _p_range_assign_equal(Input_iterator& first, Input_iterator& last)
 		{
 			iterator this_first = this->begin();
 			iterator this_last = this->end();
@@ -593,26 +560,26 @@ namespace isa
 			}
 		}
 
-		// allocators are equal or curr alloc can free stealed nodes.
-		void _p_move_assign_sorted(map&& rval, std::true_type)
+		// allocators are equal or curr alloc can free stolen nodes.
+		void _p_move_assign(map&& rval, std::true_type pocma_or_always_equal)
 		{
 			clear();
 			base::steal_nodes(std::move(rval));
 			utils::move_alloc_on_container_assignment(base::m_node_allocator, rval.m_node_allocator);
 		}
 
-		void _p_move_assign_sorted(map&& rval, std::false_type)
+		void _p_move_assign(map&& rval, std::false_type pocma_or_always_equal)
 		{
 			if(base::m_node_allocator == rval.m_node_allocator)
 			{
-				_p_move_assign_sorted(std::move(rval), std::true_type());
+				_p_move_assign(std::move(rval), std::true_type());
 			}
 			else
 			{
 				auto mbegin = utils::make_move_iterator_if_noexcept(rval.begin());
 				auto mend = utils::make_move_iterator_if_noexcept(rval.end());
 
-				_p_sorted_range_assign(mbegin, mend, rval.size());
+				_p_range_assign_dispatch(mbegin, mend, rval.size());
 			}
 
 		}
@@ -621,11 +588,6 @@ namespace isa
 
 }
 
-template<typename Key, typename Tp, typename Comp, typename Alloc>
-inline void swap(isa::map<Key, Tp, Comp, Alloc>& a, isa::map<Key, Tp, Comp, Alloc>& b) NOEXCEPT_IF(noexcept(a.swap(b)))
-{
-	a.swap(b);
-}
 
 #endif // _SKIPLIST_H
 

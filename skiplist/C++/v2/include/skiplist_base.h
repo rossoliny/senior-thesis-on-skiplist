@@ -144,75 +144,79 @@ namespace isa
 		}
 
 		template<typename... Args>
-		node_pointer do_append_node(Args&&... args)
+		insert_return_t do_append(Key const& key, Args&&... args)
 		{
-			node_pointer new_node = create_node(std::forward<Args>(args)...);
-			size_t node_height = random_level();
-//			std::cout << "inserting: (H = "<<node_height<<", " << new_node->dataptr()->first << ", " << new_node->dataptr()->second << ")" << std::endl;
-			m_head.append_node(new_node, node_height);
-
-			return new_node;
-		}
-
-		template<typename... Args>
-		node_pointer do_insert_node(node_base* update[], Args&&... args)
-		{
-			node_pointer new_node = create_node(std::forward<Args>(args)...);
-			size_t node_height = random_level();
-//			std::cout << "inserting: (H = "<<node_height<<", " << new_node->dataptr()->first << ", " << new_node->dataptr()->second << ")" << std::endl;
-
-			m_head.insert_node(new_node, node_height, update);
-
-			return new_node;
-		}
-
-		template<typename... Args>
-		void append(Args&& ... args)
-		{
-			pair_type data(std::forward<Args>(args)...);
 			Key const& last = _s_node_key(m_head.m_tail[0]);
 
-			if(m_head.m_tail[0] == m_head.npos() || less(last, data.first))
-			{
-				do_append_node(std::move(data));
-			}
+//			if(m_head.m_tail[0] == m_head.npos() || less(last, key))
+//			{
+				node_pointer new_node = create_node(std::forward<Args>(args)...);
+				size_t node_height = random_level();
+				m_head.append_node(new_node, node_height);
+
+				return insert_return_t(new_node, true);
+//			}
 		}
 
 		template<typename... Args>
-		insert_return_t insert(Args&& ... args)
+		insert_return_t do_insert(Key const& key, Args&&... args)
 		{
 			node_base* update[1 + MAX_ADDITIONAL_LEVELS];
 
-			pair_type element(std::forward<Args>(args)...);
-			node_base* pos = m_head.find_node(element.first, get_key_comparator(), update);
+			node_base* pos = m_head.find_node(key, get_key_comparator(), update);
 
-			if(pos == m_head.npos() || !equals(pos, element))
+			if(pos == m_head.npos() || !equals(_s_node_key(pos), key))
 			{
-				node_pointer new_node = do_insert_node(update, std::move(element));
+				node_pointer new_node = create_node(std::forward<Args>(args)...);
+				size_t node_height = random_level();
+				m_head.insert_node(new_node, node_height, update);
+
 				return insert_return_t(new_node, true);
 			}
 
 			return insert_return_t(static_cast<node_pointer> (pos), false);
 		}
 
-		template<typename... Args>
-		insert_return_t append_or_insert(Args&& ... args)
+		insert_return_t append_or_insert(pair_type const& data)
 		{
-			pair_type data(std::forward<Args>(args)...);
 			Key const& last = _s_node_key(m_head.m_tail[0]);
+			Key const& key = data.first;
 
-			if(m_head.m_tail[0] == m_head.npos() || less(last, data.first))
+			if(m_head.m_tail[0] == m_head.npos() || less(last, key))
 			{
-				node_pointer new_node = do_append_node(std::move(data));
-
-				return insert_return_t(new_node, true);
+				return do_append(key, data);
 			}
-			if(greater(last, data.first))
+			if(greater(last, key))
 			{
-				return insert(std::move(data));
+				return do_insert(key, data);
 			}
 
 			return insert_return_t(static_cast<node_pointer> (m_head.m_tail[0]), false);
+		}
+
+		insert_return_t append_or_insert(pair_type&& data)
+		{
+			Key const& last = _s_node_key(m_head.m_tail[0]);
+			Key const& key = data.first;
+
+			if(m_head.m_tail[0] == m_head.npos() || less(last, key))
+			{
+				return do_append(key, std::move(data));
+			}
+			if(greater(last, key))
+			{
+				return do_insert(key, std::move(data));
+			}
+
+			return insert_return_t(static_cast<node_pointer> (m_head.m_tail[0]), false);
+		}
+
+		template<typename... Args>
+		insert_return_t append_or_insert(Args&&... args)
+		{
+			pair_type data(std::forward<Args>(args)...);
+
+			return append_or_insert(std::move(data));
 		}
 
 		template<typename... Args>
@@ -340,8 +344,13 @@ namespace isa
 
 			if(pos == m_head.npos() || !equals(_s_node_key(pos), key))
 			{
-				pair_type new_element(std::forward<K> (key), Tp());
-				return do_insert_node(update, std::move(new_element))->dataptr()->second;
+				pair_type data(std::forward<K> (key), Tp());
+				node_pointer new_node = create_node(std::move(data));
+
+				size_t node_height = random_level();
+				m_head.insert_node(new_node, node_height, update);
+
+				return new_node->dataptr()->second;
 			}
 
 			return static_cast<node_pointer> (pos)->dataptr()->second;

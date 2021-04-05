@@ -7,7 +7,7 @@
 
 TEST_CASE("clear_nodes", "[clear_nodes]")
 {
-	SECTION("int")
+	SECTION("int key")
 	{
 		CREATE_MAPS_INT_STRING(act, exp);
 
@@ -15,8 +15,14 @@ TEST_CASE("clear_nodes", "[clear_nodes]")
 		exp.clear();
 
 		MAPS_REQUIRE_EQUAL(act, exp);
+
+		SECTION("some random operations")
+		{
+			DO_RANDOM_OPERATIONS(act, exp);
+			MAPS_REQUIRE_EQUAL(act, exp);
+		}
 	}
-	SECTION("string")
+	SECTION("string key")
 	{
 		my_map<string, int> act(vec_pairs.begin(), vec_pairs.end());
 		std_map<string, int> exp(vec_pairs.begin(), vec_pairs.end());

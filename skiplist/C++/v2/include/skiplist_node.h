@@ -334,58 +334,7 @@ namespace isa
 
 			void swap(skiplist_impl& _other)
 			{
-				skiplist_impl* other = std::addressof(_other);
 
-				for(int i = 0; i <= MAX_ADDITIONAL_LEVELS; ++i)
-				{
-					if(this->m_next[i] != npos())
-					{
-						if(other->m_next[i] != other->npos())
-						{
-							// both not empty
-							node_base* tmp = this->m_tail[i];
-							this->m_tail[i] = other->m_tail[i];
-							other->m_tail[i] = tmp;
-
-							this->m_tail[i]->m_next[i] = this;
-							other->m_tail[i]->m_next[i] = other;
-
-							tmp = this->m_next[i];
-							this->m_next[i] = other->m_next[i];
-							other->m_next[i] = tmp;
-						}
-						else
-						{
-							// this is not empty, other is empty
-							other->m_tail[i] = this->m_tail[i];
-							other->m_next[i] = this->m_next[i];
-
-							this->init_at(i); // make this be empty
-						}
-					}
-					else
-					{
-						if(other->m_next[i] != other->npos())
-						{
-							// this is empty, other is not empty
-							this->m_tail[i] = other->m_tail[i];
-							this->m_next[i] = other->m_next[i];
-
-							other->init_at(i); // make other be empty
-						}
-						else
-						{
-							// both empty -> do nothing
-							continue;
-						}
-
-					}
-				}
-				((node*) other->m_next[0])->set_prev(other);
-				((node*) this->m_next[0])->set_prev(this);
-
-				std::swap(this->m_length, other->m_length);
-				std::swap(this->m_height, other->m_height);
 			}
 
 		};

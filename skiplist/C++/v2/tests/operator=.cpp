@@ -31,6 +31,12 @@ TEST_CASE("copy assignment operator")
 		exp = exp_inp;
 
 		MAPS_REQUIRE_EQUAL(act, exp);
+
+		SECTION("some random operations")
+		{
+			DO_RANDOM_OPERATIONS(act, exp);
+			MAPS_REQUIRE_EQUAL(act, exp);
+		}
 	}
 	SECTION("shorter <-- longer")
 	{

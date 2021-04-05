@@ -109,8 +109,8 @@ TEST_CASE("template insert single element", tag)
 
 		pair<int const, string> val = rand_pair();
 
-		auto p11 = act.insert(val); // instantiate P as reference
-		auto p22 = exp.insert(val);
+		auto p11 = act.insert<pair<int const, string>&>(val); // instantiate P as reference
+		auto p22 = exp.insert<pair<int const, string>&>(val);
 
 		REQUIRE(p11.first == act.begin());
 		REQUIRE(p22.first == exp.begin());
@@ -123,8 +123,8 @@ TEST_CASE("template insert single element", tag)
 		pair<int const, string> val1 = vall;
 		pair<int const, string> val2 = vall;
 
-		auto p1 = act.insert(std::move(val1));
-		auto p2 = exp.insert(std::move(val2));
+		auto p1 = act.insert<pair<int const, string>>(std::move(val1));
+		auto p2 = exp.insert<pair<int const, string>>(std::move(val2));
 
 		REQUIRE(val1 == val2);
 		REQUIRE(*p1.first == vall);
@@ -139,25 +139,25 @@ TEST_CASE("template insert single element", tag)
 
 		pair<int const, string> val = rand_pair();
 
-		auto p11 = act.insert(val); // instantiate P as reference
-		auto p22 = exp.insert(val);
+		auto p11 = act.insert<pair<int const, string>&>(val); // instantiate P as reference
+		auto p22 = exp.insert<pair<int const, string>&>(val);
 
 		REQUIRE(*p11.first == val);
 		REQUIRE(*p22.first == val);
 		REQUIRE(p11.second == p22.second);
+		MAPS_REQUIRE_EQUAL(act, exp);
 
 		// rvalue
 		pair<int const, string> vall = rand_pair();
 		pair<int const, string> val1 = vall;
 		pair<int const, string> val2 = vall;
 
-		auto p1 = act.insert(std::move(val1));
-		auto p2 = exp.insert(std::move(val2));
+		auto p1 = act.insert<pair<int const, string>>(std::move(val1));
+		auto p2 = exp.insert<pair<int const, string>>(std::move(val2));
 
-		REQUIRE(val1 == val2);
-		REQUIRE(*p1.first == vall);
-		REQUIRE(*p2.first == vall);
+		REQUIRE(*p1.first == *p2.first);
 		REQUIRE(p1.second == p2.second);
+		REQUIRE(val1 == val2);
 
 		MAPS_REQUIRE_EQUAL(act, exp);
 	}
