@@ -27,6 +27,12 @@ TEST_CASE("insert single element", tag)
 		REQUIRE(*exp.begin() == val);
 
 		MAPS_REQUIRE_EQUAL(act, exp);
+
+		SECTION("do random operations")
+		{
+			DO_RANDOM_OPERATIONS(act, exp);
+			MAPS_REQUIRE_EQUAL(act, exp);
+		}
 	}
 	SECTION("non empty map")
 	{
@@ -41,6 +47,12 @@ TEST_CASE("insert single element", tag)
 		REQUIRE(p1.second == p2.second);
 
 		MAPS_REQUIRE_EQUAL(act, exp);
+
+		SECTION("do random operations")
+		{
+			DO_RANDOM_OPERATIONS(act, exp);
+			MAPS_REQUIRE_EQUAL(act, exp);
+		}
 	}
 	SECTION("insert at begin")
 	{
@@ -61,6 +73,13 @@ TEST_CASE("insert single element", tag)
 		auto it2 = p2.first;
 
 		MAPS_REQUIRE_EQUAL(act, exp);
+
+		// TODO: fix malloc error
+		SECTION("do random operations")
+		{
+			DO_RANDOM_OPERATIONS(act, exp);
+			MAPS_REQUIRE_EQUAL(act, exp);
+		}
 	}
 	SECTION("insert at end")
 	{
