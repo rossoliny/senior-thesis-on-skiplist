@@ -32,7 +32,8 @@ TEST_CASE("erase single by position", tag)
 	{
 		CREATE_MAPS_INT_STRING(act, exp);
 
-		pair<int const, string> val = rand_pair();
+		pair<int, string> val = rand_pair();
+		val.first = (*-- --act.end()).first;
 
 		auto p1 = act.insert(val);
 		auto p2 = exp.insert(val);
