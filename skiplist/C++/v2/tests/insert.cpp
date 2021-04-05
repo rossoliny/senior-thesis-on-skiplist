@@ -74,7 +74,7 @@ TEST_CASE("insert single element", tag)
 
 		MAPS_REQUIRE_EQUAL(act, exp);
 
-		// TODO: fix malloc error
+		// TODO: fix malloc error by removing append functionality
 		SECTION("do random operations")
 		{
 			DO_RANDOM_OPERATIONS(act, exp);
@@ -100,6 +100,12 @@ TEST_CASE("insert single element", tag)
 		auto it2 = p2.first;
 
 		MAPS_REQUIRE_EQUAL(act, exp);
+
+		SECTION("do random operations")
+		{
+			DO_RANDOM_OPERATIONS(act, exp);
+			MAPS_REQUIRE_EQUAL(act, exp);
+		}
 	}
 	SECTION("insert existing")
 	{
@@ -115,6 +121,12 @@ TEST_CASE("insert single element", tag)
 		REQUIRE(p1.second == p2.second);
 
 		MAPS_REQUIRE_EQUAL(act, exp);
+
+		SECTION("do random operations")
+		{
+			DO_RANDOM_OPERATIONS(act, exp);
+			MAPS_REQUIRE_EQUAL(act, exp);
+		}
 	}
 }
 
@@ -123,62 +135,99 @@ TEST_CASE("template insert single element", tag)
 {
 	SECTION("empty map")
 	{
-		my_map<int, string> act;
-		std_map<int, string> exp;
+		SECTION("lvalue template arg")
+		{
+			my_map<int, string> act;
+			std_map<int, string> exp;
 
-		pair<int const, string> val = rand_pair();
+			pair<int const, string> val = rand_pair();
 
-		auto p11 = act.insert<pair<int const, string>&>(val); // instantiate P as reference
-		auto p22 = exp.insert<pair<int const, string>&>(val);
+			auto p11 = act.insert<pair<int const, string>&>(val); // instantiate P as reference
+			auto p22 = exp.insert<pair<int const, string>&>(val);
 
-		REQUIRE(p11.first == act.begin());
-		REQUIRE(p22.first == exp.begin());
-		REQUIRE(p11.second == p22.second);
-		REQUIRE(*act.begin() == val);
-		REQUIRE(*exp.begin() == val);
+			REQUIRE(p11.first == act.begin());
+			REQUIRE(p22.first == exp.begin());
+			REQUIRE(p11.second == p22.second);
+			REQUIRE(*act.begin() == val);
+			REQUIRE(*exp.begin() == val);
 
-		// rvalue
-		pair<int const, string> vall = rand_pair();
-		pair<int const, string> val1 = vall;
-		pair<int const, string> val2 = vall;
+			SECTION("do random operations")
+			{
+				DO_RANDOM_OPERATIONS(act, exp);
+				MAPS_REQUIRE_EQUAL(act, exp);
+			}
+		}
+		SECTION("rvalue template arg")
+		{
+			my_map<int, string> act;
+			std_map<int, string> exp;
 
-		auto p1 = act.insert<pair<int const, string>>(std::move(val1));
-		auto p2 = exp.insert<pair<int const, string>>(std::move(val2));
+			pair<int const, string> vall = rand_pair();
+			pair<int const, string> val1 = vall;
+			pair<int const, string> val2 = vall;
 
-		REQUIRE(val1 == val2);
-		REQUIRE(*p1.first == vall);
-		REQUIRE(*p2.first == vall);
-		REQUIRE(p1.second == p2.second);
+			auto p1 = act.insert<pair<int const, string>>(std::move(val1));
+			auto p2 = exp.insert<pair<int const, string>>(std::move(val2));
 
-		MAPS_REQUIRE_EQUAL(act, exp);
+			REQUIRE(val1 == val2);
+			REQUIRE(*p1.first == vall);
+			REQUIRE(*p2.first == vall);
+			REQUIRE(p1.second == p2.second);
+
+			MAPS_REQUIRE_EQUAL(act, exp);
+
+//			SECTION("do random operations")
+//			{
+//				DO_RANDOM_OPERATIONS(act, exp);
+//				MAPS_REQUIRE_EQUAL(act, exp);
+//			}
+		}
 	}
 	SECTION("non empty map")
 	{
-		CREATE_MAPS_INT_STRING(act, exp);
+		SECTION("lvalue template arg")
+		{
+			CREATE_MAPS_INT_STRING(act, exp);
 
-		pair<int const, string> val = rand_pair();
+			pair<int const, string> val = rand_pair();
 
-		auto p11 = act.insert<pair<int const, string>&>(val); // instantiate P as reference
-		auto p22 = exp.insert<pair<int const, string>&>(val);
+			auto p11 = act.insert<pair<int const, string>&>(val); // instantiate P as reference
+			auto p22 = exp.insert<pair<int const, string>&>(val);
 
-		REQUIRE(*p11.first == val);
-		REQUIRE(*p22.first == val);
-		REQUIRE(p11.second == p22.second);
-		MAPS_REQUIRE_EQUAL(act, exp);
+			REQUIRE(*p11.first == val);
+			REQUIRE(*p22.first == val);
+			REQUIRE(p11.second == p22.second);
+			MAPS_REQUIRE_EQUAL(act, exp);
 
-		// rvalue
-		pair<int const, string> vall = rand_pair();
-		pair<int const, string> val1 = vall;
-		pair<int const, string> val2 = vall;
+//			SECTION("do random operations")
+//			{
+//				DO_RANDOM_OPERATIONS(act, exp);
+//				MAPS_REQUIRE_EQUAL(act, exp);
+//			}
+		}
+		SECTION("rvalue template arg")
+		{
+			CREATE_MAPS_INT_STRING(act, exp);
 
-		auto p1 = act.insert<pair<int const, string>>(std::move(val1));
-		auto p2 = exp.insert<pair<int const, string>>(std::move(val2));
+			pair<int const, string> vall = rand_pair();
+			pair<int const, string> val1 = vall;
+			pair<int const, string> val2 = vall;
 
-		REQUIRE(*p1.first == *p2.first);
-		REQUIRE(p1.second == p2.second);
-		REQUIRE(val1 == val2);
+			auto p1 = act.insert<pair<int const, string>>(std::move(val1));
+			auto p2 = exp.insert<pair<int const, string>>(std::move(val2));
 
-		MAPS_REQUIRE_EQUAL(act, exp);
+			REQUIRE(*p1.first == *p2.first);
+			REQUIRE(p1.second == p2.second);
+			REQUIRE(val1 == val2);
+
+			MAPS_REQUIRE_EQUAL(act, exp);
+
+			SECTION("do random operations")
+			{
+				DO_RANDOM_OPERATIONS(act, exp);
+				MAPS_REQUIRE_EQUAL(act, exp);
+			}
+		}
 	}
 }
 
@@ -195,11 +244,23 @@ TEST_CASE("range insert", tag)
 		exp.insert(input.begin(), input.end());
 		MAPS_REQUIRE_EQUAL(act, exp);
 
+		SECTION("do random operations 1")
+		{
+			DO_RANDOM_OPERATIONS(act, exp);
+			MAPS_REQUIRE_EQUAL(act, exp);
+		}
+
 		auto input2 = rand_pairs_of_len(rand_int(1, 1000));
 
 		act.insert(input2.begin(), input2.end());
 		exp.insert(input2.begin(), input2.end());
 		MAPS_REQUIRE_EQUAL(act, exp);
+
+		SECTION("do random operations 2")
+		{
+			DO_RANDOM_OPERATIONS(act, exp);
+			MAPS_REQUIRE_EQUAL(act, exp);
+		}
 	}
 	SECTION("insert existing")
 	{
@@ -212,10 +273,22 @@ TEST_CASE("range insert", tag)
 		vector<pair<int, string>> input(start, stop);
 		input.insert(input.end(), rand_pairs);
 
+		SECTION("do random operations 1")
+		{
+			DO_RANDOM_OPERATIONS(act, exp);
+			MAPS_REQUIRE_EQUAL(act, exp);
+		}
+
 		act.insert(input.begin(), input.end());
 		exp.insert(input.begin(), input.end());
 
 		MAPS_REQUIRE_EQUAL(act, exp);
+
+		SECTION("do random operations 2")
+		{
+			DO_RANDOM_OPERATIONS(act, exp);
+			MAPS_REQUIRE_EQUAL(act, exp);
+		}
 	}
 
 }
@@ -233,11 +306,23 @@ TEST_CASE("initializer list insert", tag)
 		exp.insert(init_list_1);
 		MAPS_REQUIRE_EQUAL(act, exp);
 
+		SECTION("do random operations 1")
+		{
+			DO_RANDOM_OPERATIONS(act, exp);
+			MAPS_REQUIRE_EQUAL(act, exp);
+		}
+
 		auto input2 = rand_pairs_of_len(rand_int(1, 1000));
 
 		act.insert(init_list_2);
 		exp.insert(init_list_2);
 		MAPS_REQUIRE_EQUAL(act, exp);
+
+		SECTION("do random operations 2")
+		{
+			DO_RANDOM_OPERATIONS(act, exp);
+			MAPS_REQUIRE_EQUAL(act, exp);
+		}
 	}
 }
 

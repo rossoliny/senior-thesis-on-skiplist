@@ -146,4 +146,5 @@ void do_random_insertions_and_deletions(isa::map<int, std::string>& act, std::ma
 
 		}
 	}
+	MAPS_REQUIRE_EQUAL(act, exp);
 }

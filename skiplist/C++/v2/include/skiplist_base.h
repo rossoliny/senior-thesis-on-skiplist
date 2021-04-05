@@ -179,36 +179,36 @@ namespace isa
 
 		insert_return_t append_or_insert(pair_type const& data)
 		{
-			Key const& last = _s_node_key(m_head.m_tail[0]);
+//			Key const& last = _s_node_key(m_head.m_tail[0]);
 			Key const& key = data.first;
 
-			if(m_head.m_tail[0] == m_head.npos() || less(last, key))
-			{
-				return do_append(key, data);
-			}
-			if(greater(last, key))
-			{
+//			if(m_head.m_tail[0] == m_head.npos() || less(last, key))
+//			{
+//				return do_append(key, data);
+//			}
+//			if(greater(last, key))
+//			{
 				return do_insert(key, data);
-			}
+//			}
 
-			return insert_return_t(static_cast<node_pointer> (m_head.m_tail[0]), false);
+//			return insert_return_t(static_cast<node_pointer> (m_head.m_tail[0]), false);
 		}
 
 		insert_return_t append_or_insert(pair_type&& data)
 		{
-			Key const& last = _s_node_key(m_head.m_tail[0]);
+//			Key const& last = _s_node_key(m_head.m_tail[0]);
 			Key const& key = data.first;
 
-			if(m_head.m_tail[0] == m_head.npos() || less(last, key))
-			{
-				return do_append(key, std::move(data));
-			}
-			if(greater(last, key))
-			{
+//			if(m_head.m_tail[0] == m_head.npos() || less(last, key))
+//			{
+//				return do_append(key, std::move(data));
+//			}
+//			if(greater(last, key))
+//			{
 				return do_insert(key, std::move(data));
-			}
-
-			return insert_return_t(static_cast<node_pointer> (m_head.m_tail[0]), false);
+//			}
+//
+//			return insert_return_t(static_cast<node_pointer> (m_head.m_tail[0]), false);
 		}
 
 		template<typename... Args>
