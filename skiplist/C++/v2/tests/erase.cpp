@@ -27,6 +27,11 @@ TEST_CASE("erase single by position", tag)
 		REQUIRE(it1 == act.end());
 		REQUIRE(it2 == exp.end());
 		MAPS_REQUIRE_EQUAL(act, exp);
+		SECTION("do random operations")
+		{
+			DO_RANDOM_OPERATIONS(act, exp);
+			MAPS_REQUIRE_EQUAL(act, exp);
+		}
 	}
 	SECTION("non last")
 	{
@@ -34,6 +39,12 @@ TEST_CASE("erase single by position", tag)
 
 		pair<int, string> val = rand_pair();
 		val.first = (*-- --act.end()).first;
+
+		SECTION("do random operations")
+		{
+			DO_RANDOM_OPERATIONS(act, exp);
+			MAPS_REQUIRE_EQUAL(act, exp);
+		}
 
 		auto p1 = act.insert(val);
 		auto p2 = exp.insert(val);
@@ -49,11 +60,23 @@ TEST_CASE("erase single by position", tag)
 
 		REQUIRE(*it1 == *it2);
 		MAPS_REQUIRE_EQUAL(act, exp);
+
+		SECTION("do random operations")
+		{
+			DO_RANDOM_OPERATIONS(act, exp);
+			MAPS_REQUIRE_EQUAL(act, exp);
+		}
 	}
 	SECTION("test next")
 	{
 		my_map<int, std::string> act;
 		std_map<int, std::string> exp;
+
+		SECTION("do random operations")
+		{
+			DO_RANDOM_OPERATIONS(act, exp);
+			MAPS_REQUIRE_EQUAL(act, exp);
+		}
 
 		pair<int const, string> val1 = make_pair(-1, "first");
 		pair<int const, string> val2 = rand_pair();
@@ -62,6 +85,12 @@ TEST_CASE("erase single by position", tag)
 		auto p1 = act.insert(val1); act.insert(val2); act.insert(val3);
 		auto p2 = exp.insert(val1); exp.insert(val2); exp.insert(val3);
 		REQUIRE(p1.second == p2.second);
+
+		SECTION("do random operations")
+		{
+			DO_RANDOM_OPERATIONS(act, exp);
+			MAPS_REQUIRE_EQUAL(act, exp);
+		}
 
 		auto it11 = ++p1.first;
 		auto it22 = ++p2.first;
@@ -76,6 +105,11 @@ TEST_CASE("erase single by position", tag)
 		REQUIRE(*it22 == *it2);
 
 		MAPS_REQUIRE_EQUAL(act, exp);
+		SECTION("do random operations")
+		{
+			DO_RANDOM_OPERATIONS(act, exp);
+			MAPS_REQUIRE_EQUAL(act, exp);
+		}
 	}
 }
 
