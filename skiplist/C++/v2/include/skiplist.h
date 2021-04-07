@@ -171,7 +171,7 @@ namespace isa
 		map(map&& rval, allocator_type const& alloc, std::false_type)
 			: base(alloc)
 		{
-			if(rval.get_node_allocator() != this->get_node_allocator())
+			if(rval.get_node_allocator() == this->get_node_allocator())
 			{
 				base::move_head(std::move(rval));
 			}
@@ -186,7 +186,7 @@ namespace isa
 
 	public:
 		map(map&& rval, allocator_type const& alloc)
-			: map(std::move(rval), alloc, std::false_type())
+			: map(std::move(rval), alloc, typename node_alloc_traits::is_always_equal())
 		{
 		}
 
