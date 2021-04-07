@@ -36,7 +36,7 @@ TEST_CASE("emplace single element", tag)
 	{
 		CREATE_MAPS_INT_STRING(act, exp);
 
-		pair<int const, string> val1 = rand_pair();
+		pair<int const, string> val1(rand_int(1001, 2000), rand_string());
 		pair<int const, string> val2 = val1;
 
 		auto p1 = act.emplace(std::move(val1));
