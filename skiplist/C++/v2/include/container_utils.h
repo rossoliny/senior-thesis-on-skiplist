@@ -131,8 +131,7 @@ namespace isa
 		template<typename Alloc>
 		inline void swap_alloc_if_pocs(Alloc& a, Alloc& b, std::true_type)
 		{
-			using std::swap;
-			swap(a, b);
+			std::swap(a, b);
 		}
 
 		template<typename Alloc>

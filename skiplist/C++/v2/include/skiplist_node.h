@@ -14,12 +14,12 @@ namespace isa
 		class skiplist_node_base
 		{
 		public:
-			enum constants { MIN_NEXT_SIZE = 11, MAX_ADDITIONAL_LEVELS = 10 };
+			enum constants { MAX_ADDITIONAL_LEVELS = 10 };
 
 #ifdef SKIPLIST_DEBUG_INFO
 			size_t height = 0;
 #endif
-			skiplist_node_base* m_next[MIN_NEXT_SIZE];
+			skiplist_node_base* m_next[1 + MAX_ADDITIONAL_LEVELS];
 
 			skiplist_node_base() = default;
 
@@ -28,19 +28,15 @@ namespace isa
 			{
 			}
 
-			void set_next(size_t level, skiplist_node_base* next)
+			// use only for levels >= 1
+			inline void set_next(size_t level, skiplist_node_base* next)
 			{
 				m_next[level] = next;
 			}
 
 			inline skiplist_node_base* get_next(size_t level)
 			{
-				return level < MIN_NEXT_SIZE ? m_next[level] : nullptr;
-			}
-
-			inline skiplist_node_base const* get_next(size_t level) const
-			{
-				return level < MIN_NEXT_SIZE ? m_next[level] : nullptr;
+				return level <= MAX_ADDITIONAL_LEVELS ? m_next[level] : nullptr;
 			}
 
 		};
@@ -129,21 +125,21 @@ namespace isa
 				{
 					if(rval.m_next[i] == std::addressof(rval))
 					{
-						this->init_at(i);
+						this->set_next(i, m_tail[i] = this);
 					}
 					else
 					{
-						m_next[i] = rval.m_next[i];
+						this->set_next(i, rval.get_next(i));
 
 						m_tail[i] = rval.m_tail[i];
-						m_tail[i]->m_next[i] = this;
+						m_tail[i]->set_next(i, this);
 					}
 				}
 				static_cast<node*> (m_next[0])->set_prev(this);
 			}
 
 		public:
-			skiplist_node_base* m_tail[MIN_NEXT_SIZE];
+			skiplist_node_base* m_tail[1 + MAX_ADDITIONAL_LEVELS];
 
 #if defined(__GNUC__) && !defined(__clang__) && !defined(_MSC_VER)
 			volatile size_t m_length;
@@ -191,16 +187,11 @@ namespace isa
 				return *this;
 			}
 
-			inline void init_at(size_t i) noexcept
-			{
-				m_next[i] = m_tail[i] = this;
-			}
-
 			void init_full() noexcept
 			{
 				for(size_t i = 0; i <= MAX_ADDITIONAL_LEVELS; ++i)
 				{
-					m_next[i] = m_tail[i] = this;
+					this->set_next(i, m_tail[i] = this);
 				}
 				m_length = m_height = 0;
 			}
@@ -361,7 +352,7 @@ namespace isa
 					}
 					else
 					{
-						this->m_tail[i]->m_next[i] = this;
+						this->m_tail[i]->set_next(i, this);
 					}
 					if(other->m_tail[i] == this->npos())
 					{
@@ -369,20 +360,20 @@ namespace isa
 					}
 					else
 					{
-						other->m_tail[i]->m_next[i] = other;
+						other->m_tail[i]->set_next(i, other);
 					}
 
-					node_base* this_next = this->m_next[i];
-					this->m_next[i] = other->m_next[i];
-					other->m_next[i] = this_next;
+					node_base* this_next = this->get_next(i);
+					this->set_next(i, other->get_next(i));
+					other->set_next(i, this_next);
 
-					if(this->m_next[i] == other->npos())
+					if(this->get_next(i) == other->npos())
 					{
-						this->m_next[i] = this;
+						this->set_next(i, this);
 					}
-					if(other->m_next[i] == this->npos())
+					if(other->get_next(i) == this->npos())
 					{
-						other->m_next[i] = other;
+						other->set_next(i, other);
 					}
 				}
 

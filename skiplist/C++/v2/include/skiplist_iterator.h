@@ -11,11 +11,17 @@
 
 namespace isa
 {
-	template<typename Key, typename Tp>
+	template<typename Key, typename Tp, typename Compare, typename Alloc>
+	class map;
+
+	template<typename Key, typename Tp, typename Compare, typename Alloc>
+	struct skiplist_const_iterator;
+
+	template<typename Key, typename Tp, typename Compare, typename Alloc>
 	struct skiplist_iterator
 	{
-	private:
-		using self = skiplist_iterator<Key, Tp>;
+	protected:
+		using self = skiplist_iterator<Key, Tp, Compare, Alloc>;
 		using node = detail::skiplist_node<Key, Tp>;
 		using node_base = detail::skiplist_node_base;
 		using pair_type = std::pair<Key const, Tp>;
@@ -35,11 +41,6 @@ namespace isa
 		explicit skiplist_iterator(node_base* node) noexcept
 			: nodeptr(node)
 		{
-		}
-
-		self m_const_cast() const noexcept
-		{
-			return *this;
 		}
 
 		// dereference begin() of empty list is UB
@@ -89,17 +90,21 @@ namespace isa
 			return a.nodeptr != b.nodeptr;
 		}
 
+	protected:
 		node_base* nodeptr;
+
+		friend class isa::map<Key, Tp, Compare, Alloc>;
+		friend class isa::skiplist_const_iterator<Key, Tp, Compare, Alloc>;
 	};
 
-	template<typename Key, typename Tp>
+	template<typename Key, typename Tp, typename Compare, typename Alloc>
 	struct skiplist_const_iterator
 	{
-	private:
-		using self = skiplist_const_iterator<Key, Tp>;
+	protected:
+		using self = skiplist_const_iterator<Key, Tp, Compare, Alloc>;
 		using node = const detail::skiplist_node<Key, Tp>;
 		using node_base = const detail::skiplist_node_base;
-		using iterator = skiplist_iterator<Key, Tp>;
+		using iterator = skiplist_iterator<Key, Tp, Compare, Alloc>;
 		using pair_type = std::pair<Key const, Tp>;
 
 	public:
@@ -175,7 +180,10 @@ namespace isa
 			return a.nodeptr != b.nodeptr;
 		}
 
-		const node_base* nodeptr;
+	protected:
+		node_base const* nodeptr;
+
+		friend class isa::map<Key, Tp, Compare, Alloc>;
 	};
 }
 

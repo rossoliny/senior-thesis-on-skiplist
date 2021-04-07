@@ -8,7 +8,6 @@
 
 #include "skiplist_node.h"
 #include <random>
-#include <iostream>
 
 namespace isa
 {
@@ -230,7 +229,7 @@ namespace isa
 			static_cast<node_pointer> (node)->mutable_dataptr()->operator=(std::forward<Args>(args)...);
 		}
 
-		size_t remove_node(Key const& key)
+		size_t remove_key(Key const& key)
 		{
 			node_base* update[1 + MAX_ADDITIONAL_LEVELS];
 			node_base* pos = m_head.find_node(key, get_key_comparator(), update);
@@ -295,7 +294,7 @@ namespace isa
 			node_base* first = m_head.find_node(_s_node_key(begin), get_key_comparator(), update1);
 			node_base* last = m_head.find_node(_s_node_key(end), get_key_comparator(), update2);
 
-			if((first == begin && last == end) || (equals(begin, first) && equals(end, last)))
+			if((equals(begin, first) && equals(end, last)))
 			{
 				m_head.remove_range(first, last, update1, update2);
 				while(first != last)
@@ -351,7 +350,9 @@ namespace isa
 			{
 				pair_type data(std::forward<K> (key), Tp());
 				node_pointer new_node = create_node(std::move(data));
-
+#ifdef SKIPLIST_DEBUG_INFO
+				new_node->height = node_height;
+#endif
 				size_t node_height = random_level();
 				m_head.insert_node(new_node, node_height, update);
 
@@ -361,9 +362,19 @@ namespace isa
 			return static_cast<node_pointer> (pos)->dataptr()->second;
 		}
 
+		void move_head(map_base&& rval)
+		{
+			m_head = std::move(rval.m_head);
+		}
+
 		void swap_head(map_base& other)
 		{
 			m_head.swap(other.m_head);
+		}
+
+		void init_head() noexcept
+		{
+			m_head.init_full();
 		}
 
 		inline bool is_empty() const
@@ -403,15 +414,6 @@ namespace isa
 			}
 		}
 
-		void init_head() noexcept
-		{
-			m_head.init_full();
-		}
-
-		inline void swap_headers(map_base& other)
-		{
-			this->m_head.swap(other.m_head);
-		}
 
 	public:
 		map_base() = default;
@@ -450,15 +452,6 @@ namespace isa
 		}
 
 		map_base(map_base&& rval) = default;
-
-
-	protected:
-		void move_head(map_base&& rval)
-		{
-			m_head = std::move(rval.m_head);
-		}
-
-	public:
 
 		map_base(map_base&& rval, Alloc const& alloc)
 			: m_node_allocator(alloc)

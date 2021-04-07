@@ -51,8 +51,8 @@ namespace isa
 		using pointer = typename std::allocator_traits<allocator_type>::pointer; // ptr to pair_type
 		using const_pointer = typename std::allocator_traits<allocator_type>::const_pointer;
 
-		using iterator = skiplist_iterator<Key, Tp>;
-		using const_iterator = skiplist_const_iterator<Key, Tp>;
+		using iterator = skiplist_iterator<Key, Tp, Compare, Alloc>;
+		using const_iterator = skiplist_const_iterator<Key, Tp, Compare, Alloc>;
 		using reverse_iterator = std::reverse_iterator<iterator>;
 		using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 	protected:
@@ -139,7 +139,7 @@ namespace isa
 		{
 		}
 
-		explicit map(key_compare const& comp, allocator_type const& alloc)
+		map(key_compare const& comp, allocator_type const& alloc)
 			: base(comp, alloc)
 		{
 		}
@@ -303,7 +303,7 @@ namespace isa
 		}
 
 		template <class Pair,
-				typename = utils::require_constructible<value_type, Pair&&>
+				typename = utils::require_constructible<value_type, Pair>
 			>
 		insert_return_type insert(Pair&& val)
 		{
@@ -318,7 +318,7 @@ namespace isa
 		}
 
 		template<typename Pair,
-				typename = utils::require_constructible<value_type, Pair&&>
+				typename = utils::require_constructible<value_type, Pair>
 			>
 		iterator insert(const_iterator hint, Pair&& val)
 		{
@@ -345,7 +345,7 @@ namespace isa
 
 		size_type erase(key_type const& key)
 		{
-			return base::remove_node(key);
+			return base::remove_key(key);
 		}
 
 		// if first == last then is it UB?
@@ -532,29 +532,6 @@ namespace isa
 		}
 
 		template<typename Input_iterator>
-		void _p_range_assign_longer(Input_iterator first, Input_iterator last)
-		{
-			_p_range_assign_equal(first, last);
-
-			while(first != last)
-			{
-				base::append_or_insert(*first);
-				++first;
-			}
-		}
-
-		template<typename Input_iterator>
-		void _p_range_assign_shorter(Input_iterator first, Input_iterator last, size_type new_len)
-		{
-			iterator this_first = begin();
-			std::advance(this_first, new_len);
-
-			base::truncate_tail(this_first.nodeptr);
-
-			_p_range_assign_equal(first, last);
-		}
-
-		template<typename Input_iterator>
 		void _p_range_assign_equal(Input_iterator& first, Input_iterator& last)
 		{
 			iterator this_first = this->begin();
@@ -568,6 +545,24 @@ namespace isa
 				++first;
 				++this_first;
 			}
+		}
+
+		template<typename Input_iterator>
+		inline void _p_range_assign_longer(Input_iterator first, Input_iterator last)
+		{
+			_p_range_assign_equal(first, last);
+			_p_range_insert(first, last);
+		}
+
+		template<typename Input_iterator>
+		void _p_range_assign_shorter(Input_iterator first, Input_iterator last, size_type new_len)
+		{
+			iterator this_first = begin();
+			std::advance(this_first, new_len);
+
+			base::truncate_tail(this_first.nodeptr);
+
+			_p_range_assign_equal(first, last);
 		}
 
 		// allocators are equal or curr alloc can free stolen nodes or alloc is moved.
