@@ -32,6 +32,12 @@ std::string rand_string()
 	return s;
 }
 
+int print(isa::map<int, std::string>& m)
+{
+	print(m.begin(), m.end());
+	return 0;
+}
+
 const std::initializer_list<std::pair<int const, std::string>> init_list_1 = rand_pairs;
 const std::initializer_list<std::pair<int const, std::string>> init_list_2 = rand_pairs;
 const std::initializer_list<std::pair<int const, std::string>> init_list_L = rand_pairs;
@@ -76,15 +82,20 @@ void do_random_insertions_and_deletions(isa::map<int, std::string>& act, std::ma
 	std::vector<std::pair<int const, std::string>> history;
 	history.reserve(N);
 
-	while(N--)
+	int i = 0;
+	while(i++ < N)
 	{
 		int cmd = rand();
+//		std::cout << "\nupdate:\n";
+//		print(act);
+//		std::cout << "\n" << std::endl;
 		if(cmd < INT_MAX / 2 || history.size() == 0)
 		{
 			if(cmd < INT_MAX / 4)
 			{
 				// insert
 				auto p = rand_pair();
+				int k = p.first;
 				history.push_back(p);
 
 				act.insert(p);
@@ -143,8 +154,8 @@ void do_random_insertions_and_deletions(isa::map<int, std::string>& act, std::ma
 				act.erase(begin1, end1);
 				exp.erase(begin2, end2);
 			}
-
 		}
 	}
 	MAPS_REQUIRE_EQUAL(act, exp);
 }
+

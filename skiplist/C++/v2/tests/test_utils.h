@@ -27,6 +27,20 @@ char rand_char();
 std::string rand_string();
 void do_random_insertions_and_deletions(isa::map<int, std::string> & my_map, std::map<int, std::string> & std_map);
 
+template<typename I>
+void print(I f, I l)
+{
+	int i = 0;
+	while(f != l)
+	{
+		std::cout << i << "\t:\t" << "(" << f->first << ", " << f->second << ")" << std::endl;
+		++f;
+		++i;
+	}
+}
+
+int print(isa::map<int, std::string>& m);
+
 
 #define rand_pair() std::make_pair<int const, std::string>(rand_int(0, 1000), rand_string())
 #define rand_pairs {rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair(), rand_pair()}

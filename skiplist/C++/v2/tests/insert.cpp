@@ -159,6 +159,7 @@ TEST_CASE("template insert single element", tag)
 		}
 		SECTION("rvalue template arg")
 		{
+			cout << "\nSTART DEBUG SECTION\n";
 			my_map<int, string> act;
 			std_map<int, string> exp;
 
@@ -176,11 +177,15 @@ TEST_CASE("template insert single element", tag)
 
 			MAPS_REQUIRE_EQUAL(act, exp);
 
-//			SECTION("do random operations")
-//			{
-//				DO_RANDOM_OPERATIONS(act, exp);
-//				MAPS_REQUIRE_EQUAL(act, exp);
-//			}
+			SECTION("do random operations")
+			{
+//				cout << "map before random operations\n";
+//				print(act.begin(), act.end());
+//				cout << "doing random operations\n";
+				DO_RANDOM_OPERATIONS(act, exp);
+				MAPS_REQUIRE_EQUAL(act, exp);
+			}
+			cout << "END DEBUG SECTION\n\n";
 		}
 	}
 	SECTION("non empty map")
@@ -199,11 +204,11 @@ TEST_CASE("template insert single element", tag)
 			REQUIRE(p11.second == p22.second);
 			MAPS_REQUIRE_EQUAL(act, exp);
 
-//			SECTION("do random operations")
-//			{
-//				DO_RANDOM_OPERATIONS(act, exp);
-//				MAPS_REQUIRE_EQUAL(act, exp);
-//			}
+			SECTION("do random operations")
+			{
+				DO_RANDOM_OPERATIONS(act, exp);
+				MAPS_REQUIRE_EQUAL(act, exp);
+			}
 		}
 		SECTION("rvalue template arg")
 		{

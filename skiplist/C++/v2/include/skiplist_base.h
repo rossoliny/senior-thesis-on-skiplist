@@ -169,6 +169,7 @@ namespace isa
 			{
 				node_pointer new_node = create_node(std::forward<Args>(args)...);
 				size_t node_height = random_level();
+//				std::cout << "inserting:\tH = " << node_height << ", K = " << key << std::endl;
 				m_head.insert_node(new_node, node_height, update);
 
 				return insert_return_t(new_node, true);
@@ -234,6 +235,7 @@ namespace isa
 			if(pos != m_head.npos() && equals(_s_node_key(pos), key))
 			{
 				node_base* next = pos->m_next[0];
+//				std::cout << "erasing:\tK = " << key << std::endl;
 				m_head.remove_node(pos, update);
 				delete_node(pos);
 				pos = next;
@@ -251,6 +253,7 @@ namespace isa
 			if(equals(node, pos))
 			{
 				node_base* next = pos->m_next[0];
+				std::cout << "erasing:\tK = " << _s_node_key(pos) << std::endl;
 				m_head.remove_node(pos, update);
 				delete_node(pos);
 
@@ -267,6 +270,8 @@ namespace isa
 
 			if(equals(begin, first))
 			{
+//				std::cout << "erasing:\t[" << _s_node_key(first) << ", end(" << _s_node_key(last) << ") )" << std::endl;
+
 				m_head.remove_range(first, last, update, m_head.m_tail);
 
 				while(first != last)
@@ -292,6 +297,8 @@ namespace isa
 
 			if((first == begin && last == end) || (equals(begin, first) && equals(end, last)))
 			{
+//				std::cout << "erasing:\t[" << _s_node_key(first) << ", " << _s_node_key(last) << ")" << std::endl;
+
 				m_head.remove_range(first, last, update1, update2);
 				while(first != last)
 				{

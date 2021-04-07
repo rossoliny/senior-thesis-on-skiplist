@@ -138,8 +138,6 @@ namespace isa
 #endif
 
 			skiplist_impl()
-				: m_length(0)
-				, m_height(0)
 			{
 				init_full();
 			}
@@ -318,6 +316,7 @@ namespace isa
 			// remove [first, last)
 			void remove_range(node_base* begin, node_base* end, node_base** update_first, node_base** update_last)
 			{
+				// TODO: FIX BUG
 				node* first = static_cast<node*> (begin);
 				node* last = static_cast<node*> (end);
 
@@ -328,7 +327,15 @@ namespace isa
 				while(lvl <= m_height)
 				{
 					update_first[lvl]->set_next(lvl, update_last[lvl]->get_next(lvl));
+					if(update_first[lvl]->get_next(lvl) == this)
+					{
+						this->m_tail[lvl] = update_first[lvl];
+					}
 					lvl++;
+				}
+				while(m_height > 0 && this->get_next(m_height) == npos())
+				{
+					m_height--;
 				}
 			}
 
