@@ -232,8 +232,7 @@ namespace isa
 
 			void append_node(node* new_node, size_t height)
 			{
-				insert_node(new_node, height, m_tail);
-				/*
+//				insert_node(new_node, height, m_tail);
 				m_tail[0]->m_next[0] = new_node;
 				new_node->set_prev(m_tail[0]);
 				new_node->m_next[0] = this;
@@ -251,7 +250,7 @@ namespace isa
 				{
 					m_height = height;
 				}
-				 */
+				++m_length;
 			}
 
 			void insert_node(node* new_node, size_t const node_height, node_base** update)
@@ -316,7 +315,6 @@ namespace isa
 			// remove [first, last)
 			void remove_range(node_base* begin, node_base* end, node_base** update_first, node_base** update_last)
 			{
-				// TODO: FIX BUG
 				node* first = static_cast<node*> (begin);
 				node* last = static_cast<node*> (end);
 
