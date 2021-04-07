@@ -22,6 +22,7 @@
 #include <set>
 
 #define TEST_CMP_GREATER
+#define TEST_STD_ALLOCATOR
 
 template<typename T>
 #ifdef TEST_CMP_GREATER
@@ -97,7 +98,10 @@ template<typename Key, typename Tp, typename Cmp, typename Alloc>
 void verify(my_map<Key, Tp, Cmp, Alloc> const& my_map, std_map<Key, Tp, Cmp, Alloc> const& std_map)
 {
 	REQUIRE(my_map.size() == std_map.size());
+#ifdef TEST_STD_ALLOCATOR
 	REQUIRE(my_map.get_allocator() == std_map.get_allocator());
+#else
+#endif
 //	REQUIRE(my_map.max_size() == std_map.max_size());
 
 	REQUIRE(my_map.empty() == std_map.empty());
@@ -132,7 +136,10 @@ template<typename Key, typename Tp, typename Cmp, typename Alloc>
 void verify(my_map<Key, Tp, Cmp, Alloc>& my_map, ::my_map<Key, Tp, Cmp, Alloc>& my_map_2)
 {
 	REQUIRE(my_map.size() == my_map_2.size());
+#ifdef TEST_STD_ALLOCATOR
 	REQUIRE(my_map.get_allocator() == my_map_2.get_allocator());
+#else
+#endif
 //	REQUIRE(my_map.max_size() == my_map_2.max_size());
 
 	auto act = my_map.begin();
