@@ -190,7 +190,7 @@ namespace isa
 		{
 		}
 
-		// optimize: default args must be default constructed (not default constructed and then copied)
+		// TODO: default args must be default constructed (not default constructed and then copied)
 		template<typename Input_iterator, typename = utils::require_input_iter<Input_iterator>>
 		map(Input_iterator first, Input_iterator last, key_compare const& comp = key_compare(), allocator_type const& alloc = allocator_type())
 			: base(comp, alloc)
@@ -234,7 +234,7 @@ namespace isa
 						// replacement allocator cannot free existing storage
 						this->clear();
 					}
-					utils::copy_alloc_on_container_assignment(this_alloc, other_alloc);
+					utils::copy_alloc_if_pocca(this_alloc, other_alloc);
 				}
 				base::m_pair_comparator = other.get_pair_comparator();
 				_p_range_assign_dispatch(other.begin(), other.end(), other.size());
@@ -253,7 +253,7 @@ namespace isa
 
 		map& operator=(std::initializer_list<value_type> il)
 		{
-			map tmp(il, base::get_key_comparator(), base::get_node_allocator()); // O(N log(N)) and heap allocations.
+			map tmp(il, base::get_key_comparator(), base::get_node_allocator()); // O(N log(N)) and heap allocations. O(N) if sorted
 			if(!tmp.empty())
 			{
 				*this = std::move(tmp); // O(N) deallocations
@@ -328,9 +328,7 @@ namespace isa
 		template<typename Input_iterator, typename = utils::require_input_iter<Input_iterator>>
 		void insert(Input_iterator first, Input_iterator last)
 		{
-//			std::cout << "\nrange insert: \n";
 			_p_range_insert(first, last);
-//			std::cout << "range insert done.\n\n";
 		}
 
 		void insert(std::initializer_list<value_type> il)
@@ -455,7 +453,7 @@ namespace isa
 			{
 				base::swap_head(other);
 				std::swap(this->m_pair_comparator, other.m_pair_comparator);
-				utils::swap_alloc_on_container_swap(this->m_node_allocator, other.m_node_allocator);
+				utils::swap_alloc_if_pocs(this->m_node_allocator, other.m_node_allocator);
 			}
 		}
 
@@ -572,12 +570,12 @@ namespace isa
 			}
 		}
 
-		// allocators are equal or curr alloc can free stolen nodes.
+		// allocators are equal or curr alloc can free stolen nodes or alloc is moved.
 		void _p_move_assign(map&& rval, std::true_type pocma_or_always_equal)
 		{
 			clear();
 			base::move_head(std::move(rval));
-			utils::move_alloc_on_container_assignment(base::m_node_allocator, rval.m_node_allocator);
+			utils::move_alloc_if_pocma(base::m_node_allocator, rval.m_node_allocator);
 		}
 
 		void _p_move_assign(map&& rval, std::false_type pocma_or_always_equal)

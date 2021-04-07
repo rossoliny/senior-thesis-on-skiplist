@@ -16,7 +16,9 @@ namespace isa
 		public:
 			enum constants { MIN_NEXT_SIZE = 11, MAX_ADDITIONAL_LEVELS = 10 };
 
+#ifdef SKIPLIST_DEBUG_INFO
 			size_t height = 0;
+#endif
 			skiplist_node_base* m_next[MIN_NEXT_SIZE];
 
 			skiplist_node_base() = default;

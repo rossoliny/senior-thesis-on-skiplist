@@ -148,7 +148,9 @@ namespace isa
 		{
 			node_pointer new_node = create_node(std::forward<Args>(args)...);
 			size_t node_height = random_level();
+#ifdef SKIPLIST_DEBUG_INFO
 			new_node->height = node_height;
+#endif
 			m_head.append_node(new_node, node_height);
 
 			return new_node;
@@ -165,7 +167,9 @@ namespace isa
 			{
 				node_pointer new_node = create_node(std::forward<Args>(args)...);
 				size_t node_height = random_level();
+#ifdef SKIPLIST_DEBUG_INFO
 				new_node->height = node_height;
+#endif
 				m_head.insert_node(new_node, node_height, update);
 
 				return insert_return_t(new_node, true);

@@ -34,7 +34,11 @@ void print(I f, I l)
 	int i = 0;
 	while(f != l)
 	{
-		std::cout << i << "\t:\t" << "(H = " << f.nodeptr->height << ", " << f->first << ", " << f->second << ")" << std::endl;
+		std::cout << i << "\t:\t" << "(H = ";
+#ifdef SKIPLIST_DEBUG_INFO
+		std::cout << f.nodeptr->height;
+#endif
+		std::cout << ", " << f->first << ", " << f->second << ")" << std::endl;
 		++f;
 		++i;
 	}

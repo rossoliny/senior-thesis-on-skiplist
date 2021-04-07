@@ -15,28 +15,6 @@ namespace isa
 {
 	namespace utils
 	{
-		template<typename Alloc, typename = typename Alloc::value_type>
-		struct allocator_traits : std::allocator_traits<Alloc>
-		{
-			typedef Alloc allocator_type;
-
-			static constexpr bool s_propagate_on_copy_assign()
-			{
-				return std::allocator_traits<Alloc>::propagate_on_container_copy_assignment::value;
-			}
-
-			static constexpr bool s_always_equal()
-			{
-				return std::allocator_traits<Alloc>::is_always_equal::value;
-			}
-
-			template<typename Tp>
-			struct rebind
-			{
-				typedef typename std::allocator_traits<Alloc>::template rebind_alloc<Tp> other;
-			};
-		};
-
 
 		template<typename Input_iterator>
 		using require_input_iter =
@@ -107,68 +85,68 @@ namespace isa
 
 		// move assign allocator if possible
 		template<typename Alloc>
-		inline void move_alloc_if(Alloc& a, Alloc& b, std::true_type)
+		inline void do_move_alloc_if_pocma(Alloc& a, Alloc& b, std::true_type)
 		{
 			// pocma true -> move assign allocators
 			a = std::move(b);
 		}
 
 		template<typename Alloc>
-		inline void move_alloc_if(Alloc& a, Alloc& b, std::false_type)
+		inline void do_move_alloc_if_pocma(Alloc& a, Alloc& b, std::false_type)
 		{
 			// pocma false -> do nothing
 			return;
 		}
 
 		template<typename Alloc>
-		inline void move_alloc_on_container_assignment(Alloc& a, Alloc& b)
+		inline void move_alloc_if_pocma(Alloc& a, Alloc& b)
 		{
 			using pocma = typename std::allocator_traits<Alloc>::propagate_on_container_move_assignment;
-			move_alloc_if(a, b, pocma());
+			do_move_alloc_if_pocma(a, b, pocma());
 		}
 
 
 		// copy assign allocator if possible
 		template<typename Alloc>
-		inline void copy_if_pocca(Alloc& a, const Alloc& b, std::true_type)
+		inline void do_copy_if_pocca(Alloc& a, const Alloc& b, std::true_type)
 		{
 			a = b;
 		}
 
 		template<typename Alloc>
-		inline void copy_if_pocca(Alloc& a, const Alloc& b, std::false_type)
+		inline void do_copy_if_pocca(Alloc& a, const Alloc& b, std::false_type)
 		{
 			return;
 		}
 
 		template<typename Alloc>
-		inline void copy_alloc_on_container_assignment(Alloc& a, const Alloc& b)
+		inline void copy_alloc_if_pocca(Alloc& a, const Alloc& b)
 		{
 			using pocca = typename std::allocator_traits<Alloc>::propagate_on_container_copy_assignment;
 
-			copy_if_pocca(a, b, pocca());
+			do_copy_if_pocca(a, b, pocca());
 		}
 
 
 		template<typename Alloc>
-		inline void swap_alloc_if(Alloc& a, Alloc& b, std::true_type)
+		inline void swap_alloc_if_pocs(Alloc& a, Alloc& b, std::true_type)
 		{
 			using std::swap;
 			swap(a, b);
 		}
 
 		template<typename Alloc>
-		inline void swap_alloc_if(Alloc& a, Alloc& b, std::false_type)
+		inline void swap_alloc_if_pocs(Alloc& a, Alloc& b, std::false_type)
 		{
 			return;
 		}
 
 		template<typename Alloc>
-		inline void swap_alloc_on_container_swap(Alloc& a, Alloc& b)
+		inline void swap_alloc_if_pocs(Alloc& a, Alloc& b)
 		{
 			typedef std::allocator_traits<Alloc> traits;
 			typedef typename traits::propagate_on_container_swap pocs;
-			swap_alloc_if(a, b, pocs());
+			swap_alloc_if_pocs(a, b, pocs());
 		}
 
 		template<bool B>
