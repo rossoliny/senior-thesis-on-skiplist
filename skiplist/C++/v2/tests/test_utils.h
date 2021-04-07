@@ -168,8 +168,17 @@ bool check_neq(isa::map<Key, Tp, Cmp, Alloc>& my_map, std::map<Key, Tp, Cmp, All
 	return not full_match;
 }
 
-#define my_map isa::map
-#define std_map std::map
+template<typename T>
+using Test_Comparator = std::less<T>;
+
+template<typename T>
+using Test_Allocator = std::allocator<T>;
+
+template<typename Key, typename Tp, typename Compar = Test_Comparator<Key>, typename Alloc = Test_Allocator<std::pair<Key const, Tp>>>
+using my_map = isa::map<Key, Tp, Compar, Alloc>;
+
+template<typename Key, typename Tp, typename Compar = Test_Comparator<Key>, typename Alloc = Test_Allocator<std::pair<Key const, Tp>>>
+using std_map = std::map<Key, Tp, Compar, Alloc>;
 
 using namespace std;
 
