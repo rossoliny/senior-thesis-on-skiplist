@@ -218,7 +218,7 @@ TEST_CASE("template insert single element", tag)
 				DO_RANDOM_OPERATIONS(act, exp);
 			}
 
-			pair<int const, string> vall = rand_pair();
+			pair<int const, string> vall(rand_int(2000, 3000), rand_string());
 			pair<int const, string> val1 = vall;
 			pair<int const, string> val2 = vall;
 
