@@ -21,12 +21,31 @@
 #include <smap>
 #include <set>
 
+#define TEST_CMP_GREATER
+
+template<typename T>
+#ifdef TEST_CMP_GREATER
+using Test_Comparator = std::greater<T>;
+#else
+using Test_Comparator = std::less<T>;
+#endif
+
+template<typename T>
+using Test_Allocator = std::allocator<T>;
+
+template<typename Key, typename Tp, typename Compar = Test_Comparator<Key>, typename Alloc = Test_Allocator<std::pair<Key const, Tp>>>
+using my_map = isa::map<Key, Tp, Compar, Alloc>;
+
+template<typename Key, typename Tp, typename Compar = Test_Comparator<Key>, typename Alloc = Test_Allocator<std::pair<Key const, Tp>>>
+using std_map = std::map<Key, Tp, Compar, Alloc>;
+
+using namespace std;
 
 // INPUTS
 int rand_int(int min, int max);
 char rand_char();
 std::string rand_string();
-void do_random_insertions_and_deletions(isa::map<int, std::string> & my_map, std::map<int, std::string> & std_map);
+void do_random_insertions_and_deletions(my_map<int, std::string>& my_map, std_map<int, std::string>& std_map);
 
 template<typename I>
 void print(I f, I l)
@@ -44,7 +63,7 @@ void print(I f, I l)
 	}
 }
 
-int print(isa::map<int, std::string>& m);
+int print(my_map<int, std::string>& m);
 
 
 #define rand_pair() std::make_pair<int const, std::string>(rand_int(0, 1000), rand_string())
@@ -75,7 +94,7 @@ std::set<std::pair<int const, std::string>> rand_pairs_of_len(int len);
 
 
 template<typename Key, typename Tp, typename Cmp, typename Alloc>
-void verify(isa::map<Key, Tp, Cmp, Alloc> const& my_map, std::map<Key, Tp, Cmp, Alloc> const& std_map)
+void verify(my_map<Key, Tp, Cmp, Alloc> const& my_map, std_map<Key, Tp, Cmp, Alloc> const& std_map)
 {
 	REQUIRE(my_map.size() == std_map.size());
 	REQUIRE(my_map.get_allocator() == std_map.get_allocator());
@@ -110,7 +129,7 @@ void verify(isa::map<Key, Tp, Cmp, Alloc> const& my_map, std::map<Key, Tp, Cmp, 
 }
 
 template<typename Key, typename Tp, typename Cmp, typename Alloc>
-void verify(isa::map<Key, Tp, Cmp, Alloc>& my_map, isa::map<Key, Tp, Cmp, Alloc>& my_map_2)
+void verify(my_map<Key, Tp, Cmp, Alloc>& my_map, ::my_map<Key, Tp, Cmp, Alloc>& my_map_2)
 {
 	REQUIRE(my_map.size() == my_map_2.size());
 	REQUIRE(my_map.get_allocator() == my_map_2.get_allocator());
@@ -143,7 +162,7 @@ void verify(isa::map<Key, Tp, Cmp, Alloc>& my_map, isa::map<Key, Tp, Cmp, Alloc>
 
 
 template<typename Key, typename Tp, typename Cmp, typename Alloc>
-bool check_neq(isa::map<Key, Tp, Cmp, Alloc>& my_map, std::map<Key, Tp, Cmp, Alloc>& std_map)
+bool check_neq(my_map<Key, Tp, Cmp, Alloc>& my_map, std_map<Key, Tp, Cmp, Alloc>& std_map)
 {
 	if(my_map.size() != std_map.size())
 		return true;
@@ -168,18 +187,6 @@ bool check_neq(isa::map<Key, Tp, Cmp, Alloc>& my_map, std::map<Key, Tp, Cmp, All
 	return not full_match;
 }
 
-template<typename T>
-using Test_Comparator = std::less<T>;
 
-template<typename T>
-using Test_Allocator = std::allocator<T>;
-
-template<typename Key, typename Tp, typename Compar = Test_Comparator<Key>, typename Alloc = Test_Allocator<std::pair<Key const, Tp>>>
-using my_map = isa::map<Key, Tp, Compar, Alloc>;
-
-template<typename Key, typename Tp, typename Compar = Test_Comparator<Key>, typename Alloc = Test_Allocator<std::pair<Key const, Tp>>>
-using std_map = std::map<Key, Tp, Compar, Alloc>;
-
-using namespace std;
 
 #endif //_TEST_UTILS_H

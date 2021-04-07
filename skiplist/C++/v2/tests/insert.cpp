@@ -52,11 +52,17 @@ TEST_CASE("insert single element", tag)
 			DO_RANDOM_OPERATIONS(act, exp);
 		}
 	}
-	SECTION("insert at begin")
+	SECTION("insert min")
 	{
 		CREATE_MAPS_INT_STRING(act, exp);
 
-		pair<int const, string> const val = make_pair(-1, "min");
+#ifdef TEST_CMP_GREATER
+		int key = INT_MAX;
+#else
+		int key = -1;
+#endif
+
+		pair<int const, string> const val = make_pair(key, "min");
 
 		auto p1 = act.insert(val);
 		auto p2 = exp.insert(val);
@@ -78,17 +84,24 @@ TEST_CASE("insert single element", tag)
 			DO_RANDOM_OPERATIONS(act, exp);
 		}
 	}
-	SECTION("insert at end")
+	SECTION("insert at max")
 	{
 		CREATE_MAPS_INT_STRING(act, exp);
 
-		pair<int const, string> const val = make_pair(INT_MAX, "max");
+#ifdef TEST_CMP_GREATER
+		int key = -1;
+#else
+		int key = INT_MAX;
+#endif
+
+		pair<int const, string> const val = make_pair(key, "max");
 
 		auto p1 = act.insert(val);
 		auto p2 = exp.insert(val);
 
 		REQUIRE(*p1.first == *p2.first);
 		REQUIRE(p1.second == p2.second);
+
 
 		REQUIRE(*--act.end() == val);
 		REQUIRE(*--exp.end() == val);

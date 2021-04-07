@@ -28,7 +28,13 @@ TEST_CASE("lower bound search", tag)
 		auto it1 = act.lower_bound("abb");
 		auto it2 = exp.lower_bound("abb");
 
-		REQUIRE(*it1 == vec_pairs[3]);
+#ifdef TEST_CMP_GREATER
+		auto expected_pair = vec_pairs[5];
+#else
+		auto expected_pair = vec_pairs[3];
+#endif
+
+		REQUIRE(*it1 == expected_pair);
 		REQUIRE(*it1 == *it2);
 		MAPS_REQUIRE_EQUAL(act, exp);
 	}

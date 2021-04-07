@@ -41,6 +41,9 @@ TEST_CASE("erase single by position", tag)
 			DO_RANDOM_OPERATIONS(act, exp);
 		}
 
+		act.insert(make_pair(1050, "1500"));
+		exp.insert(make_pair(1050, "1500"));
+
 		act.insert(make_pair(1500, "1500"));
 		exp.insert(make_pair(1500, "1500"));
 
@@ -61,8 +64,14 @@ TEST_CASE("erase single by position", tag)
 		it1 = act.erase(p1.first);
 		it2 = exp.erase(p2.first);
 
-		REQUIRE(it2->first == 1500);
-		REQUIRE(it1->first == 1500);
+#ifdef TEST_CMP_GREATER
+		int next = 1050;
+#else
+		int next = 1500;
+#endif
+
+		REQUIRE(it2->first == next);
+		REQUIRE(it1->first == next);
 		REQUIRE(*it1 == *it2);
 		MAPS_REQUIRE_EQUAL(act, exp);
 
@@ -80,6 +89,9 @@ TEST_CASE("erase single by position", tag)
 			DO_RANDOM_OPERATIONS(act, exp);
 		}
 
+		act.insert(make_pair(1500, "1500"));
+		exp.insert(make_pair(1500, "1500"));
+
 		pair<int, string> val(2000, rand_string());
 
 		auto p1 = act.insert(val);
@@ -94,8 +106,16 @@ TEST_CASE("erase single by position", tag)
 		it1 = act.erase(p1.first);
 		it2 = exp.erase(p2.first);
 
-		REQUIRE(it1 == act.end());
-		REQUIRE(it2 == exp.end());
+#ifdef TEST_CMP_GREATER
+		auto next1 = act.insert(make_pair(1500, "1500")).first;
+		auto next2 = exp.insert(make_pair(1500, "1500")).first;
+#else
+		auto next1 = act.end();
+		auto next2 = exp.end();
+#endif
+
+		REQUIRE(it1 == next1);
+		REQUIRE(it2 == next2);
 
 		MAPS_REQUIRE_EQUAL(act, exp);
 
@@ -114,7 +134,12 @@ TEST_CASE("erase single by position", tag)
 			DO_RANDOM_OPERATIONS(act, exp);
 		}
 
-		pair<int const, string> val1 = make_pair(-1, "first");
+#ifdef TEST_CMP_GREATER
+		int key = INT_MAX;
+#else
+		int key = -1;
+#endif
+		pair<int const, string> val1 = make_pair(key, "first");
 		pair<int const, string> val2 = rand_pair();
 		pair<int const, string> val3 = rand_pair();
 

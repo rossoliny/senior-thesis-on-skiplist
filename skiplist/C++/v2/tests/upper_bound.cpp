@@ -16,8 +16,15 @@ TEST_CASE("uppper bound search", tag)
 		auto it1 = act.upper_bound("zz");
 		auto it2 = exp.upper_bound("zz");
 
-		REQUIRE(it1 == act.end());
-		REQUIRE(it2 == exp.end());
+#ifdef TEST_CMP_GREATER
+		auto expected_iterator1 = act.begin();
+		auto expected_iterator2 = exp.begin();
+#else
+		auto expected_iterator1 = act.end();
+		auto expected_iterator2 = exp.end();
+#endif
+		REQUIRE(it1 == expected_iterator1);
+		REQUIRE(it2 == expected_iterator2);
 		MAPS_REQUIRE_EQUAL(act, exp);
 	}
 	SECTION("key does not exists but it is not max")
@@ -25,8 +32,14 @@ TEST_CASE("uppper bound search", tag)
 		auto it1 = act.upper_bound("aa");
 		auto it2 = exp.upper_bound("aa");
 
+#ifdef TEST_CMP_GREATER
+		REQUIRE(it1 == act.end());
+		REQUIRE(it2 == exp.end());
+#else
 		REQUIRE(*it1 == vec_pairs[5]);
 		REQUIRE(*it1 == *it2);
+#endif
+
 		MAPS_REQUIRE_EQUAL(act, exp);
 	}
 	SECTION("key exists then return it's next")
@@ -34,7 +47,13 @@ TEST_CASE("uppper bound search", tag)
 		auto it1 = act.upper_bound("ab");
 		auto it2 = exp.upper_bound("ab");
 
+#ifdef TEST_CMP_GREATER
+		REQUIRE(it1 == act.end());
+		REQUIRE(it2 == exp.end());
+#else
 		REQUIRE(*it1 == *it2);
+#endif
+
 		MAPS_REQUIRE_EQUAL(act, exp);
 	}
 	SECTION("key exists and is max")

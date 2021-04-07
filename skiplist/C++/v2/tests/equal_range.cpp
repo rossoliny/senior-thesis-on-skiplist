@@ -16,11 +16,19 @@ TEST_CASE("equal range search", tag)
 		auto p1 = act.equal_range("zz");
 		auto p2 = exp.equal_range("zz");
 
-		REQUIRE(p1.first == act.end());
-		REQUIRE(p2.first == exp.end());
+#ifdef TEST_CMP_GREATER
+		auto expected_iterator1 = act.begin();
+		auto expected_iterator2 = exp.begin();
+#else
+		auto expected_iterator1 = act.end();
+		auto expected_iterator2 = exp.end();
+#endif
 
-		REQUIRE(p1.second == act.end());
-		REQUIRE(p2.second == exp.end());
+		REQUIRE(p1.first == expected_iterator1);
+		REQUIRE(p2.first == expected_iterator2);
+
+		REQUIRE(p1.second == expected_iterator1);
+		REQUIRE(p2.second == expected_iterator2);
 
 		MAPS_REQUIRE_EQUAL(act, exp);
 	}
@@ -28,12 +36,18 @@ TEST_CASE("equal range search", tag)
 	{
 		auto p1 = act.equal_range("aa");
 		auto p2 = exp.equal_range("aa");
-
-		REQUIRE(p2.first != exp.cend());
-		REQUIRE(p2.first == p2.second);
-		REQUIRE(p2.first != exp.cend());
-		REQUIRE(p2.first == p2.second);
+#ifdef TEST_CMP_GREATER
+		auto t = exp.end();
+		REQUIRE(p2.first == exp.cend());
+		REQUIRE(p2.first == exp.cend());
+#else
+		REQUIRE(p2.first == exp.begin());
+		REQUIRE(p2.first == exp.begin());
 		REQUIRE(*p1.first == *p2.first);
+#endif
+		REQUIRE(p2.first == p2.second);
+		REQUIRE(p2.first == p2.second);
+
 		MAPS_REQUIRE_EQUAL(act, exp);
 	}
 	SECTION("key exists")
@@ -45,7 +59,12 @@ TEST_CASE("equal range search", tag)
 		REQUIRE(distance(p2.first, p2.second) == 1);
 
 		REQUIRE(*p1.first == *p2.first);
+#ifdef TEST_CMP_GREATER
+		REQUIRE(p1.second == act.end());
+		REQUIRE(p2.second == exp.end());
+#else
 		REQUIRE(*p1.second == *p2.second);
+#endif
 
 		MAPS_REQUIRE_EQUAL(act, exp);
 	}

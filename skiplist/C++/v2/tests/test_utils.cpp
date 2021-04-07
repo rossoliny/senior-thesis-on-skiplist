@@ -33,7 +33,7 @@ std::string rand_string()
 	return s;
 }
 
-int print(isa::map<int, std::string>& m)
+int print(my_map<int, std::string>& m)
 {
 	print(m.begin(), m.end());
 	return 0;
@@ -87,7 +87,7 @@ void random_advance(I& start1, I end1, I2& start2, I2 end2)
 	}
 }
 
-void do_random_insertions_and_deletions(isa::map<int, std::string>& act, std::map<int, std::string>& exp)
+void do_random_insertions_and_deletions(my_map<int, std::string>& act, std_map<int, std::string>& exp)
 {
 	int N = rand_int(10, 20);
 	std::stack<std::pair<int const, std::string>> history;
