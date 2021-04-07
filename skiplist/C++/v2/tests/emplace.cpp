@@ -6,9 +6,21 @@
 
 #define tag "[emplace]"
 
-pair<string const, string> rand_pair_ss()
+pair<string const, string> rand_pair_ss(string no = string("this will never be inserted"))
 {
-	return make_pair(rand_string(), rand_string());
+	string s1 = rand_string();
+	string s2 = rand_string();
+	while(1)
+	{
+		if(s1 != no && s2 != no)
+		{
+			break;
+		}
+		s1 = rand_string();
+		s2 = rand_string();
+	}
+
+	return make_pair(std::move(s1), std::move(s2));
 }
 
 TEST_CASE("emplace single element", tag)
@@ -67,11 +79,14 @@ TEST_CASE("emplace single element", tag)
 	}
 	SECTION("from pair's elements ctor args")
 	{
-		initializer_list<pair<string const, string>> il = {rand_pair_ss(), rand_pair_ss(), rand_pair_ss(), rand_pair_ss(), rand_pair_ss(), rand_pair_ss(), rand_pair_ss()};
+		string key = "string as key";
+		string value = "string as value";
+
+		initializer_list<pair<string const, string>> il = {rand_pair_ss(key), rand_pair_ss(key), rand_pair_ss(key), rand_pair_ss(key), rand_pair_ss(key), rand_pair_ss(key), rand_pair_ss(key)};
 		my_map<string, string> act = il;
 		std_map<string, string> exp = il;
 
-		pair<string, string> val1 = rand_pair_ss();
+		pair<string, string> val1(key, value);
 		pair<string, string> val2 = val1;
 
 		auto p1 = act.emplace(std::move(val1.first), val1.second.c_str());
