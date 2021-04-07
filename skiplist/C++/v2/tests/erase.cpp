@@ -10,7 +10,7 @@
 
 TEST_CASE("erase single by position", tag)
 {
-	SECTION("erase last element")
+	SECTION("erase last element (not back)")
 	{
 		my_map<int, std::string> act;
 		std_map<int, std::string> exp;
@@ -30,21 +30,24 @@ TEST_CASE("erase single by position", tag)
 		SECTION("do random operations")
 		{
 			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
 		}
 	}
-	SECTION("non last")
+	SECTION("non last (not back)")
 	{
 		CREATE_MAPS_INT_STRING(act, exp);
-
-		pair<int, string> val = rand_pair();
-		val.first = (*-- --act.end()).first;
 
 		SECTION("do random operations")
 		{
 			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
 		}
+
+		act.insert(make_pair(1500, "1500"));
+		exp.insert(make_pair(1500, "1500"));
+
+		act.insert(make_pair(1600, "1600"));
+		exp.insert(make_pair(1600, "1600"));
+
+		pair<int, string> val(1100, rand_string());
 
 		auto p1 = act.insert(val);
 		auto p2 = exp.insert(val);
@@ -58,13 +61,47 @@ TEST_CASE("erase single by position", tag)
 		it1 = act.erase(p1.first);
 		it2 = exp.erase(p2.first);
 
+		REQUIRE(it2->first == 1500);
+		REQUIRE(it1->first == 1500);
 		REQUIRE(*it1 == *it2);
 		MAPS_REQUIRE_EQUAL(act, exp);
 
 		SECTION("do random operations")
 		{
 			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
+		}
+	}
+	SECTION("non last, pop back")
+	{
+		CREATE_MAPS_INT_STRING(act, exp);
+
+		SECTION("do random operations")
+		{
+			DO_RANDOM_OPERATIONS(act, exp);
+		}
+
+		pair<int, string> val(2000, rand_string());
+
+		auto p1 = act.insert(val);
+		auto p2 = exp.insert(val);
+
+		auto it1 = p1.first;
+		auto it2 = p2.first;
+
+		REQUIRE(*it1 == *it2);
+		REQUIRE(p1.second == p2.second);
+
+		it1 = act.erase(p1.first);
+		it2 = exp.erase(p2.first);
+
+		REQUIRE(it1 == act.end());
+		REQUIRE(it2 == exp.end());
+
+		MAPS_REQUIRE_EQUAL(act, exp);
+
+		SECTION("do random operations")
+		{
+			DO_RANDOM_OPERATIONS(act, exp);
 		}
 	}
 	SECTION("test next")
@@ -75,7 +112,6 @@ TEST_CASE("erase single by position", tag)
 		SECTION("do random operations")
 		{
 			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
 		}
 
 		pair<int const, string> val1 = make_pair(-1, "first");
@@ -102,7 +138,6 @@ TEST_CASE("erase single by position", tag)
 		SECTION("do random operations")
 		{
 			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
 		}
 	}
 }
@@ -129,7 +164,6 @@ TEST_CASE("erase single by key", tag)
 		SECTION("do random operations")
 		{
 			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
 		}
 
 	}
@@ -140,7 +174,6 @@ TEST_CASE("erase single by key", tag)
 		SECTION("do random operations")
 		{
 			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
 		}
 
 		pair<int const, string> val = rand_pair();
@@ -157,7 +190,6 @@ TEST_CASE("erase single by key", tag)
 		SECTION("do random operations")
 		{
 			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
 		}
 	}
 	SECTION("pop back")
@@ -166,7 +198,6 @@ TEST_CASE("erase single by key", tag)
 		SECTION("do random operations")
 		{
 			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
 		}
 		my_map<int, string> act_cpy = act;
 
@@ -185,7 +216,6 @@ TEST_CASE("erase single by key", tag)
 		SECTION("do random operations")
 		{
 			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
 		}
 	}
 }
@@ -207,7 +237,6 @@ TEST_CASE("erase range", tag)
 		SECTION("do random operations")
 		{
 			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
 		}
 	}
 	SECTION("erase nothing")
@@ -225,7 +254,6 @@ TEST_CASE("erase range", tag)
 		SECTION("do random operations")
 		{
 			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
 		}
 	}
 	SECTION("erase postfix")
@@ -234,7 +262,6 @@ TEST_CASE("erase range", tag)
 		SECTION("do random operations")
 		{
 			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
 		}
 
 		auto begin1 = act.begin();
@@ -253,16 +280,14 @@ TEST_CASE("erase range", tag)
 		SECTION("do random operations")
 		{
 			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
 		}
 	}
 	SECTION("erase prefix")
 	{
 		CREATE_MAPS_INT_STRING(act, exp);
-		SECTION("do random operations")
+		SECTION("do random operations 1")
 		{
 			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
 		}
 
 		auto end1 = act.end();
@@ -277,20 +302,14 @@ TEST_CASE("erase range", tag)
 
 		REQUIRE(*it1 == *it2);
 		MAPS_REQUIRE_EQUAL(act, exp);
-		SECTION("do random operations")
+		SECTION("do random operations 2")
 		{
 			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
 		}
 	}
 	SECTION("erase middle")
 	{
 		CREATE_MAPS_INT_STRING(act, exp);
-		SECTION("do random operations")
-		{
-			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
-		}
 
 		auto begin1 = act.begin();
 		auto begin2 = exp.begin();
@@ -314,7 +333,6 @@ TEST_CASE("erase range", tag)
 		SECTION("do random operations")
 		{
 			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
 		}
 	}
 	SECTION("erase everything")
@@ -323,7 +341,6 @@ TEST_CASE("erase range", tag)
 		SECTION("do random operations")
 		{
 			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
 		}
 
 		auto it1 = act.erase(act.begin(), act.end());
@@ -337,7 +354,6 @@ TEST_CASE("erase range", tag)
 		SECTION("do random operations")
 		{
 			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
 		}
 	}
 }

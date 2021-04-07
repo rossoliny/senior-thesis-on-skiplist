@@ -6,7 +6,8 @@
 
 int seed_rand()
 {
-	srand((unsigned) -1);
+	unsigned seed = -1;
+	srand(time(NULL));
 	return 1;
 }
 
@@ -76,27 +77,36 @@ std::set<std::pair<int const, std::string>> rand_pairs_of_len(int len)
 	return res;
 }
 
+template<typename I, typename I2>
+void random_advance(I& start1, I end1, I2& start2, I2 end2)
+{
+	while(rand() > INT_MAX / 2 && start1 != end1 && start2 != end2)
+	{
+		++start1;
+		++start2;
+	}
+}
+
 void do_random_insertions_and_deletions(isa::map<int, std::string>& act, std::map<int, std::string>& exp)
 {
 	int N = rand_int(10, 20);
-	std::vector<std::pair<int const, std::string>> history;
-	history.reserve(N);
+	std::stack<std::pair<int const, std::string>> history;
+//	history.reserve(N);
 
 	int i = 0;
 	while(i++ < N)
 	{
 		int cmd = rand();
-//		std::cout << "\nupdate:\n";
-//		print(act);
-//		std::cout << "\n" << std::endl;
-		if(cmd < INT_MAX / 2 || history.size() == 0)
+
+		int lim = INT_MAX / 2;
+		if(cmd < lim || history.empty())
 		{
-			if(cmd < INT_MAX / 4)
+			lim = INT_MAX / 4;
+			if(cmd < lim)
 			{
 				// insert
 				auto p = rand_pair();
 				int k = p.first;
-				history.push_back(p);
 
 				act.insert(p);
 				exp.insert(p);
@@ -110,49 +120,41 @@ void do_random_insertions_and_deletions(isa::map<int, std::string>& act, std::ma
 				act.insert(inp.begin(), inp.end());
 				exp.insert(inp2.begin(), inp2.end());
 
-				for(auto p = inp.begin(); p != inp.end(); ++p)
+				for(const auto& p : inp)
 				{
-					history.push_back(*p);
+					history.push(p);
 				}
 			}
 
 		}
 		else if(!history.empty())
 		{
-			if(cmd >= 3 * (INT_MAX / 4))
+			int lim = 3 * (INT_MAX / 4);
+			if(cmd >= lim)
 			{
 				// erase
-				auto pos = history.begin();
-				std::advance(pos, rand_int(0, history.size()-1));
+				auto pos = history.top();
+				history.pop();
 
-				act.erase(pos->first);
-				exp.erase(pos->first);
+				act.erase(pos.first);
+				exp.erase(pos.first);
 			}
 			else if(!exp.empty())
 			{
 				// erase range
 				auto begin1 = act.begin();
 				auto begin2 = exp.begin();
-				int n1 = rand_int(0, act.size()-1);
-				std::advance(begin1, n1);
-				std::advance(begin2, n1);
+				random_advance(begin1, act.end(), begin2, exp.end());
 
 				auto end1 = begin1;
 				auto end2 = begin2;
-				int n2 = rand_int(0, std::distance(end1, act.end()));
-				std::advance(end1, n2);
-				std::advance(end2, n2);
-				if(begin1 == end1 && end1 != act.end())
-				{
-					++end1;
-				}
-				if(begin2 == end2 && end2 != exp.end())
-				{
-					++end2;
-				}
+				random_advance(end1, act.end(), end2, exp.end());
 
-				act.erase(begin1, end1);
-				exp.erase(begin2, end2);
+				if(begin1 != end1 && begin2 != end2)
+				{
+					act.erase(begin1, end1);
+					exp.erase(begin2, end2);
+				}
 			}
 		}
 	}

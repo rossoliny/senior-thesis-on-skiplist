@@ -35,7 +35,6 @@ TEST_CASE("copy assignment operator")
 		SECTION("some random operations")
 		{
 			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
 		}
 	}
 	SECTION("shorter <-- longer")
@@ -55,6 +54,10 @@ TEST_CASE("copy assignment operator")
 		exp = exp_inp;
 
 		MAPS_REQUIRE_EQUAL(act, exp);
+		SECTION("some random operations")
+		{
+			DO_RANDOM_OPERATIONS(act, exp);
+		}
 	}
 	SECTION("longer <-- shorter")
 	{
@@ -73,6 +76,32 @@ TEST_CASE("copy assignment operator")
 		exp = exp_inp;
 
 		MAPS_REQUIRE_EQUAL(act, exp);
+		SECTION("some random operations")
+		{
+			DO_RANDOM_OPERATIONS(act, exp);
+			MAPS_REQUIRE_EQUAL(act, exp);
+		}
+	}
+	SECTION("some random assignments")
+	{
+		CREATE_MAPS_INT_STRING(act, exp);
+		DO_RANDOM_OPERATIONS(act, exp);
+
+		CREATE_MAPS_INT_STRING(act2, exp2);
+		DO_RANDOM_OPERATIONS(act2, exp2);
+
+		act = act2;
+		MAPS_REQUIRE_EQUAL(act, act2);
+		MAPS_REQUIRE_EQUAL(act2, exp2);
+		MAPS_REQUIRE_EQUAL(act, exp2);
+
+		DO_RANDOM_OPERATIONS(act2, exp2);
+
+		CREATE_MAPS_INT_STRING(act3, exp3);
+
+		act = act3;
+		MAPS_REQUIRE_EQUAL(act, act3);
+		MAPS_REQUIRE_EQUAL(act, exp3);
 	}
 }
 
@@ -131,6 +160,31 @@ TEST_CASE("move assignment operator")
 
 		MAPS_REQUIRE_EQUAL(act, exp);
 		MAPS_REQUIRE_EQUAL(act_inp, exp_inp);
+	}
+	SECTION("some random move assignments")
+	{
+		CREATE_MAPS_INT_STRING(act, exp);
+		DO_RANDOM_OPERATIONS(act, exp);
+
+		CREATE_MAPS_INT_STRING(act2, exp2);
+		DO_RANDOM_OPERATIONS(act2, exp2);
+
+		act = std::move(act2);
+		exp = std::move(exp2);
+
+//		MAPS_REQUIRE_EQUAL(act, act2);
+		MAPS_REQUIRE_EQUAL(act, exp);
+		MAPS_REQUIRE_EQUAL(act2, exp2);
+
+		DO_RANDOM_OPERATIONS(act, exp);
+		DO_RANDOM_OPERATIONS(act2, exp2);
+
+		CREATE_MAPS_INT_STRING(act3, exp3);
+
+		act2 = std::move(act3);
+		exp2 = std::move(exp3);
+		MAPS_REQUIRE_EQUAL(act2, act2);
+		MAPS_REQUIRE_EQUAL(act3, exp3);
 	}
 }
 

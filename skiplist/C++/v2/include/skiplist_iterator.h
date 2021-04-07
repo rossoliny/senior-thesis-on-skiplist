@@ -88,6 +88,7 @@ namespace isa
 		{
 			return a.nodeptr != b.nodeptr;
 		}
+	public:
 
 		node_base* nodeptr;
 	};
@@ -175,6 +176,7 @@ namespace isa
 			return a.nodeptr != b.nodeptr;
 		}
 
+	public:
 		const node_base* nodeptr;
 	};
 }

@@ -31,7 +31,6 @@ TEST_CASE("insert single element", tag)
 		SECTION("do random operations")
 		{
 			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
 		}
 	}
 	SECTION("non empty map")
@@ -51,7 +50,6 @@ TEST_CASE("insert single element", tag)
 		SECTION("do random operations")
 		{
 			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
 		}
 	}
 	SECTION("insert at begin")
@@ -78,7 +76,6 @@ TEST_CASE("insert single element", tag)
 		SECTION("do random operations")
 		{
 			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
 		}
 	}
 	SECTION("insert at end")
@@ -104,7 +101,6 @@ TEST_CASE("insert single element", tag)
 		SECTION("do random operations")
 		{
 			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
 		}
 	}
 	SECTION("insert existing")
@@ -125,7 +121,6 @@ TEST_CASE("insert single element", tag)
 		SECTION("do random operations")
 		{
 			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
 		}
 	}
 }
@@ -154,7 +149,6 @@ TEST_CASE("template insert single element", tag)
 			SECTION("do random operations")
 			{
 				DO_RANDOM_OPERATIONS(act, exp);
-				MAPS_REQUIRE_EQUAL(act, exp);
 			}
 		}
 		SECTION("rvalue template arg")
@@ -183,7 +177,6 @@ TEST_CASE("template insert single element", tag)
 //				print(act.begin(), act.end());
 //				cout << "doing random operations\n";
 				DO_RANDOM_OPERATIONS(act, exp);
-				MAPS_REQUIRE_EQUAL(act, exp);
 			}
 //			cout << "END DEBUG SECTION\n\n";
 		}
@@ -197,10 +190,10 @@ TEST_CASE("template insert single element", tag)
 			SECTION("do random operations")
 			{
 				DO_RANDOM_OPERATIONS(act, exp);
-				MAPS_REQUIRE_EQUAL(act, exp);
 			}
 
-			pair<int const, string> val = rand_pair();
+			pair<int const, string> val(2000, rand_string());
+
 
 			auto p11 = act.insert<pair<int const, string>&>(val); // instantiate P as reference
 			auto p22 = exp.insert<pair<int const, string>&>(val);
@@ -208,12 +201,12 @@ TEST_CASE("template insert single element", tag)
 			REQUIRE(*p11.first == val);
 			REQUIRE(*p22.first == val);
 			REQUIRE(p11.second == p22.second);
+
 			MAPS_REQUIRE_EQUAL(act, exp);
 
 			SECTION("do random operations")
 			{
 				DO_RANDOM_OPERATIONS(act, exp);
-				MAPS_REQUIRE_EQUAL(act, exp);
 			}
 		}
 		SECTION("rvalue template arg")
@@ -223,7 +216,6 @@ TEST_CASE("template insert single element", tag)
 			SECTION("do random operations")
 			{
 				DO_RANDOM_OPERATIONS(act, exp);
-				MAPS_REQUIRE_EQUAL(act, exp);
 			}
 
 			pair<int const, string> vall = rand_pair();
@@ -242,7 +234,6 @@ TEST_CASE("template insert single element", tag)
 			SECTION("do random operations")
 			{
 				DO_RANDOM_OPERATIONS(act, exp);
-				MAPS_REQUIRE_EQUAL(act, exp);
 			}
 		}
 	}
@@ -264,7 +255,6 @@ TEST_CASE("range insert", tag)
 		SECTION("do random operations 1")
 		{
 			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
 		}
 
 		auto input2 = rand_pairs_of_len(rand_int(1, 1000));
@@ -276,7 +266,6 @@ TEST_CASE("range insert", tag)
 		SECTION("do random operations 2")
 		{
 			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
 		}
 	}
 	SECTION("insert existing")
@@ -293,7 +282,6 @@ TEST_CASE("range insert", tag)
 		SECTION("do random operations 1")
 		{
 			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
 		}
 
 		act.insert(input.begin(), input.end());
@@ -304,7 +292,6 @@ TEST_CASE("range insert", tag)
 		SECTION("do random operations 2")
 		{
 			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
 		}
 	}
 
@@ -326,7 +313,6 @@ TEST_CASE("initializer list insert", tag)
 		SECTION("do random operations 1")
 		{
 			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
 		}
 
 		auto input2 = rand_pairs_of_len(rand_int(1, 1000));
@@ -338,7 +324,6 @@ TEST_CASE("initializer list insert", tag)
 		SECTION("do random operations 2")
 		{
 			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
 		}
 	}
 }

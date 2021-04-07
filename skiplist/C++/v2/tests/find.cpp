@@ -74,30 +74,11 @@ TEST_CASE("find with int Key", tag)
 		SECTION("do random operations")
 		{
 			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
 		}
 
-		auto key = ___init_list_input___actexp.begin()->first;
-
-		auto it1 = act.find(key);
-		auto it2 = exp.find(key);
-
-		REQUIRE(*it1 == *it2);
-		MAPS_REQUIRE_EQUAL(act, exp);
-		SECTION("do random operations")
-		{
-			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
-		}
-	}
-	SECTION("find const")
-	{
-		CREATE_MAPS_INT_STRING(act, exp);
-		SECTION("do random operations")
-		{
-			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
-		}
+		auto val = rand_pair();
+		act.insert(val);
+		exp.insert(val);
 
 		auto key = exp.begin()->first;
 
@@ -109,7 +90,30 @@ TEST_CASE("find with int Key", tag)
 		SECTION("do random operations")
 		{
 			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
+		}
+	}
+	SECTION("find const")
+	{
+		CREATE_MAPS_INT_STRING(act, exp);
+		SECTION("do random operations")
+		{
+			DO_RANDOM_OPERATIONS(act, exp);
+		}
+
+		auto val = rand_pair();
+		act.insert(val);
+		exp.insert(val);
+
+		auto key = exp.begin()->first;
+
+		auto it1 = act.find(key);
+		auto it2 = exp.find(key);
+
+		REQUIRE(*it1 == *it2);
+		MAPS_REQUIRE_EQUAL(act, exp);
+		SECTION("do random operations")
+		{
+			DO_RANDOM_OPERATIONS(act, exp);
 		}
 	}
 	SECTION("not found in empty")
@@ -130,7 +134,6 @@ TEST_CASE("find with int Key", tag)
 		SECTION("do random operations")
 		{
 			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
 		}
 	}
 	SECTION("not found")
@@ -139,7 +142,6 @@ TEST_CASE("find with int Key", tag)
 		SECTION("do random operations")
 		{
 			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
 		}
 
 		int k = 1001;
@@ -153,7 +155,6 @@ TEST_CASE("find with int Key", tag)
 		SECTION("do random operations")
 		{
 			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
 		}
 
 	}

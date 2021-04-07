@@ -16,6 +16,7 @@
 #include <string>
 #include <initializer_list>
 
+#include <stack>
 #include <map>
 #include <smap>
 #include <set>
@@ -33,7 +34,7 @@ void print(I f, I l)
 	int i = 0;
 	while(f != l)
 	{
-		std::cout << i << "\t:\t" << "(" << f->first << ", " << f->second << ")" << std::endl;
+		std::cout << i << "\t:\t" << "(H = " << f.nodeptr->height << ", " << f->first << ", " << f->second << ")" << std::endl;
 		++f;
 		++i;
 	}

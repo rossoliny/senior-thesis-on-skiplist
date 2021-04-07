@@ -173,7 +173,7 @@ namespace isa
 		{
 			if(rval.get_node_allocator() != this->get_node_allocator())
 			{
-				base::steal_nodes(std::move(rval));
+				base::move_head(std::move(rval));
 			}
 			else
 			{
@@ -328,7 +328,9 @@ namespace isa
 		template<typename Input_iterator, typename = utils::require_input_iter<Input_iterator>>
 		void insert(Input_iterator first, Input_iterator last)
 		{
+//			std::cout << "\nrange insert: \n";
 			_p_range_insert(first, last);
+//			std::cout << "range insert done.\n\n";
 		}
 
 		void insert(std::initializer_list<value_type> il)
@@ -445,6 +447,16 @@ namespace isa
 		std::pair<const_iterator, const_iterator> equal_range(key_type const& key) const
 		{
 			return std::pair<const_iterator, const_iterator> (lower_bound(key), upper_bound(key));
+		}
+
+		void swap(map& other)
+		{
+			if(this != std::addressof(other))
+			{
+				base::swap_head(other);
+				std::swap(this->m_pair_comparator, other.m_pair_comparator);
+				utils::swap_alloc_on_container_swap(this->m_node_allocator, other.m_node_allocator);
+			}
 		}
 
 		// alloc and compar
@@ -564,7 +576,7 @@ namespace isa
 		void _p_move_assign(map&& rval, std::true_type pocma_or_always_equal)
 		{
 			clear();
-			base::steal_nodes(std::move(rval));
+			base::move_head(std::move(rval));
 			utils::move_alloc_on_container_assignment(base::m_node_allocator, rval.m_node_allocator);
 		}
 
@@ -588,6 +600,14 @@ namespace isa
 
 }
 
+namespace std
+{
+	template<typename Key, typename Tp, typename Comp, typename Alloc>
+	inline void swap(isa::map<Key, Tp, Comp, Alloc>& a, isa::map<Key, Tp, Comp, Alloc>& b) NOEXCEPT_IF(noexcept(a.swap(b)))
+	{
+		a.swap(b);
+	}
+}
 
 #endif // _SKIPLIST_H
 

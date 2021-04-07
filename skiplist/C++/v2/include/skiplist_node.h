@@ -16,6 +16,7 @@ namespace isa
 		public:
 			enum constants { MIN_NEXT_SIZE = 11, MAX_ADDITIONAL_LEVELS = 10 };
 
+			size_t height = 0;
 			skiplist_node_base* m_next[MIN_NEXT_SIZE];
 
 			skiplist_node_base() = default;
@@ -38,11 +39,6 @@ namespace isa
 			inline skiplist_node_base const* get_next(size_t level) const
 			{
 				return level < MIN_NEXT_SIZE ? m_next[level] : nullptr;
-			}
-
-			inline skiplist_node_base** m_next_data()
-			{
-				return m_next;
 			}
 
 		};
@@ -125,6 +121,24 @@ namespace isa
 			using node_base = skiplist_node_base;
 			using node = skiplist_node<Key, Tp>;
 
+			void steal_nodes(skiplist_impl&& rval)
+			{
+				for(size_t i = 0; i <= MAX_ADDITIONAL_LEVELS; ++i)
+				{
+					if(rval.m_next[i] == std::addressof(rval))
+					{
+						this->init_at(i);
+					}
+					else
+					{
+						m_next[i] = rval.m_next[i];
+
+						m_tail[i] = rval.m_tail[i];
+						m_tail[i]->m_next[i] = this;
+					}
+				}
+				static_cast<node*> (m_next[0])->set_prev(this);
+			}
 
 		public:
 			skiplist_node_base* m_tail[MIN_NEXT_SIZE];
@@ -153,7 +167,26 @@ namespace isa
 				else
 				{
 					steal_nodes(std::move(rval));
+
+					rval.init_full();
 				}
+			}
+
+			skiplist_impl& operator=(skiplist_impl&& rval)
+			{
+				if(rval.m_next[0] == std::addressof(rval)) // empty
+				{
+					init_full();
+				}
+				else
+				{
+					steal_nodes(std::move(rval));
+					m_length = rval.m_length;
+					m_height = rval.m_height;
+
+					rval.init_full();
+				}
+				return *this;
 			}
 
 			inline void init_at(size_t i) noexcept
@@ -170,22 +203,6 @@ namespace isa
 				m_length = m_height = 0;
 			}
 
-			void steal_nodes(skiplist_impl&& rval)
-			{
-				for(size_t i = 0; i <= MAX_ADDITIONAL_LEVELS; ++i)
-				{
-					set_next(i, rval.get_next(i));
-
-					m_tail[i] = rval.m_tail[i];
-					m_tail[i]->set_next(i, this);
-				}
-				static_cast<node*> (m_next[0])->set_prev(this);
-				m_length = rval.m_length;
-				m_height = rval.m_height;
-
-				rval.init_full();
-			}
-
 			inline node_base* npos()
 			{
 				return this;
@@ -196,17 +213,6 @@ namespace isa
 				return this;
 			}
 
-/*
-			inline skiplist_node_base const* get_prev() const noexcept
-			{
-				return m_tail[0];
-			}
-
-			inline skiplist_node_base* get_prev() noexcept
-			{
-				return m_tail[0];
-			}
-*/
 
 			template<typename Comparator>
 			node_base* find_node(const Key& key, const Comparator& comp, node_base** update) const
@@ -254,7 +260,6 @@ namespace isa
 
 			void insert_node(node* new_node, size_t const node_height, node_base** update)
 			{
-				//node_base* head = const_cast<node_base*> (this);
 				size_t list_height = m_height;
 				size_t lvl = node_height;
 
@@ -306,6 +311,7 @@ namespace isa
 
 				while(m_height > 0 && this->get_next(m_height) == npos())
 				{
+//					m_tail[m_height] = this;
 					m_height--;
 				}
 				--m_length;
@@ -332,13 +338,57 @@ namespace isa
 				}
 				while(m_height > 0 && this->get_next(m_height) == npos())
 				{
+//					m_tail[m_height] = this;
 					m_height--;
 				}
 			}
 
 			void swap(skiplist_impl& _other)
 			{
+				skiplist_impl* other = std::addressof(_other);
 
+				for(int i = 0; i <= MAX_ADDITIONAL_LEVELS; ++i)
+				{
+					node_base* this_tail = this->m_tail[i];
+					this->m_tail[i] = other->m_tail[i];
+					other->m_tail[i] = this_tail;
+
+					if(this->m_tail[i] == other->npos())
+					{
+						this->m_tail[i] = this;
+					}
+					else
+					{
+						this->m_tail[i]->m_next[i] = this;
+					}
+					if(other->m_tail[i] == this->npos())
+					{
+						other->m_tail[i] = other;
+					}
+					else
+					{
+						other->m_tail[i]->m_next[i] = other;
+					}
+
+					node_base* this_next = this->m_next[i];
+					this->m_next[i] = other->m_next[i];
+					other->m_next[i] = this_next;
+
+					if(this->m_next[i] == other->npos())
+					{
+						this->m_next[i] = this;
+					}
+					if(other->m_next[i] == this->npos())
+					{
+						other->m_next[i] = other;
+					}
+				}
+
+				((node*) other->m_next[0])->set_prev(other);
+				((node*) this->m_next[0])->set_prev(this);
+
+				std::swap(this->m_length, other->m_length);
+				std::swap(this->m_height, other->m_height);
 			}
 
 		};

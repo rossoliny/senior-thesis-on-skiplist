@@ -144,22 +144,18 @@ namespace isa
 		}
 
 		template<typename... Args>
-		insert_return_t do_append(Key const& key, Args&&... args)
+		node_pointer do_append(Key const& key, Args&&... args)
 		{
-			Key const& last = _s_node_key(m_head.m_tail[0]);
+			node_pointer new_node = create_node(std::forward<Args>(args)...);
+			size_t node_height = random_level();
+			new_node->height = node_height;
+			m_head.append_node(new_node, node_height);
 
-//			if(m_head.m_tail[0] == m_head.npos() || less(last, key))
-//			{
-				node_pointer new_node = create_node(std::forward<Args>(args)...);
-				size_t node_height = random_level();
-				m_head.append_node(new_node, node_height);
-
-				return insert_return_t(new_node, true);
-//			}
+			return new_node;
 		}
 
 		template<typename... Args>
-		insert_return_t do_insert(Key const& key, Args&&... args)
+		insert_return_t insert_node(Key const& key, Args&&... args)
 		{
 			node_base* update[1 + MAX_ADDITIONAL_LEVELS];
 
@@ -169,7 +165,7 @@ namespace isa
 			{
 				node_pointer new_node = create_node(std::forward<Args>(args)...);
 				size_t node_height = random_level();
-//				std::cout << "inserting:\tH = " << node_height << ", K = " << key << std::endl;
+				new_node->height = node_height;
 				m_head.insert_node(new_node, node_height, update);
 
 				return insert_return_t(new_node, true);
@@ -185,11 +181,13 @@ namespace isa
 
 			if(m_head.m_tail[0] == m_head.npos() || less(last, key))
 			{
-				return do_append(key, data);
+				node_pointer new_node = do_append(key, data);
+				return insert_return_t(new_node, true);
 			}
+
 			if(greater(last, key))
 			{
-				return do_insert(key, data);
+				return insert_node(key, data);
 			}
 
 			return insert_return_t(static_cast<node_pointer> (m_head.m_tail[0]), false);
@@ -202,11 +200,13 @@ namespace isa
 
 			if(m_head.m_tail[0] == m_head.npos() || less(last, key))
 			{
-				return do_append(key, std::move(data));
+				node_pointer new_node = do_append(key, std::move(data));
+				return insert_return_t(new_node, true);
 			}
+
 			if(greater(last, key))
 			{
-				return do_insert(key, std::move(data));
+				return insert_node(key, std::move(data));
 			}
 
 			return insert_return_t(static_cast<node_pointer> (m_head.m_tail[0]), false);
@@ -235,7 +235,6 @@ namespace isa
 			if(pos != m_head.npos() && equals(_s_node_key(pos), key))
 			{
 				node_base* next = pos->m_next[0];
-//				std::cout << "erasing:\tK = " << key << std::endl;
 				m_head.remove_node(pos, update);
 				delete_node(pos);
 				pos = next;
@@ -253,7 +252,6 @@ namespace isa
 			if(equals(node, pos))
 			{
 				node_base* next = pos->m_next[0];
-				std::cout << "erasing:\tK = " << _s_node_key(pos) << std::endl;
 				m_head.remove_node(pos, update);
 				delete_node(pos);
 
@@ -270,8 +268,6 @@ namespace isa
 
 			if(equals(begin, first))
 			{
-//				std::cout << "erasing:\t[" << _s_node_key(first) << ", end(" << _s_node_key(last) << ") )" << std::endl;
-
 				m_head.remove_range(first, last, update, m_head.m_tail);
 
 				while(first != last)
@@ -297,8 +293,6 @@ namespace isa
 
 			if((first == begin && last == end) || (equals(begin, first) && equals(end, last)))
 			{
-//				std::cout << "erasing:\t[" << _s_node_key(first) << ", " << _s_node_key(last) << ")" << std::endl;
-
 				m_head.remove_range(first, last, update1, update2);
 				while(first != last)
 				{
@@ -361,6 +355,11 @@ namespace isa
 			}
 
 			return static_cast<node_pointer> (pos)->dataptr()->second;
+		}
+
+		void swap_head(map_base& other)
+		{
+			m_head.swap(other.m_head);
 		}
 
 		inline bool is_empty() const
@@ -450,9 +449,9 @@ namespace isa
 
 
 	protected:
-		void steal_nodes(map_base&& rval)
+		void move_head(map_base&& rval)
 		{
-			m_head.steal_nodes(std::move(rval.m_head));
+			m_head = std::move(rval.m_head);
 		}
 
 	public:
