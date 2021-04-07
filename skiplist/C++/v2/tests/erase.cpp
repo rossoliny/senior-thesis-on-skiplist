@@ -86,12 +86,6 @@ TEST_CASE("erase single by position", tag)
 		auto p2 = exp.insert(val1); exp.insert(val2); exp.insert(val3);
 		REQUIRE(p1.second == p2.second);
 
-		SECTION("do random operations")
-		{
-			DO_RANDOM_OPERATIONS(act, exp);
-			MAPS_REQUIRE_EQUAL(act, exp);
-		}
-
 		auto it11 = ++p1.first;
 		auto it22 = ++p2.first;
 
