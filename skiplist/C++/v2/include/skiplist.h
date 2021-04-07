@@ -527,7 +527,7 @@ namespace isa
 			}
 			else
 			{
-				_p_range_assign_longer(first, last);
+				_p_range_assign_longer_or_equal(first, last);
 			}
 		}
 
@@ -548,7 +548,7 @@ namespace isa
 		}
 
 		template<typename Input_iterator>
-		inline void _p_range_assign_longer(Input_iterator first, Input_iterator last)
+		inline void _p_range_assign_longer_or_equal(Input_iterator first, Input_iterator last)
 		{
 			_p_range_assign_equal(first, last);
 			_p_range_insert(first, last);
@@ -566,14 +566,14 @@ namespace isa
 		}
 
 		// allocators are equal or curr alloc can free stolen nodes or alloc is moved.
-		void _p_move_assign(map&& rval, std::true_type pocma_or_always_equal)
+		void _p_move_assign(map&& rval, std::true_type pocma_or_equal)
 		{
 			clear();
 			base::move_head(std::move(rval));
 			utils::move_alloc_if_pocma(base::m_node_allocator, rval.m_node_allocator);
 		}
 
-		void _p_move_assign(map&& rval, std::false_type pocma_or_always_equal)
+		void _p_move_assign(map&& rval, std::false_type pocma_or_equal)
 		{
 			if(base::m_node_allocator == rval.m_node_allocator)
 			{
