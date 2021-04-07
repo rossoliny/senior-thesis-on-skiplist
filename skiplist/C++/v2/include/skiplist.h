@@ -463,6 +463,11 @@ namespace isa
 			return base::get_key_comparator();
 		}
 
+		value_compare value_comp() const noexcept
+		{
+			return base::get_pair_comparator();
+		}
+
 		allocator_type get_allocator() const noexcept
 		{
 			return base::get_node_allocator();

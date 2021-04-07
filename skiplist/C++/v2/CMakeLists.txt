@@ -5,6 +5,7 @@ set(CMAKE_CXX_COMPILER "g++")
 
 include_directories(.)
 include_directories(include)
+include_directories(tests)
 
 set(TEST_WITH_CATCH_SRC
         tests/catch2_test.cpp
@@ -23,6 +24,8 @@ set(TEST_WITH_CATCH_SRC
         tests/upper_bound.cpp
         tests/equal_range.cpp
         tests/swap.cpp
+
+        tests/with_std_alorithms/std_algos.cpp
 )
 
 add_compile_options(-std=c++11 -g)
