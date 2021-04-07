@@ -232,7 +232,6 @@ namespace isa
 
 			void append_node(node* new_node, size_t height)
 			{
-//				insert_node(new_node, height, m_tail);
 				m_tail[0]->m_next[0] = new_node;
 				new_node->set_prev(m_tail[0]);
 				new_node->m_next[0] = this;

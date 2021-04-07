@@ -65,3 +65,96 @@ TEST_CASE("find", tag)
 		MAPS_REQUIRE_EQUAL(act, exp);
 	}
 }
+
+TEST_CASE("find with int Key", tag)
+{
+	SECTION("find success")
+	{
+		CREATE_MAPS_INT_STRING(act, exp);
+		SECTION("do random operations")
+		{
+			DO_RANDOM_OPERATIONS(act, exp);
+			MAPS_REQUIRE_EQUAL(act, exp);
+		}
+
+		auto key = ___init_list_input___actexp.begin()->first;
+
+		auto it1 = act.find(key);
+		auto it2 = exp.find(key);
+
+		REQUIRE(*it1 == *it2);
+		MAPS_REQUIRE_EQUAL(act, exp);
+		SECTION("do random operations")
+		{
+			DO_RANDOM_OPERATIONS(act, exp);
+			MAPS_REQUIRE_EQUAL(act, exp);
+		}
+	}
+	SECTION("find const")
+	{
+		CREATE_MAPS_INT_STRING(act, exp);
+		SECTION("do random operations")
+		{
+			DO_RANDOM_OPERATIONS(act, exp);
+			MAPS_REQUIRE_EQUAL(act, exp);
+		}
+
+		auto key = exp.begin()->first;
+
+		auto it1 = act.find(key);
+		auto it2 = exp.find(key);
+
+		REQUIRE(*it1 == *it2);
+		MAPS_REQUIRE_EQUAL(act, exp);
+		SECTION("do random operations")
+		{
+			DO_RANDOM_OPERATIONS(act, exp);
+			MAPS_REQUIRE_EQUAL(act, exp);
+		}
+	}
+	SECTION("not found in empty")
+	{
+		my_map<int, string> act;
+		std_map<int, string> exp;
+
+		int k = 1001;
+		auto it1 = act.find(k);
+		auto it2 = exp.find(k);
+
+		REQUIRE(it1 == act.end());
+		REQUIRE(it2 == exp.end());
+		REQUIRE(it1 == act.begin());
+		REQUIRE(it2 == exp.begin());
+
+		MAPS_REQUIRE_EQUAL(act, exp);
+		SECTION("do random operations")
+		{
+			DO_RANDOM_OPERATIONS(act, exp);
+			MAPS_REQUIRE_EQUAL(act, exp);
+		}
+	}
+	SECTION("not found")
+	{
+		CREATE_MAPS_INT_STRING(act, exp);
+		SECTION("do random operations")
+		{
+			DO_RANDOM_OPERATIONS(act, exp);
+			MAPS_REQUIRE_EQUAL(act, exp);
+		}
+
+		int k = 1001;
+		auto it1 = act.find(k);
+		auto it2 = exp.find(k);
+
+		REQUIRE(it1 == act.end());
+		REQUIRE(it2 == exp.end());
+
+		MAPS_REQUIRE_EQUAL(act, exp);
+		SECTION("do random operations")
+		{
+			DO_RANDOM_OPERATIONS(act, exp);
+			MAPS_REQUIRE_EQUAL(act, exp);
+		}
+
+	}
+}
