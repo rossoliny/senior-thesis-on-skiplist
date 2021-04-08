@@ -6,29 +6,65 @@
 #include <thread>
 
 
+static void escape(void* p)
+{
+	asm volatile("" : : "g"(p) : "memory");
+}
+
+static void clobber()
+{
+	asm volatile("" : : : "memory");
+}
+
+
+const auto p = std::make_pair("not short string. allocated on heap", 10);
+const int N = 25;
+
+isa::map<std::string, int> m1;
+std::map<std::string, int> m2;
+
+std::chrono::duration<float> bench_skiplist()
+{
+	auto start = std::chrono::high_resolution_clock::now();
+	for(int i = 0; i < N; ++i)
+	{
+		escape(&m1);
+		m1.insert(p);
+		escape(&m1);
+		clobber();
+	}
+	auto end = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<float> elapsed = end - start;
+
+	return elapsed;
+}
+
+std::chrono::duration<float> bench_rbtree()
+{
+	auto start = std::chrono::high_resolution_clock::now();
+	for(int i = 0; i < N; ++i)
+	{
+		escape(&m2);
+		m2.insert(p);
+		escape(&m2);
+		clobber();
+	}
+	auto end = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<float> elapsed = end - start;
+
+	return elapsed;
+}
+
 int main()
 {
 //	using namespace std::literals::chrono_literals;
 
-	isa::map<std::string, int> m1;
-	std::map<std::string, int> m2;
+	auto elapsed1 = bench_skiplist();
+	auto elapsed2 = bench_rbtree();
 
-	auto p = std::make_pair("short string", 10);
-
-	auto start = std::chrono::high_resolution_clock::now();
-	m1.insert(p);
-	auto end = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<float> elapsed = end - start;
-
-	auto start2 = std::chrono::high_resolution_clock::now();
-	m2.insert(p);
-	auto end2 = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<float> elapsed2 = end2 - start2;
-
-	std::cout << "isa::map::insert:\t" << (elapsed.count() * 1000) << " ms" << std::endl;
-	std::cout << "std::map::insert:\t" << (elapsed2.count() * 1000) << " ms" << std::endl;
-
-	std::cout << "ratio:\t" << (elapsed.count() / elapsed2.count()) << std::endl;
+	std::cout << "isa::map::insert:\t" << (elapsed1.count() * 1000) << "\tms" << std::endl;
+	std::cout << "std::map::insert:\t" << (elapsed2.count() * 1000) << "\tms" << std::endl;
+	std::cout << "ratio:\t" << (elapsed1.count() / elapsed2.count()) << std::endl;
 
 	return 0;
 }

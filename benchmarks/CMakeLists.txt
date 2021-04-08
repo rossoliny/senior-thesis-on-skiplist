@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.16)
-project(Benchmarks)
+project(benchmarks)
 
 set(CMAKE_CXX_STANDARD 11)
 include_directories(../skiplist/C++/v2/include)
 
-add_executable(Benchmarks main.cpp)
+add_compile_options(-fno-omit-frame-pointer -o2)
+
+add_executable(benchmarks main.cpp)
