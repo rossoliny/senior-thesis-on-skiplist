@@ -8,7 +8,7 @@
 
 int main()
 {
-	using namespace std::literals::chrono_literals;
+//	using namespace std::literals::chrono_literals;
 
 	isa::map<std::string, int> m1;
 	std::map<std::string, int> m2;
@@ -27,6 +27,8 @@ int main()
 
 	std::cout << "isa::map::insert:\t" << (elapsed.count() * 1000) << " ms" << std::endl;
 	std::cout << "std::map::insert:\t" << (elapsed2.count() * 1000) << " ms" << std::endl;
+
+	std::cout << "ratio:\t" << (elapsed.count() / elapsed2.count()) << std::endl;
 
 	return 0;
 }
