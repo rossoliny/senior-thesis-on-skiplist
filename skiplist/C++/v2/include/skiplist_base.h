@@ -75,7 +75,8 @@ namespace isa
 
 		inline bool equals(Key const& a, Key const& b) const
 		{
-			return !less(a, b) && !greater(a, b);
+//			return !less(a, b) && !greater(a, b);
+			return std::equal_to<Key>()(a, b);
 		}
 
 		inline bool equals(node_base const* node, pair_type const& pair) const
@@ -311,24 +312,18 @@ namespace isa
 
 		node_pointer find_node(Key const& key)
 		{
-			node_base* update[1 + MAX_ADDITIONAL_LEVELS];
-			node_base* pos = m_head.find_node(key, get_key_comparator(), update);
-
-			return static_cast<node_pointer> (pos);
+			return m_head.find(key, get_key_comparator());
 		}
 
 		node_const_pointer find_node(Key const& key) const
 		{
-			node_base* update[1 + MAX_ADDITIONAL_LEVELS];
-			node_base* pos = m_head.find_node(key, get_key_comparator(), update);
-
-			return static_cast<node_const_pointer> (pos);
+			return m_head.find(key, get_key_comparator());
 		}
 
+		// this is fair although it's faster to just return 1 or 0
 		size_t count_key(Key const& key) const
 		{
-			node_base* update[1 + MAX_ADDITIONAL_LEVELS];
-			node_base* pos = m_head.find_node(key, get_key_comparator(), update);
+			node_base* pos = m_head.find(key, get_key_comparator());
 			size_t count = 0;
 
 			while(pos != m_head.npos() && equals(_s_node_key(pos), key))

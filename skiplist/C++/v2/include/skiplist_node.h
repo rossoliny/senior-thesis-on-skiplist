@@ -118,6 +118,7 @@ namespace isa
 		protected:
 			using node_base = skiplist_node_base;
 			using node = skiplist_node<Key, Tp>;
+			using ssize_t = signed long long int;
 
 			void steal_nodes(skiplist_impl&& rval)
 			{
@@ -206,13 +207,42 @@ namespace isa
 				return this;
 			}
 
+			template<typename Comparator>
+			node* find(const Key& key, const Comparator& comp) const
+			{
+				std::equal_to<Key> equals;
+				node_base const* head = static_cast<node_base const*> (this);
+				node_base* curr = const_cast<node_base*> (head);
+				ssize_t lvl = m_height;
+
+				while(lvl >= 0)
+				{
+					while(true)
+					{
+						if(curr->get_next(lvl) == npos())
+							break;
+
+						Key const& k = *static_cast<node*>(curr->get_next(lvl))->keyptr();
+						if(!comp(k, key))
+						{
+							if(equals(k, key))
+							{
+								return static_cast<node*> (curr->get_next(lvl));
+							}
+							break;
+						}
+						curr = curr->get_next(lvl);
+					}
+					--lvl;
+				}
+
+				return static_cast<node*> (curr->m_next[0]);
+			}
 
 			template<typename Comparator>
 			node_base* find_node(const Key& key, const Comparator& comp, node_base** update) const
 			{
-				node_base const* head = static_cast<node_base const*> (this);
-				node_base* curr = const_cast<node_base*> (head);
-				using ssize_t = signed long long int;
+				node_base* curr = const_cast<node_base*>(static_cast<node_base const*> (this));
 				ssize_t lvl = m_height;
 
 				while(lvl >= 0)

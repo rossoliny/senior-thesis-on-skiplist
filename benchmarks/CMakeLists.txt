@@ -4,6 +4,6 @@ project(benchmarks)
 set(CMAKE_CXX_STANDARD 11)
 include_directories(../skiplist/C++/v2/include)
 
-add_compile_options(-fno-omit-frame-pointer -o2)
+add_compile_options(-fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -O0 -g)
 
 add_executable(benchmarks main.cpp)
