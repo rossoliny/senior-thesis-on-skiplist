@@ -36,7 +36,7 @@ namespace isa
 
 			inline skiplist_node_base* get_next(size_t level)
 			{
-				return level <= MAX_ADDITIONAL_LEVELS ? m_next[level] : nullptr;
+				return m_next[level];
 			}
 
 		};

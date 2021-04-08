@@ -45,12 +45,8 @@ int max_string = 120;
 isa::map<std::string, int> m1;
 std::map<std::string, int> m2;
 
-std::chrono::duration<float> bench_skiplist()
+std::chrono::duration<float> bench_skiplist(std::pair<std::string, int> const& p)
 {
-	static int val = 1;
-
-	const auto p = std::make_pair(rand_string(min_string, max_string), val++);
-
 	auto start = std::chrono::high_resolution_clock::now();
 
 		escape(&m1);
@@ -59,17 +55,12 @@ std::chrono::duration<float> bench_skiplist()
 		clobber();
 
 	auto end = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<float> elapsed = end - start;
 
-	return elapsed;
+	return (end - start);
 }
 
-std::chrono::duration<float> bench_rbtree()
+std::chrono::duration<float> bench_rbtree(std::pair<std::string, int> const& p)
 {
-	static int val = 1;
-
-	const auto p = std::make_pair(rand_string(min_string, max_string), val++);
-
 	auto start = std::chrono::high_resolution_clock::now();
 
 		escape(&m2);
@@ -78,29 +69,26 @@ std::chrono::duration<float> bench_rbtree()
 		clobber();
 
 	auto end = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<float> elapsed = end - start;
 
-	return elapsed;
+	return (end - start);
 }
 
 int main()
 {
+	srand(INT_MAX);
 //	using namespace std::literals::chrono_literals;
 	int RUNS = 10000;
 
 
+	volatile int val = 1;
 	for(int i = 0; i < RUNS; ++i)
 	{
 		escape(&m1);
-		const volatile auto elapsed1 = bench_skiplist();
-		escape(&m1);
-	}
+		const auto pair = std::make_pair(rand_string(min_string, max_string), val++);
 
-	for(int i = 0; i < RUNS; ++i)
-	{
-		escape(&m2);
-		const volatile auto elapsed2 = bench_rbtree();
-		escape(&m2);
+		const volatile auto elapsed1 = bench_skiplist(pair);
+		const volatile auto elapsed2 = bench_rbtree(pair);
+		escape(&m1);
 	}
 
 

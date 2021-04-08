@@ -219,9 +219,7 @@ namespace isa
 		template<typename... Args>
 		insert_return_t append_or_insert(Args&&... args)
 		{
-			pair_type data(std::forward<Args>(args)...);
-
-			return append_or_insert(std::move(data));
+			return append_or_insert(pair_type(std::forward<Args>(args)...));
 		}
 
 		template<typename... Args>
