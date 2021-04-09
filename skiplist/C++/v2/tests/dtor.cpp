@@ -41,8 +41,8 @@ TEST_CASE("destructor", "[destructor] [dtor]")
 	{
 		CREATE_MAPS_INT_STRING(res);
 
-		my_res.~map();
-		std_res.~map();
+		my_res.smapp();
+		std_res.smapp();
 
 		MAPS_REQUIRE_EQUAL(my_res, std_res);
 	}
@@ -51,8 +51,8 @@ TEST_CASE("destructor", "[destructor] [dtor]")
 		my_map<string, int> act(vec_pairs.begin(), vec_pairs.end());
 		std_map<string, int> exp(vec_pairs.begin(), vec_pairs.end());
 
-		act.~map();
-		exp.~map();
+		act.smapp();
+		exp.smapp();
 
 		MAPS_REQUIRE_EQUAL(act, exp);
 	}

@@ -6,7 +6,7 @@
 #include <iostream>
 #define tag "[swap]"
 
-TEST_CASE("map::swap")
+TEST_CASE("smap::swap")
 {
 //	cout << "\nSWAP TEST\n" << endl;
 //	srand(99999); // 2 gives malloc error // 7 infinite loop // 8,11 segfault // 99999->19==17

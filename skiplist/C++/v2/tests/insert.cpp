@@ -9,7 +9,7 @@
 
 TEST_CASE("insert single element", tag)
 {
-	SECTION("empty map")
+	SECTION("empty smap")
 	{
 		my_map<int, string> act;
 		std_map<int, string> exp;
@@ -33,7 +33,7 @@ TEST_CASE("insert single element", tag)
 			DO_RANDOM_OPERATIONS(act, exp);
 		}
 	}
-	SECTION("non empty map")
+	SECTION("non empty smap")
 	{
 		CREATE_MAPS_INT_STRING(act, exp);
 
@@ -141,7 +141,7 @@ TEST_CASE("insert single element", tag)
 
 TEST_CASE("template insert single element", tag)
 {
-	SECTION("empty map")
+	SECTION("empty smap")
 	{
 		SECTION("lvalue template arg")
 		{
@@ -186,7 +186,7 @@ TEST_CASE("template insert single element", tag)
 
 			SECTION("do random operations")
 			{
-//				cout << "map before random operations\n";
+//				cout << "smap before random operations\n";
 //				print(act.begin(), act.end());
 //				cout << "doing random operations\n";
 				DO_RANDOM_OPERATIONS(act, exp);
@@ -194,7 +194,7 @@ TEST_CASE("template insert single element", tag)
 //			cout << "END DEBUG SECTION\n\n";
 		}
 	}
-	SECTION("non empty map")
+	SECTION("non empty smap")
 	{
 		SECTION("lvalue template arg")
 		{
@@ -254,7 +254,7 @@ TEST_CASE("template insert single element", tag)
 
 TEST_CASE("range insert", tag)
 {
-	SECTION("empty map and non empty")
+	SECTION("empty smap and non empty")
 	{
 		auto input = rand_pairs_of_len(rand_int(1, 1000));
 
@@ -312,7 +312,7 @@ TEST_CASE("range insert", tag)
 
 TEST_CASE("initializer list insert", tag)
 {
-	SECTION("empty map and non empty")
+	SECTION("empty smap and non empty")
 	{
 		auto input = rand_pairs_of_len(rand_int(1, 1000));
 

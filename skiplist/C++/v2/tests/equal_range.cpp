@@ -11,7 +11,7 @@ TEST_CASE("equal range search", tag)
 	my_map<string, int> const act(vec_pairs.begin(), vec_pairs.end());
 	std_map<string, int> const exp(vec_pairs.begin(), vec_pairs.end());
 
-	SECTION("key is out of map's range")
+	SECTION("key is out of smap's range")
 	{
 		auto p1 = act.equal_range("zz");
 		auto p2 = exp.equal_range("zz");
@@ -32,7 +32,7 @@ TEST_CASE("equal range search", tag)
 
 		MAPS_REQUIRE_EQUAL(act, exp);
 	}
-	SECTION("key is in map's range, but does not exist: return 0 elements")
+	SECTION("key is in smap's range, but does not exist: return 0 elements")
 	{
 		auto p1 = act.equal_range("aa");
 		auto p2 = exp.equal_range("aa");

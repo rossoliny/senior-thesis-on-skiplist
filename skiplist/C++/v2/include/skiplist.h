@@ -5,12 +5,11 @@
 #ifndef _SKIPLIST_H
 #define _SKIPLIST_H
 
+#include <iterator>
+#include <algorithm>
 #include "skiplist_base.h"
 #include "skiplist_iterator.h"
 #include "container_utils.h"
-#include <iostream>
-#include <iterator>
-#include <algorithm>
 
 namespace isa
 {
@@ -22,9 +21,9 @@ namespace isa
 			typename Compare = std::less<Key>,
 			typename Alloc = std::allocator<std::pair<Key const, Tp>>
 		>
-	class map : public map_base<Key, Tp, Alloc, Compare>
+	class smap : public smap_base<Key, Tp, Alloc, Compare>
 	{
-		using base = map_base<Key, Tp, Alloc, Compare>;
+		using base = smap_base<Key, Tp, Alloc, Compare>;
 
 		using node_alloc_type = typename base::node_alloc_type;
 		using node_alloc_traits = typename base::node_alloc_traits;
@@ -127,32 +126,32 @@ namespace isa
 		// constructors
 
 		// empty ctors
-		map() = default;
+		smap() = default;
 
-		explicit map(key_compare const& comp)
+		explicit smap(key_compare const& comp)
 			: base(comp)
 		{
 		}
 
-		explicit map(allocator_type const& alloc)
+		explicit smap(allocator_type const& alloc)
 			: base(alloc)
 		{
 		}
 
-		map(key_compare const& comp, allocator_type const& alloc)
+		smap(key_compare const& comp, allocator_type const& alloc)
 			: base(comp, alloc)
 		{
 		}
 
 		// copy ctors
-		map(map const& other)
+		smap(smap const& other)
 			: base(other.get_pair_comparator(), node_alloc_traits::select_on_container_copy_construction(other.get_node_allocator()))
 		{
 			// 100% sorted
 			_p_range_construct(other.begin(), other.end());
 		}
 
-		map(map const& other, allocator_type const& alloc)
+		smap(smap const& other, allocator_type const& alloc)
 			: base(other.get_pair_comparator(), alloc)
 		{
 			// 100% sorted
@@ -160,15 +159,15 @@ namespace isa
 		}
 
 		// move ctors
-		map(map&& rval) = default;
+		smap(smap&& rval) = default;
 
 	protected:
-		map(map&& rval, allocator_type const& alloc, std::true_type)
+		smap(smap&& rval, allocator_type const& alloc, std::true_type)
 			: base(std::move(rval), alloc)
 		{
 		}
 
-		map(map&& rval, allocator_type const& alloc, std::false_type)
+		smap(smap&& rval, allocator_type const& alloc, std::false_type)
 			: base(alloc)
 		{
 			if(rval.get_node_allocator() == this->get_node_allocator())
@@ -185,14 +184,14 @@ namespace isa
 		}
 
 	public:
-		map(map&& rval, allocator_type const& alloc)
-			: map(std::move(rval), alloc, typename node_alloc_traits::is_always_equal())
+		smap(smap&& rval, allocator_type const& alloc)
+			: smap(std::move(rval), alloc, typename node_alloc_traits::is_always_equal())
 		{
 		}
 
 		// TODO: default args must be default constructed (not default constructed and then copied)
 		template<typename Input_iterator, typename = utils::require_input_iter<Input_iterator>>
-		map(Input_iterator first, Input_iterator last, key_compare const& comp = key_compare(), allocator_type const& alloc = allocator_type())
+		smap(Input_iterator first, Input_iterator last, key_compare const& comp = key_compare(), allocator_type const& alloc = allocator_type())
 			: base(comp, alloc)
 		{
 			// not 100% sorted
@@ -200,26 +199,26 @@ namespace isa
 		}
 
 		// initializer list
-		map(std::initializer_list<value_type> il, key_compare const& comp, allocator_type const& alloc)
+		smap(std::initializer_list<value_type> il, key_compare const& comp, allocator_type const& alloc)
 			: base(comp, alloc)
 		{
 			_p_range_construct(il.begin(), il.end());
 		}
 
-		map(std::initializer_list<value_type> il, key_compare const& comp)
+		smap(std::initializer_list<value_type> il, key_compare const& comp)
 			: base(comp)
 		{
 			_p_range_construct(il.begin(), il.end());
 		}
 
-		map(std::initializer_list<value_type> il)
+		smap(std::initializer_list<value_type> il)
 			: base()
 		{
 			_p_range_construct(il.begin(), il.end());
 		}
 
 		// assignment operators
-		map& operator=(map const& other)
+		smap& operator=(smap const& other)
 		{
 			if(this != std::addressof(other))
 			{
@@ -243,7 +242,7 @@ namespace isa
 			return *this;
 		}
 
-		map& operator=(map&& rval)
+		smap& operator=(smap&& rval)
 		{
 			base::m_pair_comparator = std::move(rval.get_pair_comparator());
 			constexpr bool steal_nodes = base::node_alloc_traits::propagate_on_container_move_assignment::value || base::node_alloc_traits::is_always_equal::value;
@@ -251,9 +250,9 @@ namespace isa
 			return *this;
 		}
 
-		map& operator=(std::initializer_list<value_type> il)
+		smap& operator=(std::initializer_list<value_type> il)
 		{
-			map tmp(il, base::get_key_comparator(), base::get_node_allocator()); // O(N log(N)) and heap allocations. O(N) if sorted
+			smap tmp(il, base::get_key_comparator(), base::get_node_allocator()); // O(N log(N)) and heap allocations. O(N) if sorted
 			if(!tmp.empty())
 			{
 				*this = std::move(tmp); // O(N) deallocations
@@ -278,7 +277,7 @@ namespace isa
 			node_pointer node = base::find_node(key);
 			if(node->baseptr() == base::m_head.npos() || !base::equals(*node->keyptr(), key))
 			{
-				throw std::out_of_range("map::at: key not found");
+				throw std::out_of_range("smap::at: key not found");
 			}
 
 			return node->dataptr()->second;
@@ -289,7 +288,7 @@ namespace isa
 			node_const_pointer node = base::find_node(key);
 			if(node->baseptr() == base::m_head.npos() || !base::equals(*node->keyptr(), key))
 			{
-				throw std::out_of_range("map::at: key not found");
+				throw std::out_of_range("smap::at: key not found");
 			}
 
 			return node->dataptr()->second;
@@ -447,7 +446,7 @@ namespace isa
 			return std::pair<const_iterator, const_iterator> (lower_bound(key), upper_bound(key));
 		}
 
-		void swap(map& other)
+		void swap(smap& other)
 		{
 			if(this != std::addressof(other))
 			{
@@ -490,7 +489,7 @@ namespace isa
 		}
 
 		// dtor
-		~map() noexcept = default;
+		~smap() noexcept = default;
 
 		void clear() noexcept
 		{
@@ -571,14 +570,14 @@ namespace isa
 		}
 
 		// allocators are equal or curr alloc can free stolen nodes or alloc is moved.
-		void _p_move_assign(map&& rval, std::true_type pocma_or_equal)
+		void _p_move_assign(smap&& rval, std::true_type pocma_or_equal)
 		{
 			clear();
 			base::move_head(std::move(rval));
 			utils::move_alloc_if_pocma(base::m_node_allocator, rval.m_node_allocator);
 		}
 
-		void _p_move_assign(map&& rval, std::false_type pocma_or_equal)
+		void _p_move_assign(smap&& rval, std::false_type pocma_or_equal)
 		{
 			if(base::m_node_allocator == rval.m_node_allocator)
 			{
@@ -601,7 +600,7 @@ namespace isa
 namespace std
 {
 	template<typename Key, typename Tp, typename Comp, typename Alloc>
-	inline void swap(isa::map<Key, Tp, Comp, Alloc>& a, isa::map<Key, Tp, Comp, Alloc>& b) NOEXCEPT_IF(noexcept(a.swap(b)))
+	inline void swap(isa::smap<Key, Tp, Comp, Alloc>& a, isa::smap<Key, Tp, Comp, Alloc>& b) NOEXCEPT_IF(noexcept(a.swap(b)))
 	{
 		a.swap(b);
 	}

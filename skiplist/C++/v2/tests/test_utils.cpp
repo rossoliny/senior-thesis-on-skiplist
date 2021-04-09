@@ -45,21 +45,21 @@ const std::initializer_list<std::pair<int const, std::string>> init_list_L = ran
 
 const  std::vector<std::pair<std::string const, int>> vec_pairs = {
 	std::make_pair("smap", 1),     std::make_pair("unit", 2), std::make_pair("test", 3),  std::make_pair("auca", 4),
-	std::make_pair("std::map", 5), std::make_pair("ab", 6),   std::make_pair("cd", 7),    std::make_pair("ef", 8),
+	std::make_pair("std::smap", 5), std::make_pair("ab", 6),   std::make_pair("cd", 7),    std::make_pair("ef", 8),
 	std::make_pair("gh", 9),       std::make_pair("ij", 10),  std::make_pair("kl", 11),   std::make_pair("mnop", 12),
 	std::make_pair("qrstuv", 13),  std::make_pair("wxy", 14), std::make_pair("z", 15)
 };
 
 const std::initializer_list<std::pair<int const, std::string>> initializer_list_pairs = {
 	std::make_pair(1, "smap"), std::make_pair(2, "unit"), std::make_pair(3, "test"),  std::make_pair(4, "auca"),
-	std::make_pair(5, "std::map"), std::make_pair(6, "ab"),   std::make_pair(7, "cd"),    std::make_pair(8, "ef"),
+	std::make_pair(5, "std::smap"), std::make_pair(6, "ab"),   std::make_pair(7, "cd"),    std::make_pair(8, "ef"),
 	std::make_pair(9, "gh"),       std::make_pair(10, "ij"),  std::make_pair(11, "kl"),   std::make_pair(12, "mnop"),
 	std::make_pair(13, "qrstuv"),  std::make_pair(14, "wxy"), std::make_pair(15, "z")
 };
 
 const std::initializer_list<std::pair<int const, std::string>> initializer_list_pairs_L = {
 	std::make_pair(1, "smap"), std::make_pair(2, "unit"),   std::make_pair(3, "test"),  std::make_pair(4, "auca"),
-	std::make_pair(5, "std::map"), std::make_pair(6, "ab"),     std::make_pair(7, "cd"),    std::make_pair(8, "ef"),
+	std::make_pair(5, "std::smap"), std::make_pair(6, "ab"),     std::make_pair(7, "cd"),    std::make_pair(8, "ef"),
 	std::make_pair(9, "gh"),       std::make_pair(10, "ij"),    std::make_pair(11, "kl"),   std::make_pair(12, "mnop"),
 	std::make_pair(13, "qrstuv"),  std::make_pair(14, "wxy"),   std::make_pair(15, "z"),    std::make_pair(16, "16"),
 	std::make_pair(17, "qwer"),    std::make_pair(18, "tyui"),  std::make_pair(19, "op[]"), std::make_pair(20, "20"),

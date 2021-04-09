@@ -6,13 +6,13 @@
 #define _SKIPLIST_ITERATOR_H
 
 
-#include "skiplist_node.h"
 #include <iterator>
+#include "skiplist_node.h"
 
 namespace isa
 {
 	template<typename Key, typename Tp, typename Compare, typename Alloc>
-	class map;
+	class smap;
 
 	template<typename Key, typename Tp, typename Compare, typename Alloc>
 	struct skiplist_const_iterator;
@@ -93,7 +93,7 @@ namespace isa
 	protected:
 		node_base* nodeptr;
 
-		friend class isa::map<Key, Tp, Compare, Alloc>;
+		friend class isa::smap<Key, Tp, Compare, Alloc>;
 		friend class isa::skiplist_const_iterator<Key, Tp, Compare, Alloc>;
 	};
 
@@ -183,7 +183,7 @@ namespace isa
 	protected:
 		node_base const* nodeptr;
 
-		friend class isa::map<Key, Tp, Compare, Alloc>;
+		friend class isa::smap<Key, Tp, Compare, Alloc>;
 	};
 }
 

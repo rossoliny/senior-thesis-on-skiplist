@@ -247,7 +247,7 @@ TEST_CASE("erase single by key", tag)
 
 TEST_CASE("erase range", tag)
 {
-	SECTION("erase from empty map")
+	SECTION("erase from empty smap")
 	{
 		my_map<int, std::string> act;
 		std_map<int, std::string> exp;

@@ -6,14 +6,14 @@
 #define _SKIPLIST_BASE_H
 #define USE_C_RAND
 
-#include "skiplist_node.h"
 #include <random>
+#include "skiplist_node.h"
 
 namespace isa
 {
 
 	template<typename Key, typename Tp, typename Alloc, typename Comparator>
-	class map_base
+	class smap_base
 	{
 		enum
 		{
@@ -355,12 +355,12 @@ namespace isa
 			return static_cast<node_pointer> (pos)->dataptr()->second;
 		}
 
-		void move_head(map_base&& rval)
+		void move_head(smap_base&& rval)
 		{
 			m_head = std::move(rval.m_head);
 		}
 
-		void swap_head(map_base& other)
+		void swap_head(smap_base& other)
 		{
 			m_head.swap(other.m_head);
 		}
@@ -409,44 +409,44 @@ namespace isa
 
 
 	public:
-		map_base() = default;
+		smap_base() = default;
 
-		explicit map_base(Comparator const& key_comp)
+		explicit smap_base(Comparator const& key_comp)
 			: m_pair_comparator(key_comp)
 		  	, m_head()
 		{
 		}
 
-		explicit map_base(Alloc const& alloc)
+		explicit smap_base(Alloc const& alloc)
 			: m_node_allocator(alloc)
 		  	, m_head()
 		{
 		}
 
-		map_base(Comparator const& key_comp, Alloc const& alloc)
+		smap_base(Comparator const& key_comp, Alloc const& alloc)
 			: m_node_allocator(alloc)
 			, m_pair_comparator(key_comp)
 			, m_head()
 		{
 		}
 
-		map_base(pair_comparator_type const& pair_comp, node_alloc_type&& alloc)
+		smap_base(pair_comparator_type const& pair_comp, node_alloc_type&& alloc)
 			: m_node_allocator(std::move(alloc))
 		  	, m_pair_comparator(pair_comp)
 		  	, m_head()
 		{
 		}
 
-		map_base(pair_comparator_type const& pair_comp, Alloc const& alloc)
+		smap_base(pair_comparator_type const& pair_comp, Alloc const& alloc)
 			: m_node_allocator(alloc)
 		  	, m_pair_comparator(pair_comp)
 		  	, m_head()
 		{
 		}
 
-		map_base(map_base&& rval) = default;
+		smap_base(smap_base&& rval) = default;
 
-		map_base(map_base&& rval, Alloc const& alloc)
+		smap_base(smap_base&& rval, Alloc const& alloc)
 			: m_node_allocator(alloc)
 		  	, m_pair_comparator(std::move(rval.m_pair_comparator))
 		  	, m_head(std::move(rval.m_head))
@@ -454,7 +454,7 @@ namespace isa
 		}
 
 
-		~map_base() noexcept
+		~smap_base() noexcept
 		{
 			clear_nodes();
 		}

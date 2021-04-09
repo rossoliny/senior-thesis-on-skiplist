@@ -211,10 +211,10 @@ TEST_CASE("move ctor", tag)
 TEST_CASE("initializer_list ctor", tag)
 {
 	my_map<std::string, int> actual = {  make_pair("smap", 1),  make_pair("unit", 2),   make_pair("test", 3),
-	                                     make_pair("std::map", 3),  make_pair("auca", 4), make_pair("std::map", 5)};
+	                                     make_pair("std::smap", 3),  make_pair("auca", 4), make_pair("std::smap", 5)};
 
 	std_map<std::string, int> expected = {  make_pair("smap", 1),   make_pair("unit", 2),   make_pair("test", 3),
-											make_pair("std::map", 3),   make_pair("auca", 4),   make_pair("std::map", 5)};
+											make_pair("std::smap", 3),   make_pair("auca", 4),   make_pair("std::smap", 5)};
 
 	MAPS_REQUIRE_EQUAL(actual, expected);
 }

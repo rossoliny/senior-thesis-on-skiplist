@@ -4,3 +4,9 @@
 
 #pragma once
 #include "skiplist.h"
+
+namespace isa
+{
+	template<typename Key, typename Tp, typename Compar = std::less<Key>, typename Alloc = std::allocator<std::pair<Key const, Tp>>>
+	using map = isa::smap<Key, Tp, Compar, Alloc>;
+}

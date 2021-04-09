@@ -16,6 +16,7 @@
 #include <string>
 #include <initializer_list>
 
+#include <iostream>
 #include <stack>
 #include <map>
 #include <smap>
@@ -35,7 +36,7 @@ template<typename T>
 using Test_Allocator = std::allocator<T>;
 
 template<typename Key, typename Tp, typename Compar = Test_Comparator<Key>, typename Alloc = Test_Allocator<std::pair<Key const, Tp>>>
-using my_map = isa::map<Key, Tp, Compar, Alloc>;
+using my_map = isa::smap<Key, Tp, Compar, Alloc>;
 
 template<typename Key, typename Tp, typename Compar = Test_Comparator<Key>, typename Alloc = Test_Allocator<std::pair<Key const, Tp>>>
 using std_map = std::map<Key, Tp, Compar, Alloc>;
