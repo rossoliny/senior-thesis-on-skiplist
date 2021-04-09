@@ -6,4 +6,4 @@ include_directories(../skiplist/C++/v2/include)
 
 add_compile_options(-fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -O0 -g)
 
-add_executable(benchmarks main.cpp)
+add_executable(benchmarks manual.cpp)

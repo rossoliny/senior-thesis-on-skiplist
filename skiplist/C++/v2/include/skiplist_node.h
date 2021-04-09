@@ -14,7 +14,7 @@ namespace isa
 		class skiplist_node_base
 		{
 		public:
-			enum constants { MAX_ADDITIONAL_LEVELS = 10 };
+			enum constants { MAX_ADDITIONAL_LEVELS = 15 };
 
 #ifdef SKIPLIST_DEBUG_INFO
 			size_t height = 0;
