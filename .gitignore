@@ -76,4 +76,4 @@ cmake-build-*
 !benchmarks/google\ benchmark/tools/compare
 !benchmarks/google\ benchmark/tools/compare/BUILD.bazel
 !benchmarks/google\ benchmark/tools/compare/*.py
-!benchmarks/google\ benchmark/tools/compare/*.pyc
+!benchmarks/google\ benchmark/tools/compare/gbench/*.pyc
