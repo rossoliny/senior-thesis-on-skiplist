@@ -78,6 +78,7 @@ enum {
 	N4 = 1000000
 };
 
-#define Send_Args() DenseRange(0, N1, 64)
+//#define Send_Args() DenseRange(32, N1, 32)
+#define Send_Args() RangeMultiplier(2)->Range(8, 8<<11)->Iterations(1000)
 
 #endif //_BENCH_UTILS_H
