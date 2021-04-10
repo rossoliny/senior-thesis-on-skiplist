@@ -72,13 +72,14 @@ std::vector<std::pair<std::string, std::string>> generate_unsorted_range(int N);
 std::vector<std::pair<std::string, std::string>> generate_sorted_range(int N);
 
 enum {
-	N1 = 1000,
-	N2 = 10000,
-	N3 = 100000,
-	N4 = 1000000
+	_THOUSAND = 1000,
+	_10_THOUSANDS = 10000,
+	_100_THOUSANDS = 100000,
+	_MILLION = 1000000,
+	_10_MILLIONS = 10000000
 };
 
-//#define Send_Args() DenseRange(32, N1, 32)
-#define Send_Args() RangeMultiplier(2)->Range(8, 8<<11)->Iterations(1000)
+#define Send_Args() DenseRange(_MILLION, _10_MILLIONS + _100_THOUSANDS, _100_THOUSANDS)
+//#define Send_Args() RangeMultiplier(2)->Range(8, 8<<11)->Iterations(150)
 
 #endif //_BENCH_UTILS_H
