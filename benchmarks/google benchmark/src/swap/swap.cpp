@@ -9,7 +9,7 @@
 
 static void swap(benchmark::State& state)
 {
-	const static std::vector<std::pair<std::string, std::string>> sorted = generate_sorted_range(N1);
+	const static std::vector<std::pair<std::string, std::string>> sorted = generate_sorted_range(state.range(0));
 
 	while(state.KeepRunning())
 	{

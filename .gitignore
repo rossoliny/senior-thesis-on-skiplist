@@ -65,3 +65,15 @@ cmake-build-*
 !*.tcc
 !*.sh
 !smap
+!benchmarks/
+!*.txt
+!*.crtx
+!*.xlsx
+!*.xltx
+~$*
+!*.csv
+!*.json
+!benchmarks/google\ benchmark/tools/compare
+!benchmarks/google\ benchmark/tools/compare/BUILD.bazel
+!benchmarks/google\ benchmark/tools/compare/*.py
+!benchmarks/google\ benchmark/tools/compare/*.pyc
