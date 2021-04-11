@@ -208,7 +208,7 @@ namespace isa
 			}
 
 			template<typename Comparator>
-			node* find(const Key& key, const Comparator& comp) const
+			node* find_node(const Key& key, const Comparator& comp) const
 			{
 				std::equal_to<Key> equals;
 				node_base const* head = static_cast<node_base const*> (this);
@@ -240,7 +240,37 @@ namespace isa
 			}
 
 			template<typename Comparator>
-			node_base* find_node(const Key& key, const Comparator& comp, node_base** update) const
+			node_base* find_insert_position(const Key& key, const Comparator& less, node_base** update) const
+			{
+				std::equal_to<Key> equals;
+
+				node_base* curr = const_cast<node_base*>(static_cast<node_base const*> (this));
+				ssize_t lvl = m_height;
+				bool not_end = true;
+
+				while(lvl >= 0)
+				{
+					not_end = curr->get_next(lvl) != npos();
+
+					while(not_end && less(*static_cast<node*>(curr->get_next(lvl))->keyptr(), key))
+					{
+						curr = curr->get_next(lvl);
+						not_end = curr->get_next(lvl) != npos();
+					}
+
+					if(not_end && equals(*static_cast<node*>(curr->get_next(lvl))->keyptr(), key))
+					{
+						return curr->get_next(lvl);
+					}
+					update[lvl] = curr;
+					--lvl;
+				}
+
+				return curr->m_next[0];
+			}
+
+			template<typename Comparator>
+			node_base* find_remove_position(const Key& key, const Comparator& less, node_base** update) const
 			{
 				node_base* curr = const_cast<node_base*>(static_cast<node_base const*> (this));
 				ssize_t lvl = m_height;
@@ -248,10 +278,11 @@ namespace isa
 				while(lvl >= 0)
 				{
 					while(curr->get_next(lvl) != npos() &&
-						comp(*static_cast<node*>(curr->get_next(lvl))->keyptr(), key))
+							less(*static_cast<node*>(curr->get_next(lvl))->keyptr(), key))
 					{
 						curr = curr->get_next(lvl);
 					}
+
 					update[lvl] = curr;
 					--lvl;
 				}

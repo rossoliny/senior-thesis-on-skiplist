@@ -7,7 +7,7 @@
 
 #define tag "[std algorithms]"
 
-TEST_CASE("std::find", tag)
+TEST_CASE("std::find_node", tag)
 {
 	my_map<string, int> act(vec_pairs.begin(), vec_pairs.end());
 	std_map<string, int> exp(vec_pairs.begin(), vec_pairs.end());

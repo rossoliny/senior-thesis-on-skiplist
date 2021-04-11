@@ -5,12 +5,12 @@
 
 #include "test_utils.h"
 
-#define tag "[find]"
+#define tag "[find_node]"
 
 
-TEST_CASE("find", tag)
+TEST_CASE("find_node", tag)
 {
-	SECTION("find success")
+	SECTION("find_node success")
 	{
 		my_map<string, int> act(vec_pairs.begin(), vec_pairs.end());
 		std_map<string, int> exp(vec_pairs.begin(), vec_pairs.end());
@@ -23,7 +23,7 @@ TEST_CASE("find", tag)
 		REQUIRE(*it1 == *it2);
 		MAPS_REQUIRE_EQUAL(act, exp);
 	}
-	SECTION("find const")
+	SECTION("find_node const")
 	{
 		my_map<string, int> const act(vec_pairs.begin(), vec_pairs.end());
 		std_map<string, int> const exp(vec_pairs.begin(), vec_pairs.end());
@@ -66,9 +66,9 @@ TEST_CASE("find", tag)
 	}
 }
 
-TEST_CASE("find with int Key", tag)
+TEST_CASE("find_node with int Key", tag)
 {
-	SECTION("find success")
+	SECTION("find_node success")
 	{
 		CREATE_MAPS_INT_STRING(act, exp);
 		SECTION("do random operations")
@@ -92,7 +92,7 @@ TEST_CASE("find with int Key", tag)
 			DO_RANDOM_OPERATIONS(act, exp);
 		}
 	}
-	SECTION("find const")
+	SECTION("find_node const")
 	{
 		CREATE_MAPS_INT_STRING(act, exp);
 		SECTION("do random operations")

@@ -8,7 +8,7 @@
 
 TEST_CASE("operator[]", tag)
 {
-	SECTION("find arg rvalue")
+	SECTION("find_node arg rvalue")
 	{
 		my_map<string, string> act;
 		std_map<string, string> exp;
@@ -30,7 +30,7 @@ TEST_CASE("operator[]", tag)
 		REQUIRE(exp[k] == (*((exp.insert(make_pair(k, v))).first)).second);
 		MAPS_REQUIRE_EQUAL(act, exp);
 	}
-	SECTION("find arg lvalue")
+	SECTION("find_node arg lvalue")
 	{
 		my_map<string, string> act;
 		std_map<string, string> exp;
