@@ -79,7 +79,7 @@ enum {
 	_10_MILLIONS = 10000000
 };
 
-#define Send_Args() DenseRange(_MILLION, _10_MILLIONS + _100_THOUSANDS, _100_THOUSANDS)
+#define Send_Args() DenseRange(1, _MILLION + 1, _10_THOUSANDS)
 //#define Send_Args() RangeMultiplier(2)->Range(8, 8<<11)->Iterations(150)
 
 #endif //_BENCH_UTILS_H

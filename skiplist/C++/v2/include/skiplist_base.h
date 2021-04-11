@@ -178,48 +178,36 @@ namespace isa
 			return insert_return_t(static_cast<node_pointer> (pos), false);
 		}
 
-		insert_return_t append_or_insert(pair_type const& data)
+		template
+			<
+				typename Pair,
+				typename = std::enable_if<std::is_constructible<pair_type, Pair>::value>
+			>
+		insert_return_t append_or_insert(Pair&& data)
 		{
 			Key const& last = _s_node_key(m_head.m_tail[0]);
 			Key const& key = data.first;
 
 			if(m_head.m_tail[0] == m_head.npos() || less(last, key))
 			{
-				node_pointer new_node = do_append(key, data);
+				node_pointer new_node = do_append(key, std::forward<Pair> (data));
 				return insert_return_t(new_node, true);
 			}
 
 			if(greater(last, key))
 			{
-				return insert_node(key, data);
-			}
-
-			return insert_return_t(static_cast<node_pointer> (m_head.m_tail[0]), false);
-		}
-
-		insert_return_t append_or_insert(pair_type&& data)
-		{
-			Key const& last = _s_node_key(m_head.m_tail[0]);
-			Key const& key = data.first;
-
-			if(m_head.m_tail[0] == m_head.npos() || less(last, key))
-			{
-				node_pointer new_node = do_append(key, std::move(data));
-				return insert_return_t(new_node, true);
-			}
-
-			if(greater(last, key))
-			{
-				return insert_node(key, std::move(data));
+				return insert_node(key, std::forward<Pair> (data));
 			}
 
 			return insert_return_t(static_cast<node_pointer> (m_head.m_tail[0]), false);
 		}
 
 		template<typename... Args>
-		insert_return_t append_or_insert(Args&&... args)
+		insert_return_t append_or_insert_from_args(Args&&... args)
 		{
-			return append_or_insert(pair_type(std::forward<Args>(args)...));
+			// TODO: remove extra copy and make perfect forwarding
+			pair_type tmp_copy(std::forward<Args>(args)...);
+			return append_or_insert(std::move(tmp_copy));
 		}
 
 		template<typename... Args>

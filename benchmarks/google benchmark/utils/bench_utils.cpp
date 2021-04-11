@@ -29,9 +29,10 @@ std::vector<std::pair<std::string, std::string>> generate_unsorted_range(int N)
 {
 	std::vector<std::pair<std::string, std::string>> result(N);
 
+	int strlen = _10_THOUSANDS;
 	for(int i = 0; i < N; ++i)
 	{
-		result[i] = std::make_pair(rand_string(20, 20), rand_string(20, 20));
+		result[i] = std::make_pair(rand_string(strlen, strlen), rand_string(strlen, strlen));
 	}
 
 	return result;

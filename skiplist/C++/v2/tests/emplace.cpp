@@ -77,6 +77,23 @@ TEST_CASE("emplace single element", tag)
 
 		MAPS_REQUIRE_EQUAL(act, exp);
 	}
+	SECTION("piecewise_construct")
+	{
+		CREATE_MAPS_INT_STRING(act, exp);
+
+		pair<int, string> val1(rand_int(1200, 2000), rand_string());
+		pair<int, string> val2 = val1;
+
+		auto p1 = act.emplace(piecewise_construct, forward_as_tuple(std::move(val1.first)), forward_as_tuple(std::move(val1.second)));
+		auto p2 = exp.emplace(piecewise_construct, forward_as_tuple(std::move(val2.first)), forward_as_tuple(std::move(val2.second)));
+
+		REQUIRE(*p1.first == *p2.first);
+		REQUIRE(p1.second == p2.second);
+		REQUIRE(p1.second == true);
+		REQUIRE(val1 == val2);
+
+		MAPS_REQUIRE_EQUAL(act, exp);
+	}
 	SECTION("from pair's elements ctor args")
 	{
 		string key = "string as key";

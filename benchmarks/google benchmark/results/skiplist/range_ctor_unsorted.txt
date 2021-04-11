@@ -1,4 +1,4 @@
-2021-04-11T03:55:03+06:00
+2021-04-11T21:09:45+06:00
 Running ./cmake-build-debug/skiplist_bench
 Run on (4 X 2300 MHz CPU s)
 CPU Caches:
@@ -6,77 +6,9 @@ CPU Caches:
   L1 Instruction 32 KiB (x2)
   L2 Unified 256 KiB (x2)
   L3 Unified 4096 KiB (x1)
-Load Average: 1.70, 2.27, 2.33
------------------------------------------------------------------------
-Benchmark                             Time             CPU   Iterations
------------------------------------------------------------------------
-range_ctor_unsorted/1000000  8770061906 ns   8507837000 ns            1
-range_ctor_unsorted/1100000  8011413038 ns   7952585000 ns            1
-range_ctor_unsorted/1200000  10590004962 ns   9894711000 ns            1
-range_ctor_unsorted/1300000  10398417265 ns   10207796000 ns            1
-range_ctor_unsorted/1400000  11489824056 ns   11332605000 ns            1
-range_ctor_unsorted/1500000  12705385237 ns   12329785000 ns            1
-range_ctor_unsorted/1600000  15392138051 ns   13807602000 ns            1
-range_ctor_unsorted/1700000  15627567126 ns   15065621000 ns            1
-range_ctor_unsorted/1800000  14348244600 ns   14138875000 ns            1
-range_ctor_unsorted/1900000  15867787321 ns   15585287000 ns            1
-range_ctor_unsorted/2000000  17142988552 ns   16913665000 ns            1
-range_ctor_unsorted/2100000  19015124942 ns   18634626000 ns            1
-range_ctor_unsorted/2200000  21330854874 ns   20758073000 ns            1
-range_ctor_unsorted/2300000  21093572633 ns   20581579000 ns            1
-range_ctor_unsorted/2400000  23996623563 ns   22309641000 ns            1
-range_ctor_unsorted/2500000  25075066471 ns   24705417000 ns            1
-range_ctor_unsorted/2600000  25144295168 ns   24737681000 ns            1
-range_ctor_unsorted/2700000  24958339450 ns   24585414000 ns            1
-range_ctor_unsorted/2800000  27178515008 ns   26853649000 ns            1
-range_ctor_unsorted/2900000  27482082622 ns   26993087000 ns            1
-range_ctor_unsorted/3000000  31754174315 ns   31305178000 ns            1
-range_ctor_unsorted/3100000  31050326955 ns   30547393000 ns            1
-range_ctor_unsorted/3200000  30604307032 ns   30286895000 ns            1
-range_ctor_unsorted/3300000  34264219592 ns   33732653000 ns            1
-range_ctor_unsorted/3400000  35376514276 ns   34811202000 ns            1
-range_ctor_unsorted/3500000  37926203640 ns   37287701000 ns            1
-range_ctor_unsorted/3600000  43233909858 ns   39480457000 ns            1
-range_ctor_unsorted/3700000  41554317381 ns   39501879000 ns            1
-range_ctor_unsorted/3800000  40213441151 ns   39579589000 ns            1
-range_ctor_unsorted/3900000  45832418566 ns   43853390000 ns            1
-range_ctor_unsorted/4000000  44944934156 ns   43178888000 ns            1
-range_ctor_unsorted/4100000  48275623354 ns   47535884000 ns            1
-range_ctor_unsorted/4200000  44965593487 ns   44402008000 ns            1
-range_ctor_unsorted/4300000  46932463498 ns   46400466000 ns            1
-range_ctor_unsorted/4400000  53956513121 ns   52888282000 ns            1
-range_ctor_unsorted/4500000  48182664014 ns   47797546000 ns            1
-range_ctor_unsorted/4600000  52698124115 ns   52165213000 ns            1
-range_ctor_unsorted/4700000  56412018547 ns   54516132000 ns            1
-range_ctor_unsorted/4800000  56266113402 ns   55181792000 ns            1
-range_ctor_unsorted/4900000  60883064956 ns   60027893000 ns            1
-range_ctor_unsorted/5000000  54434597710 ns   53749510000 ns            1
-range_ctor_unsorted/5100000  63059485891 ns   61672469000 ns            1
-range_ctor_unsorted/5200000  63066345717 ns   62402953000 ns            1
-range_ctor_unsorted/5300000  67074679252 ns   65783128000 ns            1
-range_ctor_unsorted/5400000  64696064004 ns   63998477000 ns            1
-range_ctor_unsorted/5500000  66838160126 ns   66016034000 ns            1
-range_ctor_unsorted/5600000  71565647088 ns   69904119000 ns            1
-range_ctor_unsorted/5700000  77785062193 ns   71196145000 ns            1
-range_ctor_unsorted/5800000  81607647043 ns   77290686000 ns            1
-range_ctor_unsorted/5900000  85949006448 ns   80846064000 ns            1
-range_ctor_unsorted/6000000  81361895505 ns   79701387000 ns            1
-range_ctor_unsorted/6100000  79124192695 ns   78512452000 ns            1
-range_ctor_unsorted/6200000  81863575108 ns   81220435000 ns            1
-range_ctor_unsorted/6300000  79415423210 ns   78655488000 ns            1
-range_ctor_unsorted/6400000  89387177055 ns   85889490000 ns            1
-range_ctor_unsorted/6500000  94495561942 ns   88311131000 ns            1
-range_ctor_unsorted/6600000  90763288709 ns   89648311000 ns            1
-range_ctor_unsorted/6700000  109660528953 ns   102668677000 ns            1
-range_ctor_unsorted/6800000  100233011972 ns   97326441000 ns            1
-range_ctor_unsorted/6900000  105631945546 ns   102549105000 ns            1
-range_ctor_unsorted/7000000  123076370615 ns   111102609000 ns            1
-range_ctor_unsorted/7100000  110337403251 ns   100239757000 ns            1
-range_ctor_unsorted/7200000  107762680707 ns   106306365000 ns            1
-range_ctor_unsorted/7300000  141814925985 ns   127176468000 ns            1
-range_ctor_unsorted/7400000  136930940451 ns   123160185000 ns            1
-range_ctor_unsorted/7500000  137216733092 ns   128791160000 ns            1
-range_ctor_unsorted/7600000  115613465372 ns   112173188000 ns            1
-range_ctor_unsorted/7700000  127140312447 ns   121958152000 ns            1
-range_ctor_unsorted/7800000  125221702136 ns   121470881000 ns            1
-range_ctor_unsorted/7900000  142270545681 ns   135820032000 ns            1
+Load Average: 1.29, 1.61, 1.83
+----------------------------------------------------------------------
+Benchmark                            Time             CPU   Iterations
+----------------------------------------------------------------------
+range_ctor_unsorted/1             1251 ns         1247 ns       536740
+range_ctor_unsorted/10001    194405966 ns    187439000 ns            3

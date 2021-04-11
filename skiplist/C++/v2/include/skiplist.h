@@ -368,7 +368,7 @@ namespace isa
 		template<typename... Args>
 		insert_return_type emplace(Args&&... args)
 		{
-			typename base::insert_return_t res = base::append_or_insert(std::forward<Args>(args)...);
+			typename base::insert_return_t res = base::append_or_insert_from_args(std::forward<Args>(args)...);
 			return insert_return_type(iterator(res.first), res.second);
 		}
 
