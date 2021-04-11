@@ -58,6 +58,7 @@ namespace isa
 		pair_comparator_type m_pair_comparator;
 		node_header m_head;
 
+		// COMPARE HELPERS
 		inline static Key const& _s_get_key(node_base const* node)
 		{
 			return *static_cast<node_const_pointer> (node)->keyptr();
@@ -83,24 +84,8 @@ namespace isa
 		{
 			return std::not_equal_to<Key>()(a, b);
 		}
-/*
-		inline bool equals(node_base const* node, pair_type const& pair) const
-		{
-			return equals(_s_node_key(node), pair.first);
-		}
 
-		inline bool equals(node_base const* a, node_base const* b) const
-		{
-			return a == b || equals(_s_node_key(a), _s_get_key(b));
-		}
-*/
-
-
-		inline constexpr size_t length() const
-		{
-			return m_head.m_length;
-		}
-
+		// MEMBER GETTERS
 		inline pair_comparator_type& get_pair_comparator()
 		{
 			return m_pair_comparator;
@@ -131,6 +116,12 @@ namespace isa
 			return m_node_allocator;
 		}
 
+		inline constexpr size_t length() const
+		{
+			return m_head.m_length;
+		}
+
+		// NODE OPERATIONS
 		template<typename... Args>
 		node_pointer create_node(Args&& ... args)
 		{
@@ -150,6 +141,7 @@ namespace isa
 			node_alloc_traits::deallocate(m_node_allocator, ptr, 1);
 		}
 
+		// INSERT OPETATIONS
 		template<typename... Args>
 		node_pointer do_append(Args&&... args)
 		{
@@ -218,6 +210,7 @@ namespace isa
 			return append_or_insert(std::move(tmp_copy));
 		}
 
+		// SEARCH OPERATIONS
 		template<typename K>
 		Tp& find_or_insert(K&& key)
 		{
@@ -225,12 +218,32 @@ namespace isa
 			return res.first->dataptr()->second;
 		}
 
-		template<typename... Args>
-		inline void assign_pair(node_base* node, Args&&... args) const
+		node_pointer find_node(Key const& key)
 		{
-			static_cast<node_pointer> (node)->mutable_dataptr()->operator=(std::forward<Args>(args)...);
+			return m_head.find_node(key, get_key_comparator());
 		}
 
+		node_const_pointer find_node(Key const& key) const
+		{
+			return m_head.find_node(key, get_key_comparator());
+		}
+
+		// this is fair although it's faster to just return 1 or 0
+		size_t count_key(Key const& key) const
+		{
+			node_base* pos = m_head.find_node(key, get_key_comparator());
+			size_t count = 0;
+
+			while(pos != m_head.npos() && equals(_s_get_key(pos), key))
+			{
+				pos = pos->m_next[0];
+				++count;
+			}
+
+			return count;
+		}
+
+		// REMOVE OPERAITONS
 		size_t remove_key(Key const& key)
 		{
 			node_base* update[1 + MAX_ADDITIONAL_LEVELS];
@@ -311,31 +324,14 @@ namespace isa
 			return const_cast<node_base*> (begin);
 		}
 
-		node_pointer find_node(Key const& key)
+		// ELEMENT ASSIGN
+		template<typename... Args>
+		inline void assign_pair(node_base* node, Args&&... args) const
 		{
-			return m_head.find_node(key, get_key_comparator());
+			static_cast<node_pointer> (node)->mutable_dataptr()->operator=(std::forward<Args>(args)...);
 		}
 
-		node_const_pointer find_node(Key const& key) const
-		{
-			return m_head.find_node(key, get_key_comparator());
-		}
-
-		// this is fair although it's faster to just return 1 or 0
-		size_t count_key(Key const& key) const
-		{
-			node_base* pos = m_head.find_node(key, get_key_comparator());
-			size_t count = 0;
-
-			while(pos != m_head.npos() && equals(_s_get_key(pos), key))
-			{
-				pos = pos->m_next[0];
-				++count;
-			}
-
-			return count;
-		}
-
+		// HEADER OPERATIONS
 		void move_head(smap_base&& rval)
 		{
 			m_head = std::move(rval.m_head);
@@ -354,26 +350,6 @@ namespace isa
 		inline bool is_empty() const
 		{
 			return m_head.m_next[0] == m_head.npos();
-		}
-
-		size_t random_level()
-		{
-#ifndef USE_C_RAND
-			float p = 0.5f;
-			std::random_device seed;
-			std::default_random_engine e(seed());
-			std::geometric_distribution<size_type> d(p);
-
-			return d(e);
-#else
-			size_t res = 0;
-			while(res < MAX_ADDITIONAL_LEVELS && rand() < RAND_MAX / 2)
-			{
-				res++;
-			}
-
-			return res;
-#endif
 		}
 
 		void clear_nodes() noexcept
@@ -434,10 +410,30 @@ namespace isa
 		{
 		}
 
-
 		~smap_base() noexcept
 		{
 			clear_nodes();
+		}
+
+		// RANDOMIZATION
+		size_t random_level()
+		{
+#ifndef USE_C_RAND
+			float p = 0.5f;
+			std::random_device seed;
+			std::default_random_engine e(seed());
+			std::geometric_distribution<size_type> d(p);
+
+			return d(e);
+#else
+			size_t res = 0;
+			while(res < MAX_ADDITIONAL_LEVELS && rand() < RAND_MAX / 2)
+			{
+				res++;
+			}
+
+			return res;
+#endif
 		}
 	};
 
