@@ -181,7 +181,7 @@ namespace isa
 		template
 			<
 				typename Pair,
-				typename = std::enable_if<std::is_constructible<pair_type, Pair>::value>
+				typename = std::enable_if<std::is_constructible<pair_type, Pair&&>::value>
 			>
 		insert_return_t append_or_insert(Pair&& data)
 		{
