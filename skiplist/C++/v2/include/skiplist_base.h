@@ -31,7 +31,7 @@ namespace isa
 
 		template<typename K, typename V>
 		using pair_t = std::pair<K, V>;
-		using insert_return_t = pair_t<node_pointer, bool>;
+		using insert_return_t = typename node_header::insert_return_t;
 
 		using pair_type = pair_t<Key const, Tp>;
 		using mutable_key_pair = pair_t<Key, Tp>;
@@ -160,10 +160,9 @@ namespace isa
 		{
 			node_base* update[1 + MAX_ADDITIONAL_LEVELS];
 
-			node_base* pos = m_head.find_insert_position(key, get_key_comparator(), update);
+			insert_return_t res = m_head.find_insert_position(key, get_key_comparator(), update);
 
-			// never returns npos as it's already checked in append
-			if(/*pos == m_head.npos() ||*/ not_equals(_s_get_key(pos), key))
+			if(res.second == true /*|| not_equals(_s_get_key(pos), key)*/)
 			{
 				node_pointer new_node = create_node(std::forward<Args>(args)...);
 				size_t node_height = random_level();
@@ -175,7 +174,7 @@ namespace isa
 				return insert_return_t(new_node, true);
 			}
 
-			return insert_return_t(static_cast<node_pointer> (pos), false);
+			return res;
 		}
 
 		template

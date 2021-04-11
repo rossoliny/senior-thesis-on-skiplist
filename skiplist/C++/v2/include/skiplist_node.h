@@ -140,6 +140,8 @@ namespace isa
 			}
 
 		public:
+			using insert_return_t = std::pair<node*, bool>;
+
 			skiplist_node_base* m_tail[1 + MAX_ADDITIONAL_LEVELS];
 
 #if defined(__GNUC__) && !defined(__clang__) && !defined(_MSC_VER)
@@ -240,9 +242,10 @@ namespace isa
 			}
 
 			template<typename Comparator>
-			node_base* find_insert_position(const Key& key, const Comparator& less, node_base** update) const
+			insert_return_t find_insert_position(const Key& key, const Comparator& less, node_base** update) const
 			{
 				std::equal_to<Key> equals;
+				std::not_equal_to<Key> not_equals;
 
 				node_base* curr = const_cast<node_base*>(static_cast<node_base const*> (this));
 				ssize_t lvl = m_height;
@@ -260,13 +263,13 @@ namespace isa
 
 					if(not_end && equals(*static_cast<node*>(curr->get_next(lvl))->keyptr(), key))
 					{
-						return curr->get_next(lvl);
+						return insert_return_t(static_cast<node*> (curr->get_next(lvl)), false);
 					}
 					update[lvl] = curr;
 					--lvl;
 				}
 
-				return curr->m_next[0];
+				return insert_return_t(static_cast<node*> (curr->m_next[0]), true);
 			}
 
 			template<typename Comparator>

@@ -25,7 +25,7 @@ long long static range_ctor_bench(int RUNS, Input& input)
 	return std::chrono::duration_cast<std::chrono::milliseconds>(res).count();
 }
 
-auto input = generate_unsorted_range(_10_THOUSANDS, _10_THOUSANDS);
+auto input = generate_unsorted_range(_100_THOUSANDS, _10_THOUSANDS);
 
 int main()
 {
