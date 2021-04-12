@@ -8,12 +8,14 @@
 template<typename Map, typename Input>
 long long static range_ctor_bench(int RUNS, Input& input)
 {
+	int len = 0;
 	auto start = std::chrono::high_resolution_clock::now();
 
 	while(RUNS--)
 	{
 		escape(&input);
 		Map m(input.begin(), input.end());
+		len = m.size();
 		escape(&m);
 		clobber();
 	}
@@ -22,10 +24,11 @@ long long static range_ctor_bench(int RUNS, Input& input)
 
 	auto res = end - start;
 
+	std::cout << "\tsize = " << len << std::endl;
 	return std::chrono::duration_cast<std::chrono::milliseconds>(res).count();
 }
 
-auto input = generate_unsorted_range(_100_THOUSANDS, _10_THOUSANDS);
+auto input = generate_sorted_range(_100_THOUSANDS, _10_THOUSANDS);
 
 int main()
 {
@@ -46,3 +49,4 @@ int main()
 	escape(&my_map_ms);
 	clobber();
 }
+

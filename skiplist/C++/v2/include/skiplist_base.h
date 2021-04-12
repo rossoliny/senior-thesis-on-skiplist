@@ -64,8 +64,10 @@ namespace isa
 			return *static_cast<node_const_pointer> (node)->keyptr();
 		}
 
+		int less_count = 0;
 		inline bool less(Key const& a, Key const& b) const
 		{
+			++const_cast<smap_base*> (this)->less_count;
 			return m_pair_comparator.m_key_comparator(a, b);
 		}
 
@@ -122,11 +124,13 @@ namespace isa
 		}
 
 		// NODE OPERATIONS
+		int create_node_count = 0;
 		template<typename... Args>
 		node_pointer create_node(Args&& ... args)
 		{
+			++const_cast<smap_base*> (this)->create_node_count;
 			node_pointer ptr = node_alloc_traits::allocate(m_node_allocator, 1);
-			node_alloc_traits::construct(m_node_allocator, ptr->dataptr(), std::forward<Args>(args)...);
+			node_alloc_traits::construct(m_node_allocator, ptr->mutable_dataptr(), std::forward<Args>(args)...);
 			return ptr;
 		}
 
@@ -137,7 +141,7 @@ namespace isa
 
 		void delete_node(node_pointer ptr)
 		{
-			node_alloc_traits::destroy(m_node_allocator, ptr->dataptr());
+			node_alloc_traits::destroy(m_node_allocator, ptr->mutable_dataptr());
 			node_alloc_traits::deallocate(m_node_allocator, ptr, 1);
 		}
 
@@ -177,10 +181,17 @@ namespace isa
 			return res;
 		}
 
+		template <class T>
+		struct unconstref {
+			using type = typename std::remove_const<typename std::remove_reference<T>::type>::type;
+		};
+
+
 		template
 			<
 				typename Pair,
-				typename = std::enable_if<std::is_constructible<pair_type, Pair&&>::value>
+//				typename = typename std::enable_if<!std::is_same<typename unconstref<Pair>::type, pair_type>::value && std::is_constructible<pair_type, Pair>::value>::type
+				typename = typename std::enable_if<std::is_constructible<pair_type, Pair>::value>::type
 			>
 		insert_return_t append_or_insert(Pair&& data)
 		{
