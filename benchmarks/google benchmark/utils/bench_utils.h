@@ -79,7 +79,8 @@ enum {
 	_10_MILLIONS = 10000000
 };
 
-#define Send_Args() DenseRange(1, _MILLION + 1, _10_THOUSANDS)
-//#define Send_Args() RangeMultiplier(2)->Range(8, 8<<11)->Iterations(150)
+//#define Send_Args() DenseRange(1, _MILLION + 1, _10_THOUSANDS)
+//#define Send_Args() RangeMultiplier(2)->Range(8, 4000)//->Iterations(150)
+#define Send_Args() Arg(_THOUSAND)//->Iterations(150)
 
 #endif //_BENCH_UTILS_H

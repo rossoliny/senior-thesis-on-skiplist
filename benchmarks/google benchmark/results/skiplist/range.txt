@@ -1,0 +1,13 @@
+2021-04-14T05:27:31+06:00
+Running ./cmake-build-debug/skiplist_bench
+Run on (4 X 2300 MHz CPU s)
+CPU Caches:
+  L1 Data 32 KiB (x2)
+  L1 Instruction 32 KiB (x2)
+  L2 Unified 256 KiB (x2)
+  L3 Unified 4096 KiB (x1)
+Load Average: 3.25, 3.12, 3.11
+----------------------------------------------------------------------
+Benchmark                            Time             CPU   Iterations
+----------------------------------------------------------------------
+range_ctor_unsorted/1              865 ns          861 ns       768606

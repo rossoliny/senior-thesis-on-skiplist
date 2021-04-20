@@ -20,6 +20,7 @@ set(BENCH_WITH_GOOGLE_SRC
         src/ctor/range_ctor.cpp
         src/ctor/copy_ctor.cpp
         src/ctor/move_ctor.cpp
+        src/insert/insert.cpp
         src/erase/erase.cpp
         src/erase/erase_range.cpp
         src/erase/clear.cpp

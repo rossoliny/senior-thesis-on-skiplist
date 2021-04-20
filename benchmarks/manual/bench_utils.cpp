@@ -32,13 +32,13 @@ std::vector<std::pair<std::string, std::string const>> generate_unsorted_range(i
 
 	for(int i = 0; i < N; ++i)
 	{
-		result.emplace_back(std::make_pair(rand_string(strlen, strlen), rand_string(1, 1)));
+		result.emplace_back(std::make_pair(rand_string(strlen, strlen), rand_string(strlen, strlen)));
 	}
 
 	return std::move(result);
 }
 
-std::vector<std::pair<std::string, std::string>> generate_sorted_range(int N, int strlen)
+std::vector<std::pair<std::string const, std::string const>> generate_sorted_range(int N, int strlen)
 {
 	union R
 	{
@@ -50,6 +50,7 @@ std::vector<std::pair<std::string, std::string>> generate_sorted_range(int N, in
 		std::vector<std::pair<std::string, std::string>> data_nc_nc;
 		std::vector<std::pair<std::string, std::string const>> data_nc_c;
 		std::vector<std::pair<std::string const, std::string>> data_c_nc;
+		std::vector<std::pair<std::string const, std::string const>> data_c_c;
 
 		~R()
 		{
@@ -62,5 +63,5 @@ std::vector<std::pair<std::string, std::string>> generate_sorted_range(int N, in
 
 	std::sort(result.begin(), result.end(), ss_pair_cmp());
 
-	return std::move(r.data_nc_nc);
+	return std::move(r.data_c_c);
 }

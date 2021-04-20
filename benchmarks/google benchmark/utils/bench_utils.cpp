@@ -29,7 +29,7 @@ std::vector<std::pair<std::string, std::string>> generate_unsorted_range(int N)
 {
 	std::vector<std::pair<std::string, std::string>> result(N);
 
-	int strlen = _10_THOUSANDS;
+	int strlen = 100;
 	for(int i = 0; i < N; ++i)
 	{
 		result[i] = std::make_pair(rand_string(strlen, strlen), rand_string(strlen, strlen));

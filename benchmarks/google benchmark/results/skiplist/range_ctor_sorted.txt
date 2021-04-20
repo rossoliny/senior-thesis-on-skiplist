@@ -1,4 +1,4 @@
-2021-04-11T21:10:09+06:00
+2021-04-14T01:09:28+06:00
 Running ./cmake-build-debug/skiplist_bench
 Run on (4 X 2300 MHz CPU s)
 CPU Caches:
@@ -6,30 +6,108 @@ CPU Caches:
   L1 Instruction 32 KiB (x2)
   L2 Unified 256 KiB (x2)
   L3 Unified 4096 KiB (x1)
-Load Average: 1.62, 1.66, 1.85
+Load Average: 3.24, 2.91, 2.54
 --------------------------------------------------------------------
 Benchmark                          Time             CPU   Iterations
 --------------------------------------------------------------------
-range_ctor_sorted/1             1256 ns         1252 ns       547478
-range_ctor_sorted/10001    106222632 ns    105726000 ns            5
-range_ctor_sorted/20001    315776832 ns    254820667 ns            3
-range_ctor_sorted/30001   1521657762 ns    598471000 ns            1
-range_ctor_sorted/40001   1165586415 ns    565447000 ns            1
-range_ctor_sorted/50001   1638415247 ns    914825000 ns            1
-range_ctor_sorted/60001   2203891494 ns   1123181000 ns            1
-range_ctor_sorted/70001   2474495708 ns   1281579000 ns            1
-range_ctor_sorted/80001   2376119091 ns   1178630000 ns            1
-range_ctor_sorted/90001   3391973455 ns   1913193000 ns            1
-range_ctor_sorted/100001  3950106517 ns   2176568000 ns            1
-range_ctor_sorted/110001  6376269007 ns   3495695000 ns            1
-range_ctor_sorted/120001  8487962490 ns   3762469000 ns            1
-range_ctor_sorted/130001  12221984922 ns   5027414000 ns            1
-range_ctor_sorted/140001  11728297255 ns   5186127000 ns            1
-range_ctor_sorted/150001  26342358453 ns   9463186000 ns            1
-range_ctor_sorted/160001  44003309332 ns   13735785000 ns            1
-range_ctor_sorted/170001  61213837496 ns   18977843000 ns            1
-range_ctor_sorted/180001  141654172042 ns   41403327000 ns            1
-range_ctor_sorted/190001  66786974732 ns   21575204000 ns            1
-range_ctor_sorted/200001  108523975433 ns   32544552000 ns            1
-range_ctor_sorted/210001  356023213891 ns   91101364000 ns            1
-range_ctor_sorted/220001  275345221913 ns   72266888000 ns            1
+range_ctor_sorted/1              586 ns          584 ns      1216270
+range_ctor_sorted/10001      7999859 ns      7979888 ns           89
+range_ctor_sorted/20001     17551391 ns     17233780 ns           41
+range_ctor_sorted/30001     29726171 ns     28068435 ns           23
+range_ctor_sorted/40001     38244460 ns     37754000 ns           19
+range_ctor_sorted/50001     59134212 ns     54456200 ns           15
+range_ctor_sorted/60001     87906107 ns     67247545 ns           11
+range_ctor_sorted/70001     71668111 ns     69335600 ns           10
+range_ctor_sorted/80001     81539993 ns     80202667 ns            9
+range_ctor_sorted/90001    120173489 ns    107744857 ns            7
+range_ctor_sorted/100001   111380580 ns    104726286 ns            7
+range_ctor_sorted/110001   112187845 ns    109477000 ns            6
+range_ctor_sorted/120001   116923771 ns    115953833 ns            6
+range_ctor_sorted/130001   125477878 ns    124796200 ns            5
+range_ctor_sorted/140001   138767976 ns    137163200 ns            5
+range_ctor_sorted/150001   148475465 ns    147456200 ns            5
+range_ctor_sorted/160001   165210706 ns    162922500 ns            4
+range_ctor_sorted/170001   175997176 ns    171531250 ns            4
+range_ctor_sorted/180001   179948863 ns    178581750 ns            4
+range_ctor_sorted/190001   224767949 ns    209662000 ns            4
+range_ctor_sorted/200001   195523285 ns    194812333 ns            3
+range_ctor_sorted/210001   207056693 ns    205879000 ns            3
+range_ctor_sorted/220001   241692495 ns    230238667 ns            3
+range_ctor_sorted/230001   227987679 ns    226439667 ns            3
+range_ctor_sorted/240001   242120769 ns    238070333 ns            3
+range_ctor_sorted/250001   303326319 ns    280938333 ns            3
+range_ctor_sorted/260001   269850263 ns    265990000 ns            3
+range_ctor_sorted/270001   272370907 ns    270177333 ns            3
+range_ctor_sorted/280001   280419256 ns    277825333 ns            3
+range_ctor_sorted/290001   416804231 ns    323543000 ns            2
+range_ctor_sorted/300001   305797260 ns    302745000 ns            2
+range_ctor_sorted/310001   359739806 ns    333806500 ns            2
+range_ctor_sorted/320001   318173463 ns    315937500 ns            2
+range_ctor_sorted/330001   334637464 ns    331183000 ns            2
+range_ctor_sorted/340001   367663532 ns    354268000 ns            2
+range_ctor_sorted/350001   356146063 ns    352789500 ns            2
+range_ctor_sorted/360001   357115616 ns    354015000 ns            2
+range_ctor_sorted/370001   380054999 ns    374967000 ns            2
+range_ctor_sorted/380001   412149607 ns    397404500 ns            2
+range_ctor_sorted/390001   386534223 ns    384502500 ns            2
+range_ctor_sorted/400001   400153606 ns    397963000 ns            2
+range_ctor_sorted/410001   631077132 ns    545884500 ns            2
+range_ctor_sorted/420001   476143187 ns    452119000 ns            2
+range_ctor_sorted/430001   631245267 ns    542568000 ns            2
+range_ctor_sorted/440001   459534649 ns    454679000 ns            2
+range_ctor_sorted/450001   451990761 ns    450123500 ns            2
+range_ctor_sorted/460001   570936075 ns    525396000 ns            1
+range_ctor_sorted/470001   486517942 ns    480264000 ns            2
+range_ctor_sorted/480001   518096635 ns    510850000 ns            1
+range_ctor_sorted/490001   508098761 ns    500465000 ns            2
+range_ctor_sorted/500001   527317229 ns    522359000 ns            1
+range_ctor_sorted/510001   534002573 ns    529210000 ns            1
+range_ctor_sorted/520001   553599863 ns    548862000 ns            1
+range_ctor_sorted/530001   544048894 ns    537209000 ns            1
+range_ctor_sorted/540001   557140441 ns    552185000 ns            1
+range_ctor_sorted/550001   561661056 ns    557944000 ns            1
+range_ctor_sorted/560001   569366104 ns    567299000 ns            1
+range_ctor_sorted/570001   589660901 ns    586000000 ns            1
+range_ctor_sorted/580001   607760016 ns    604319000 ns            1
+range_ctor_sorted/590001   732253998 ns    679540000 ns            1
+range_ctor_sorted/600001   707885510 ns    678413000 ns            1
+range_ctor_sorted/610001   681798147 ns    657579000 ns            1
+range_ctor_sorted/620001   738410584 ns    698951000 ns            1
+range_ctor_sorted/630001   673096613 ns    662992000 ns            1
+range_ctor_sorted/640001   694684368 ns    689065000 ns            1
+range_ctor_sorted/650001   755278836 ns    715457000 ns            1
+range_ctor_sorted/660001   692621913 ns    685859000 ns            1
+range_ctor_sorted/670001   713656602 ns    705291000 ns            1
+range_ctor_sorted/680001   750009165 ns    734621000 ns            1
+range_ctor_sorted/690001   804444159 ns    761843000 ns            1
+range_ctor_sorted/700001   734168831 ns    725496000 ns            1
+range_ctor_sorted/710001   742125838 ns    738368000 ns            1
+range_ctor_sorted/720001   786300185 ns    771168000 ns            1
+range_ctor_sorted/730001   782958896 ns    776526000 ns            1
+range_ctor_sorted/740001   800420133 ns    790664000 ns            1
+range_ctor_sorted/750001   795251814 ns    782049000 ns            1
+range_ctor_sorted/760001   983919191 ns    896494000 ns            1
+range_ctor_sorted/770001   925249843 ns    878035000 ns            1
+range_ctor_sorted/780001   856115665 ns    842006000 ns            1
+range_ctor_sorted/790001   838945704 ns    827226000 ns            1
+range_ctor_sorted/800001   865759405 ns    859153000 ns            1
+range_ctor_sorted/810001   941376168 ns    889903000 ns            1
+range_ctor_sorted/820001   874887807 ns    859116000 ns            1
+range_ctor_sorted/830001   931850619 ns    907131000 ns            1
+range_ctor_sorted/840001   880790220 ns    875740000 ns            1
+range_ctor_sorted/850001   903094545 ns    892549000 ns            1
+range_ctor_sorted/860001  1604457574 ns   1396177000 ns            1
+range_ctor_sorted/870001   985822138 ns    942559000 ns            1
+range_ctor_sorted/880001   921776171 ns    914607000 ns            1
+range_ctor_sorted/890001   994832023 ns    950483000 ns            1
+range_ctor_sorted/900001   907096408 ns    902959000 ns            1
+range_ctor_sorted/910001   951023625 ns    945241000 ns            1
+range_ctor_sorted/920001  1092652150 ns   1051693000 ns            1
+range_ctor_sorted/930001  1036123694 ns    996638000 ns            1
+range_ctor_sorted/940001  1119620329 ns   1047989000 ns            1
+range_ctor_sorted/950001  1048847775 ns   1034986000 ns            1
+range_ctor_sorted/960001  1060987798 ns   1029618000 ns            1
+range_ctor_sorted/970001  1092591390 ns   1056132000 ns            1
+range_ctor_sorted/980001  1173135440 ns   1103430000 ns            1
+range_ctor_sorted/990001  1361308480 ns   1251817000 ns            1
+range_ctor_sorted/1000001 1320038914 ns   1252879000 ns            1

@@ -45,6 +45,11 @@ static void escape(void* p)
 	asm volatile("" : : "g"(p) : "memory");
 }
 
+static void escape(void const* p)
+{
+	asm volatile("" : : "g"(const_cast<void*> (p)) : "memory");
+}
+
 static void clobber()
 {
 	asm volatile("" : : : "memory");
@@ -61,7 +66,7 @@ std::string rand_string(int min_len, int max_len);
 
 std::vector<std::pair<std::string, std::string const>> generate_unsorted_range(int N, int strlen);
 
-std::vector<std::pair<std::string, std::string>> generate_sorted_range(int N, int strlen);
+std::vector<std::pair<std::string const, std::string const>> generate_sorted_range(int N, int strlen);
 
 enum {
 	_THOUSAND = 1000,
